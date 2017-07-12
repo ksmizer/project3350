@@ -47,13 +47,11 @@ extern void checkPause(Game *game);
 extern void checkStart(Game *game);
 extern void checkGameOver(Game *game);
 extern void charHurt(Game *game, Character *p);
-extern void enemyHurt(Game *game, Character *p, Enemy *e);
 extern void setFrame(Game *g);
 extern void setLRDoor(Game *g);
 extern void levelText(Game *game, Level *lev);
 extern void levelDrawBox(Game *g);
-extern void drawLevel2(Game *g, Level *lev);
-extern void setLevel2(Game *g, Level *lev);
+extern void setLevelSwitch(Game *g, Level *lev);
 extern void gameOverLevelRestart(Game *game, Level *lev);
 extern void setLeftDoor(Game *g);
 extern void setRightDoor(Game *g);
@@ -118,13 +116,13 @@ int main(void)
 	gm.plat[0].height = 15;
 	gm.plat[0].center.x = 300;
 	gm.plat[0].center.y = runAnimation.getFrameHeight()*1.5;
-	
+
 	//test spikes
 	gm.spike[0].width = 30;
 	gm.spike[0].height = 15;
 	gm.spike[0].center.x = 600;
-	gm.spike[0].center.y = 0;
-	*/	
+	gm.spike[0].center.y = 60;
+	*/
 
 	//play background_music
 	background_music();
@@ -344,7 +342,6 @@ void physics(Game *game, PlayerState ps)
 	//kyleS.cpp	
 	movement(game, p, ps, gm.keys);
 	charCollision(game, p, e);
-	enemyHurt(game, p, e);
 
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
@@ -419,8 +416,8 @@ void render(Game *game)
 		glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
-	
-	//Draw test spike
+
+	//Draw test platform
 	Shape *spike;
 	glColor3ub(80,110,70);
 	spike = &game->spike[0];
@@ -435,12 +432,19 @@ void render(Game *game)
 		glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+
 	*/
 
+	setLevelSwitch(&gm, &lev);
 	//set up level 2 
-	setLevel2(&gm, &lev);
+	//setLevel2(&gm, &lev);
 	//renders level 2 if on level 2
-	drawLevel2(&gm, &lev);
+	//drawLevel2(&gm, &lev);
+
+	//set up level 3
+	//setLevel3(&gm, &lev);
+	//renders level 3 if on level 3
+	//drawLevel3(&gm, &lev);
 	
 	//draw boxs using game box array to the screen
 	levelDrawBox(&gm);
