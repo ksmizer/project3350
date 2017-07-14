@@ -2,7 +2,6 @@
 #define _KYLES_H_
 
 #include <cstring>
-
 //types
 typedef float Flt;
 typedef Flt Matrix[4][4];

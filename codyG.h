@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <math.h>
 #include "timers.h"
+#include <iostream> 
 
 using namespace std;
 
@@ -46,6 +47,7 @@ class SpriteAnimation
 	SpriteAnimation(char* name, int numFrames, int maxr, int maxc, 
 		int sFrame, int eFrame, double framew, double frameh, 
 		double d, bool l);
+	~SpriteAnimation();
 	void enable();
 	void disable();
 	bool isEnabled();
@@ -67,23 +69,29 @@ class SpriteAnimation
 class Enemy
 {
 	protected:
+	int type;
 	Vec direction;
 	Vec velocity;
 	int leftStop, rightStop;
 	bool isLeft;
 	public:
+	vector<SpriteAnimation> animations;
 	Shape s;
 	Hitbox hitbox;
-	Enemy(Flt w, Flt h, Flt cenX, Flt cenY, Flt hitW, Flt hitH, Flt dirX, 
-		Flt dirY, Flt velX, Flt velY, int left, int right, bool l);
+	Enemy(int t, Flt w, Flt h, Flt cenX, Flt cenY, Flt hitW, Flt hitH, 
+		Flt dirX, Flt dirY, Flt velX, Flt velY, int left, int right, bool l);
+	~Enemy();
 	void checkState();
 	bool checkIsLeft();
 	Flt getX();
 	Flt getY();
+	void setX(Flt x);
+	void setY(Flt y);
 	void move();
 	void stateUnitTest();
-	void destroy();
+	void initAnimations();
 };
 
+void moveEnemy(Enemy &e, int xpos, int ypos);
 void renderSprite(SpriteAnimation anim, int x, int y, bool left);
 PlayerState getPlayerState(Character *p, char keys[]);

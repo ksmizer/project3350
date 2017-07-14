@@ -77,7 +77,10 @@ Game gm;
 Level lev;
 
 //test enemy
-Enemy testEnemy(27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
+vector<Enemy> enemies;
+
+//zombie sprites
+//vector<SpriteAnimation> zombieAnimations;
 
 //sprite testing
 SpriteAnimation runAnimation((char*)"player.png", 1, 12, 12, 1, 6, 
@@ -88,11 +91,18 @@ SpriteAnimation jumpAnimation((char*)"player.png", 1, 12, 12, 8, 8,
 	46, 50, 0.1, true);
 SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 	46, 50, 0.1, false);
-SpriteAnimation zombieAnimation((char*)"zombie.png", 1, 5, 5, 0, 3,
-	27, 40, 0.1, true);
+//SpriteAnimation zombieAnimation((char*)"zombie.png", 1, 5, 5, 0, 3,
+	//27, 40, 0.1, true);
 
 int main(void)
 {
+	//initialize enemies
+	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
+	enemies.push_back(testEnemy);
+	//initialize sprites
+	for (unsigned int i = 0; i < enemies.size(); i++) 
+		enemies.at(i).initAnimations();
+	//initZombieAnim(zombieAnimations);
 	#ifdef USE_OPENAL_SOUND
 	initialize_sound();
 	background_music();
@@ -213,8 +223,12 @@ void init_opengl(void)
 	jumpAnimation.createTexture();
 	attackAnimation.convertToPpm();
 	attackAnimation.createTexture();
-	zombieAnimation.convertToPpm();
-	zombieAnimation.createTexture();
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
+			enemies.at(i).animations.at(j).convertToPpm();
+			enemies.at(i).animations.at(j).createTexture();
+		}
+	}
 }
 
 void makeCharacter(Game *game, int x, int y)
@@ -303,6 +317,11 @@ void check_keys(XEvent *e) {
                     else
                         gm.state = STATE_PAUSE;
                     break;
+				case XK_d:
+					//enemies.erase(enemies.begin()); breaks game due to physics
+					if (enemies.size() > 0)
+						moveEnemy(enemies.at(0), 301, 48);
+					break;
                 case XK_p:
                     if (gm.state == STATE_STARTMENU)
                         gm.state = STATE_GAMEPLAY;
@@ -311,7 +330,8 @@ void check_keys(XEvent *e) {
 					playerState = STATE_ATTACK;
 					break;
 				case XK_t:
-					testEnemy.stateUnitTest();
+					if (enemies.size() > 0)
+						enemies.at(0).stateUnitTest();
 					break;
 					
         }
@@ -328,7 +348,7 @@ void physics(Game *game, PlayerState ps)
 	
 	
 	p = &game->character;
-	e = &testEnemy;
+	e = &enemies.at(0);
 	
 	//Gravity and velocity update
 	p->velocity.y -= GRAVITY;
@@ -389,8 +409,12 @@ void physics(Game *game, PlayerState ps)
 		if (!attackAnimation.isEnabled())
 			playerState = STATE_IDLE;
 	}
-	zombieAnimation.enable();
-	zombieAnimation.updateAnimation();
+	for (unsigned int i = 0; i < enemies.size(); i++) {	
+		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
+			enemies.at(i).animations.at(j).enable();
+			enemies.at(i).animations.at(j).updateAnimation();
+		}
+	}
 }
 
 void render(Game *game)
@@ -478,8 +502,12 @@ void render(Game *game)
 	renderSprite(attackAnimation, game->character.s.center.x,
 		game->character.s.center.y, game->character.isLeft);
 
-	renderSprite(zombieAnimation, testEnemy.getX(),
-		testEnemy.getY(), testEnemy.checkIsLeft());
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
+			renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
+				enemies.at(i).getY(), enemies.at(i).checkIsLeft());
+		}
+	}
 
 	//Check Game States
 	checkStart(&gm);
