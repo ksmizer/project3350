@@ -15,6 +15,8 @@
  *Week 6: Added Enemy class. Has no functionality with collision, simply moves
  * left and right while cycling through walk animation. Added Unit Test for
  * enemy which verifies it is between left and right stop points.
+ *Week 7: Added sprite vector for enemy class. Added moveEnemy function to move
+ * position of enemies.
  */
 
 #include "codyG.h"
@@ -65,6 +67,9 @@ SpriteAnimation::SpriteAnimation(char* name, int maxr, int maxc,
 		}
 	}
 }
+
+//class destructor
+SpriteAnimation::~SpriteAnimation() { }
 
 //convert image to usable format
 void SpriteAnimation::convertToPpm()
@@ -151,10 +156,11 @@ Ppmimage* SpriteAnimation::getSpriteSheet() { return spriteSheet; }
 //---------------------------------------------------------
 //Enemy Class
 
-
-Enemy::Enemy(Flt w, Flt h, Flt cenX, Flt cenY, Flt hitW, Flt hitH, Flt dirX,
-	Flt dirY, Flt velX, Flt velY, int left, int right, bool l)
+//constructor
+Enemy::Enemy(int t, Flt w, Flt h, Flt cenX, Flt cenY, Flt hitW, Flt hitH, 
+	Flt dirX, Flt dirY, Flt velX, Flt velY, int left, int right, bool l)
 {
+	type = t;
 	s.width = w;
 	s.height = h;
 	s.center.x = cenX;
@@ -171,6 +177,9 @@ Enemy::Enemy(Flt w, Flt h, Flt cenX, Flt cenY, Flt hitW, Flt hitH, Flt dirX,
 	isLeft = l;
 }
 
+//destructor
+Enemy::~Enemy() { }
+
 //checks when enemy should turn around
 void Enemy::checkState()
 {
@@ -186,13 +195,24 @@ Flt Enemy::getX() { return s.center.x; }
 
 Flt Enemy::getY() { return s.center.y; }
 
-void Enemy::destroy() { delete this; }
+void Enemy::setX(Flt x) { s.center.x = x; }
 
-void Enemy::move()
-{
+void Enemy::setY(Flt y) { s.center.y = y; }
+
+void Enemy::move() 
+{ 
 	s.center.x += velocity.x;
+	hitbox.center.x = s.center.x;
 }
 
+void Enemy::initAnimations()
+{
+	animations.clear();
+	if (type == 0) {
+		SpriteAnimation anim((char*)"zombie.png", 1, 5, 5, 0, 3, 27, 40, 0.1, true);
+		animations.push_back(anim);
+	}
+}
 
 //checks if enemy is between left and right stop values
 void Enemy::stateUnitTest()
@@ -206,6 +226,11 @@ void Enemy::stateUnitTest()
 }
 //---------------------------------------------------------
 // FUNCTIONS
+void moveEnemy(Enemy &e, int xpos, int ypos)
+{
+	e.setX(xpos);
+	e.setY(ypos);	
+}
 
 void renderSprite(SpriteAnimation sprite, int xposition, 
 	int yposition, bool left)
@@ -269,4 +294,6 @@ PlayerState getPlayerState(Character *p, char keys[])
 		tmp = STATE_JUMP;
 	return tmp;
 }
+
+
 

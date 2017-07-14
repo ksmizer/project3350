@@ -284,7 +284,7 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			}
 		}
 	}
-
+	enemyHurt(game, p, e);
 	charHurt(game, p, e);
 }
 
