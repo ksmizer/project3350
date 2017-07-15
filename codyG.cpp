@@ -1,6 +1,6 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/8/17
+ *Last Modified: 7/15/17
  *Project: Dungeon Escape
  *Week 4: Created SpriteAnimation class and functionality to add generic
  * sprite animations in game. 
@@ -15,8 +15,9 @@
  *Week 6: Added Enemy class. Has no functionality with collision, simply moves
  * left and right while cycling through walk animation. Added Unit Test for
  * enemy which verifies it is between left and right stop points.
- *Week 7: Added sprite vector for enemy class. Added moveEnemy function to move
- * position of enemies.
+ *Week 7: Added enemy vector. Added sprite vector for enemy class. 
+ * Added moveEnemy function to move position of enemies as well as movePlayer 
+ * function. Added SavePoint class.
  */
 
 #include "codyG.h"
@@ -224,6 +225,39 @@ void Enemy::stateUnitTest()
 	printf("Current Position: %f\n", s.center.x);
 	printf("Expected Position Between: %i and %i\n", leftStop, rightStop);
 }
+
+//---------------------------------------------------------
+//SavePoint class
+SavePoint::SavePoint(int x, int y, bool e)
+{
+	xPos = x;
+	yPos = y;
+	enabled = e;
+}
+
+SavePoint::~SavePoint(){ }
+
+void SavePoint::initAnimations()
+{
+	animations.clear();
+	SpriteAnimation anim1((char*)"savepoint.png", 1, 2, 2, 0, 0, 49, 188, 
+		0.1, true);
+	SpriteAnimation anim2((char*)"savepoint.png", 1, 2, 2, 1, 1, 49, 188,
+		0.1, true);
+	animations.push_back(anim1);
+	animations.push_back(anim2);
+}
+
+int SavePoint::getX() { return xPos; } 
+
+int SavePoint::getY() { return yPos; }
+
+bool SavePoint::checkIsEnabled() { return enabled; }
+
+void SavePoint::enable() { enabled = true; }
+
+void SavePoint::disable() { enabled = false; }
+
 //---------------------------------------------------------
 // FUNCTIONS
 void moveEnemy(Enemy &e, int xpos, int ypos)
@@ -232,16 +266,22 @@ void moveEnemy(Enemy &e, int xpos, int ypos)
 	e.setY(ypos);	
 }
 
+void movePlayer(Character &c, int xpos, int ypos)
+{
+	c.s.center.x = c.hurt.center.x = xpos;
+	c.s.center.y = c.hurt.center.x = ypos;
+}
+
 void renderSprite(SpriteAnimation sprite, int xposition, 
-	int yposition, bool left)
+	int yposition, Flt modifier, bool left)
 {
 	if (sprite.isEnabled()) {
 		int ix;
 		float tx, ty, h, w;
 		float xPer, yPer;
 		SpriteAnimation *tmp = &sprite;
-		h = tmp->getFrameHeight();
-		w = tmp->getFrameWidth();
+		h = tmp->getFrameHeight() / modifier;
+		w = tmp->getFrameWidth() / modifier;
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glBindTexture(GL_TEXTURE_2D, *(tmp->getTexture()));
@@ -294,6 +334,5 @@ PlayerState getPlayerState(Character *p, char keys[])
 		tmp = STATE_JUMP;
 	return tmp;
 }
-
 
 

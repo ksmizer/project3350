@@ -1,6 +1,6 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/8/17
+ *Last Modified: 7/15/17
  *Project: Dungeon Escape
  *
  */
@@ -44,7 +44,7 @@ class SpriteAnimation
 
 	public:
 	SpriteAnimation();
-	SpriteAnimation(char* name, int numFrames, int maxr, int maxc, 
+	SpriteAnimation(char* name, int maxr, int maxc, int numFrames,
 		int sFrame, int eFrame, double framew, double frameh, 
 		double d, bool l);
 	~SpriteAnimation();
@@ -92,6 +92,24 @@ class Enemy
 	void initAnimations();
 };
 
+class SavePoint
+{
+	protected:
+	int xPos, yPos;
+	bool enabled;
+	public:
+	vector<SpriteAnimation> animations;
+	SavePoint(int x, int y, bool e);
+	~SavePoint();
+	void initAnimations();
+	int getX();
+	int getY();
+	bool checkIsEnabled();
+	void enable();
+	void disable();
+};
+
+void movePlayer(Character &c, int xpos, int ypos);
 void moveEnemy(Enemy &e, int xpos, int ypos);
-void renderSprite(SpriteAnimation anim, int x, int y, bool left);
+void renderSprite(SpriteAnimation anim, int x, int y, Flt modifier, bool left);
 PlayerState getPlayerState(Character *p, char keys[]);
