@@ -339,6 +339,9 @@ void checkPause(Game *gm)
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
 		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
 		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
+		ggprint8b(&r, 16, c, "D - Enemy Move Test");
+		ggprint8b(&r, 16, c, "I - Toggle Save Point");
+		ggprint8b(&r, 16, c, "O - Test Save Point");
 	}
 }
 
