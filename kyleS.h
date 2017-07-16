@@ -85,7 +85,7 @@ class Game {
 public:
 	Shape box[7];
 	Shape plat[10];
-	Shape spike[4];
+	Shape spike[10];
 	Character character;
 	State state;
 	int n;
