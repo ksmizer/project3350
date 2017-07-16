@@ -193,8 +193,8 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 
 void charCollision(Game *game, Character *p, Enemy *e)
 {
-	int boxTop[5], boxBottom[5], boxLeft[5], boxRight[5];
-	for (int i = 0; i < 5; i++) {
+	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
+	for (int i = 0; i < 7; i++) {
 		Shape *s = &game->box[i];
 		boxTop[i] = s->center.y + s->height + p->s.height;
 		boxBottom[i] = s->center.y - s->height - p->s.height;
@@ -248,8 +248,8 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			}
 		}
 	}
-	int platTop[5], platBottom[5], platLeft[5], platRight[5];
-	for (int i = 0; i < 5; i++) {
+	int platTop[10], platBottom[10], platLeft[10], platRight[10];
+	for (int i = 0; i < 10; i++) {
 		Shape *s = &game->plat[i];
 		platTop[i] = s->center.y + s->height + p->s.height;
 		platBottom[i] = s->center.y - s->height - p->s.height;

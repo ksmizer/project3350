@@ -52,6 +52,8 @@ extern void setLRDoor(Game *g);
 extern void levelText(Game *game, Level *lev);
 extern void levelDrawBox(Game *g);
 extern void setLevelSwitch(Game *g, Level *lev);
+extern void nextLevel(Game *g, Level *lev);
+extern void previousLevel(Game *g, Level *lev);
 extern void gameOverLevelRestart(Game *game, Level *lev);
 extern void setLeftDoor(Game *g);
 extern void setRightDoor(Game *g);
@@ -333,6 +335,12 @@ void check_keys(XEvent *e) {
 					if (enemies.size() > 0)
 						enemies.at(0).stateUnitTest();
 					break;
+				case XK_0:
+					nextLevel(&gm, &lev);
+					break;
+				case XK_9:
+					previousLevel(&gm, &lev);
+					break;
 					
         }
 }
@@ -518,13 +526,14 @@ void render(Game *game)
 	Rect r;
 	int c = 0xffffffff;
 	if (gm.state == STATE_GAMEPLAY) {
-		h = gm.spike[0].height;
-		w = gm.spike[0].width;
+		for (int i = 0; i < 10; i++) {
+		h = gm.spike[i].height;
+		w = gm.spike[i].width;
 		glPushMatrix();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f(0.0, 0.0, 0.0, 0.0);
-		glTranslated(gm.spike[0].center.x, gm.spike[0].center.y, 0);
+		glTranslated(gm.spike[i].center.x, gm.spike[i].center.y, 0);
 		glBegin(GL_QUADS);
 			glVertex2i(-w, -h);
 			glVertex2i(-w, +h);
@@ -533,11 +542,12 @@ void render(Game *game)
 		glEnd();
 		glDisable(GL_BLEND);
 		glPopMatrix();
-		r.bot = gm.spike[0].center.y;
-		r.left = gm.spike[0].center.x;
+		r.bot = gm.spike[i].center.y;
+		r.left = gm.spike[i].center.x;
 		r.center = 1;
 		ggprint8b(&r, 16, c, "SPIKES");
 	}
+}
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
 }
