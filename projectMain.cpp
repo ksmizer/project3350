@@ -68,7 +68,10 @@ extern void loadLevel(Game *g);
 extern void initialize_sound();
 extern void finish_sound();
 extern void background_music();
-
+extern void timer(int mode);
+extern void initializeTime();
+extern void countDeath();
+extern void outputScore(Game *game);
 
 //declare player state
 PlayerState playerState;
@@ -101,6 +104,7 @@ SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 int main(void)
 {
 	//initialize enemies
+	initializeTime();
 	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	enemies.push_back(testEnemy);
 	//initialize sprites
@@ -451,6 +455,10 @@ void physics(Game *game, PlayerState ps)
 		sp1.animations.at(0).disable();
 		sp1.animations.at(1).disable();
 	}
+	if (gm.state == STATE_GAMEOVER) {
+		countDeath();
+		timer(1);
+	}
 }
 
 void render(Game *game)
@@ -516,6 +524,7 @@ void render(Game *game)
 	checkStart(&gm);
 	checkPause(&gm);
 	checkGameOver(&gm);
+	outputScore(&gm);
 
 	//Temporary spike indicator
 	Rect r;

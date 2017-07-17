@@ -3,6 +3,20 @@
 // Purpose: Create sound effects for certain funcitons 
 // in the main file. 
 
+#include <fstream>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <stdlib.h>
+#include <netdb.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "fonts.h"
+#include "codyG.h"
+#include "kyleS.h"
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
+#include <GL/glx.h>
 #include <iostream>
 #include <cstdlib>
 #include <stdio.h>
@@ -11,9 +25,21 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <ctime>
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
 #endif //USE_OPENAL_SOUND
+#define SIZE 40
+#define HOST "www.google.com"
+#define PAGE "/"
+#define PORT 80
+#define USERAGENT "HTMLGET 1.0"
+int seconds = 0;
+int minutes = 0;
+int deaths = 0;
+clock_t startTime;
+clock_t clockTicksTaken;
+double timeInSeconds;
 
 class Sound {
 	public:
@@ -33,6 +59,8 @@ class Sound {
 		ALuint alSource_six;
 		ALuint alBuffer_seven;
 		ALuint alSource_seven;
+		ALuint alBuffer_eight;
+		ALuint alSource_eight;
 };
 
 void initialize_sound()
@@ -64,6 +92,7 @@ void finish_sound()
 	alDeleteSources(1, &s.alSource_five);
 	alDeleteSources(1, &s.alSource_six);
 	alDeleteSources(1, &s.alSource_seven);
+	alDeleteSources(1, &s.alSource_eight);
 	//Delete the buffer.
 	alDeleteBuffers(1, &s.alBuffer);
 	alDeleteBuffers(1, &s.alBuffer_one[0]);
@@ -75,6 +104,7 @@ void finish_sound()
 	alDeleteBuffers(1, &s.alBuffer_five);
 	alDeleteBuffers(1, &s.alBuffer_six);
 	alDeleteBuffers(1, &s.alBuffer_seven);
+	alDeleteBuffers(1, &s.alBuffer_eight);
 	//Close out OpenAL itself.
 	//Get active context.
 	ALCcontext *Context = alcGetCurrentContext();
@@ -103,8 +133,7 @@ void thump()
 	alSourcef(s.alSource, AL_PITCH, 1.0f);
 	alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
@@ -129,8 +158,7 @@ void flames()
 	alSourcef(s.alSource_one[0], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_one[0], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
@@ -140,16 +168,14 @@ void flames()
 	//for longer fire set looping to AL_TRUE
 	alSourcei(s.alSource_one[1], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
 
 	alSourcePlay(s.alSource_one[1]);
 	//flames will not loop until after the first source plays
-	for (int i=0; i<10; i++) 
-	{
+	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_one[0]);
 	}
 	return;
@@ -172,8 +198,7 @@ void background_music()
 	alSourcef(s.alSource_two[0], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_two[0], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
@@ -183,16 +208,14 @@ void background_music()
 	//for longer fire set looping to AL_TRUE
 	alSourcei(s.alSource_two[1], AL_LOOPING, AL_TRUE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
 
 	alSourcePlay(s.alSource_two[1]);
 	//flames will not loop until after the first source plays
-	for (int i=0; i<10; i++) 
-	{
+	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_two[0]);
 	}
 	return;
@@ -213,8 +236,7 @@ void hit()
 	alSourcef(s.alSource_three, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_three, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
@@ -237,8 +259,7 @@ void jump()
 	alSourcef(s.alSource_four, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_four, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
@@ -261,8 +282,7 @@ void throw_spear()
 	alSourcef(s.alSource_five, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_five, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
@@ -285,8 +305,7 @@ void spikes()
 	alSourcef(s.alSource_six, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_six, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
@@ -310,11 +329,85 @@ void death()
 	alSourcef(s.alSource_seven, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_seven, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) 
-	{
+	if (alGetError() != AL_NO_ERROR) {
 		printf("ERROR: setting source\n");
 		return;
 	}
 	
 	alSourcePlay(s.alSource_seven);
+}
+
+void explosion()
+{
+	Sound s;
+	//Buffer holds the sound information.
+	
+	s.alBuffer_eight = alutCreateBufferFromFile("./explosion.wav");
+
+	//Source refers to the sound.
+	//Generate a source, and store it in a buffer.
+	alGenSources(1, &s.alSource_eight);
+	alSourcei(s.alSource_eight, AL_BUFFER, s.alBuffer_eight);
+	//Set volume and pitch to normal, no looping of sound.
+	alSourcef(s.alSource_eight, AL_GAIN, 0.1f);
+	alSourcef(s.alSource_eight, AL_PITCH, 1.0f);
+	alSourcei(s.alSource_eight, AL_LOOPING, AL_FALSE);
+	
+	if (alGetError() != AL_NO_ERROR) {
+		printf("ERROR: setting source\n");
+		return;
+	}
+	
+	alSourcePlay(s.alSource_eight);
+}
+
+void initializeTime()
+{
+	startTime = clock();
+}
+
+void countDeath()
+{
+	deaths++;
+}
+
+void timer(int mode)
+{
+	if (mode == 1) {
+		clockTicksTaken = clock() - startTime;
+		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
+		seconds = timeInSeconds * 10;
+		minutes = seconds / 60;
+		seconds = seconds % 60;
+	}
+}
+
+void outputScore(Game *gm)
+{
+	Flt h, w;
+	Rect r;
+	int c = 0xffffffff;
+	if (gm->state == STATE_GAMEOVER) {
+		h = 50;
+		w = 50;
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(0.0, 0.0, 0.0, 0.0);
+		glTranslated(gm->xres/2, gm->yres/2, 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-w, -h);
+			glVertex2i(-w, +h);
+			glVertex2i(+w, +h);
+			glVertex2i(+w, -h);
+		glEnd();
+		glDisable(GL_BLEND);
+		glPopMatrix();
+		r.bot = gm->yres/2 + 40;
+		r.left = gm->xres/2.3;
+		r.center = .5;
+		ggprint8b(&r, 16, c, "Time: %d.%d", minutes, seconds);
+		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
+	}
+
 }
