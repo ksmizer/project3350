@@ -55,6 +55,7 @@ extern void spikes();
 extern void death();
 extern void flames();
 extern void explosion();
+extern void timer(int mode);
 
 void makeWeapon(Game *game, Character *p);
 

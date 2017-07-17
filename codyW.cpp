@@ -512,10 +512,39 @@ void timer(int mode)
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
 		seconds = timeInSeconds * 10;
 		minutes = seconds / 60;
-		seconds = seconds % 60; 
+		seconds = seconds % 60;
 		cout << "Time: " << minutes << "." << seconds << endl;
 		cout << "Deaths: " << deaths << endl;
 		//scores();
 	}
 }
 
+void outputScore(Game *gm)
+{
+	Flt h, w;
+	Rect r;
+	int c = 0xffffffff;
+	if (gm->state == STATE_GAMEOVER) {
+		h = 50;
+		w = 50;
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(0.0, 0.0, 0.0, 0.0);
+		glTranslated(gm->xres/2, gm->yres/2, 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-w, -h);
+			glVertex2i(-w, +h);
+			glVertex2i(+w, +h);
+			glVertex2i(+w, -h);
+		glEnd();
+		glDisable(GL_BLEND);
+		glPopMatrix();
+		r.bot = gm->yres/2 + 40;
+		r.left = gm->xres/2;
+		r.center = .5;
+		ggprint8b(&r, 16, c, "Time: ");
+		ggprint8b(&r, 16, c, "Death: ");
+	}
+
+}
