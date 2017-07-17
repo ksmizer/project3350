@@ -171,7 +171,7 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 						&& e->s.center.x < spikeRight[i]
 							&& e->s.center.x > spikeLeft[i]) {
 					e->s.center.y = spikeTop[i];
-					//e->destroy();
+					e->animations.at(0).disable();
 				}
 			}
 		}
@@ -185,7 +185,7 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 		lance[i][3] = p->l[i].s.center.x - p->l[i].hit.width - e->s.width;
 		if (e->s.center.y < lance[i][0] && e->s.center.y > lance[i][1]) {
 			if (e->s.center.x < lance[i][2] && e->s.center.x > lance[i][3]) {
-				//e->destroy();
+				e->animations.at(0).disable();
 			}
 		}
 	}
@@ -284,8 +284,84 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			}
 		}
 	}
-	enemyHurt(game, p, e);
 	charHurt(game, p, e);
+}
+
+void enemyCollision(Game *game, Character *p, Enemy *e)
+{
+	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
+	for (int i = 0; i < 7; i++) {
+		Shape *s = &game->box[i];
+		boxTop[i] = s->center.y + s->height + e->s.height;
+		boxBottom[i] = s->center.y - s->height - e->s.height;
+		boxLeft[i] = s->center.x - s->width - e->s.width;
+		boxRight[i] = s->center.x + s->width + e->s.width;
+		if (e->s.center.y < boxTop[i] && e->s.center.y > boxBottom[i]) {
+			if (e->s.center.x > boxLeft[i]	&& e->s.center.x < boxRight[i]) {
+				//Top collision detection
+				if (e->s.center.y < boxTop[i]
+						&& e->s.center.y > boxTop[i] - OFFSET
+							&& e->s.center.x < boxRight[i] - OFFSET
+								&& e->s.center.x > boxLeft[i] + OFFSET) {
+					if (e->velocity.y < 0) {
+						thump();
+						e->s.center.y = boxTop[i];
+						e->velocity.y = 0;
+					}
+				}
+				//Bottom collision detection
+				if (e->s.center.y > boxBottom[i]
+						&& e->s.center.y < boxBottom[i] + OFFSET
+							&& e->s.center.x < boxRight[i] - OFFSET
+								&& e->s.center.x > boxLeft[i] + OFFSET) {
+					e->s.center.y = boxBottom[i];
+					if (e->velocity.y > 0)
+						e->velocity.y = 0;
+				}
+				//Right collision detection
+				if (e->s.center.x < boxRight[i]
+						&& e->s.center.x > s->center.x
+							&& e->s.center.y < boxTop[i] - OFFSET
+								&& e->s.center.y > boxBottom[i] + OFFSET) {
+					e->s.center.x = boxRight[i];
+					if (e->velocity.x < 0)
+						e->velocity.x = 0;
+				}
+				//Left Collision detection
+				if (e->s.center.x > boxLeft[i]
+						&& e->s.center.x < s->center.x
+							&& e->s.center.y < boxTop[i] - OFFSET
+								&& e->s.center.y > boxBottom[i] + OFFSET) {
+					e->s.center.x = boxLeft[i];
+					if (e->velocity.x > 0)
+						e->velocity.x = 0;
+				}
+			}
+		}
+	}
+	int platTop[10], platBottom[10], platLeft[10], platRight[10];
+	for (int i = 0; i < 10; i++) {
+		Shape *s = &game->plat[i];
+		platTop[i] = s->center.y + s->height + e->s.height;
+		platBottom[i] = s->center.y - s->height - e->s.height;
+		platLeft[i] = s->center.x - s->width - e->s.width;
+		platRight[i] = s->center.x + s->width + e->s.width;
+		if (e->s.center.y < platTop[i] && e->s.center.y > platBottom[i]) {
+			if (e->s.center.x > platLeft[i]	&& e->s.center.x < platRight[i]) {
+				//Top collision detection
+				if (e->s.center.y < platTop[i]
+					&& e->s.center.y > platTop[i] - OFFSET
+						&& e->s.center.x < platRight[i]
+							&& e->s.center.x > platLeft[i]
+								&& e->velocity.y < 0) {
+					thump();
+					e->s.center.y = platTop[i];
+					e->velocity.y = 0;
+				}
+			}
+		}
+	}
+	enemyHurt(game, p, e);
 }
 
 void makeWeapon(Game *game, Character *p)

@@ -43,6 +43,7 @@ void render(Game *game);
 //Extern function calls
 extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, Enemy *e);
+extern void enemyCollision(Game *game, Character *p, Enemy *e);
 extern void checkPause(Game *game);
 extern void checkStart(Game *game);
 extern void checkGameOver(Game *game);
@@ -124,20 +125,6 @@ int main(void)
 
 	//set ups spikes and plats for level 2
 	//setLevel2(&gm, &lev);
-
-	/*
-	//test platforms
-	gm.plat[0].width = 50;
-	gm.plat[0].height = 15;
-	gm.plat[0].center.x = 300;
-	gm.plat[0].center.y = runAnimation.getFrameHeight()*1.5;
-
-	//test spikes
-	gm.spike[0].width = 30;
-	gm.spike[0].height = 15;
-	gm.spike[0].center.x = 600;
-	gm.spike[0].center.y = 60;
-	*/
 
 	//play background_music
 	background_music();
@@ -345,6 +332,7 @@ void check_keys(XEvent *e) {
 					if (sp1.checkIsEnabled())
 					{
 						lev.levelID = 1;
+						loadLevel(&gm, &lev);
 						movePlayer(gm.character, sp1.getX(), sp1.getY());
 					}
                 	break;
@@ -394,6 +382,7 @@ void physics(Game *game, PlayerState ps)
 	//kyleS.cpp	
 	movement(game, p, ps, gm.keys);
 	charCollision(game, p, e);
+	enemyCollision(game, p, e);
 
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
@@ -470,42 +459,6 @@ void render(Game *game)
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-
-/*	
-	//Draw test platform
-	Shape *test;
-	glColor3ub(80,110,70);
-	test = &game->plat[0];
-	glPushMatrix();
-	glTranslatef(test->center.x, test->center.y, test->center.z);
-	w = test->width;
-	h = test->height;
-	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
-
-	//Draw test platform
-	Shape *spike;
-	glColor3ub(80,110,70);
-	spike = &game->spike[0];
-	glPushMatrix();
-	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
-	w = spike->width;
-	h = spike->height;
-	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
-
-	*/
-
 	setLevelSwitch(&gm, &lev);
 	//set up level 2 
 	//setLevel2(&gm, &lev);
@@ -588,8 +541,8 @@ void render(Game *game)
 		r.left = gm.spike[i].center.x;
 		r.center = 1;
 		ggprint8b(&r, 16, c, "SPIKES");
+		}
 	}
-}
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
 }
@@ -623,21 +576,4 @@ unsigned char *buildAlphaData(Ppmimage *img)
 	}
 	return newdata;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

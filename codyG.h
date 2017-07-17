@@ -71,12 +71,12 @@ class Enemy
 	protected:
 	int type;
 	Vec direction;
-	Vec velocity;
 	int leftStop, rightStop;
 	bool isLeft;
 	public:
 	vector<SpriteAnimation> animations;
 	Shape s;
+	Vec velocity;
 	Hitbox hitbox;
 	Enemy(int t, Flt w, Flt h, Flt cenX, Flt cenY, Flt hitW, Flt hitH, 
 		Flt dirX, Flt dirY, Flt velX, Flt velY, int left, int right, bool l);
