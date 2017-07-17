@@ -134,6 +134,39 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					death();
 					game->state = STATE_GAMEOVER;
 				}
+				//Bottom collision detection
+				if (p->s.center.y > spikeBottom[i]
+						&& p->s.center.y < spikeBottom[i] + OFFSET
+							&& p->s.center.x < spikeRight[i] - OFFSET
+								&& p->s.center.x > spikeLeft[i] + OFFSET) {
+					p->s.center.y = spikeBottom[i];
+					p->velocity.y = 0;
+					p->jumpCurrent = 2;
+					death();
+					game->state = STATE_GAMEOVER;
+				}
+				//Right collision detection
+				if (p->s.center.x < spikeRight[i]
+						&& p->s.center.x > s->center.x
+							&& p->s.center.y < spikeTop[i] - OFFSET
+								&& p->s.center.y > spikeBottom[i] + OFFSET) {
+					p->s.center.y = spikeRight[i];
+					p->velocity.y = 0;
+					p->jumpCurrent = 2;
+					death();
+					game->state = STATE_GAMEOVER;
+				}
+				//Left Collision detection
+				if (p->s.center.x > spikeLeft[i]
+						&& p->s.center.x < s->center.x
+							&& p->s.center.y < spikeTop[i] - OFFSET
+								&& p->s.center.y > spikeBottom[i] + OFFSET) {
+					p->s.center.y = spikeLeft[i];
+					p->velocity.y = 0;
+					p->jumpCurrent = 2;
+					death();
+					game->state = STATE_GAMEOVER;
+				}
 			}
 		}
 	}
@@ -171,7 +204,35 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 						&& e->s.center.x < spikeRight[i]
 							&& e->s.center.x > spikeLeft[i]) {
 					e->s.center.y = spikeTop[i];
-					e->animations.at(0).disable();
+					e->velocity.y = 0;
+					death();
+				}
+				//Bottom collision detection
+				if (e->s.center.y > spikeBottom[i]
+						&& e->s.center.y < spikeBottom[i] + OFFSET
+							&& e->s.center.x < spikeRight[i] - OFFSET
+								&& e->s.center.x > spikeLeft[i] + OFFSET) {
+					e->s.center.y = spikeBottom[i];
+					e->velocity.y = 0;
+					death();
+				}
+				//Right collision detection
+				if (e->s.center.x < spikeRight[i]
+						&& e->s.center.x > s->center.x
+							&& e->s.center.y < spikeTop[i] - OFFSET
+								&& e->s.center.y > spikeBottom[i] + OFFSET) {
+					e->s.center.y = spikeRight[i];
+					e->velocity.y = 0;
+					death();
+				}
+				//Left Collision detection
+				if (e->s.center.x > spikeLeft[i]
+						&& e->s.center.x < s->center.x
+							&& e->s.center.y < spikeTop[i] - OFFSET
+								&& e->s.center.y > spikeBottom[i] + OFFSET) {
+					e->s.center.y = spikeLeft[i];
+					e->velocity.y = 0;
+					death();
 				}
 			}
 		}
@@ -185,7 +246,8 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 		lance[i][3] = p->l[i].s.center.x - p->l[i].hit.width - e->s.width;
 		if (e->s.center.y < lance[i][0] && e->s.center.y > lance[i][1]) {
 			if (e->s.center.x < lance[i][2] && e->s.center.x > lance[i][3]) {
-				e->animations.at(0).disable();
+				e->velocity.x = 0;
+				//death();
 			}
 		}
 	}
