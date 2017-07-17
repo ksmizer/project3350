@@ -64,17 +64,37 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 	//Character movement check
 	if (keys[XK_Left] || keys[XK_A] || keys[XK_a]) {
 		p->isLeft = true;
-		if (keys[XK_Shift_L] || keys[XK_Shift_R])
-			p->velocity.x = WALK * -2;
-		else
-			p->velocity.x = -WALK;
+		if (p->jumpCurrent > 0) {
+			if (p->velocity.x > -WALK)
+				p->velocity.x -= WALK / 10;
+			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+				if (p->velocity.x > -WALK * 2)
+					p->velocity.x -= WALK / 5;
+			}
+		}
+		else {
+			if (keys[XK_Shift_L] || keys[XK_Shift_R])
+				p->velocity.x = -WALK * 2;
+			else
+				p->velocity.x = -WALK;
+		}
 	}
 	if (keys[XK_Right] || keys[XK_D] || keys[XK_d]) {
 		p->isLeft = false;
-		if (keys[XK_Shift_L] || keys[XK_Shift_R])
-			p->velocity.x = WALK * 2;
-		else
-			p->velocity.x = WALK;
+		if (p->jumpCurrent > 0) {
+			if (p->velocity.x < WALK)
+				p->velocity.x += WALK / 10;
+			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+				if (p->velocity.x < WALK * 2)
+					p->velocity.x += WALK / 5;
+			}
+		}
+		else {
+			if (keys[XK_Shift_L] || keys[XK_Shift_R])
+				p->velocity.x = WALK * 2;
+			else
+				p->velocity.x = WALK;
+		}
 	}
 	if (keys[XK_Up] ||  keys[XK_W] || keys[XK_w]) {
 		if (p->jumpCurrent < p->jumpMax && p->velocity.y <= (3/4 * JUMP)) {
@@ -348,6 +368,7 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			}
 		}
 	}
+	// save point collision check
 	charHurt(game, p, e);
 }
 
@@ -415,12 +436,15 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 				//Top collision detection
 				if (e->s.center.y < platTop[i]
 					&& e->s.center.y > platTop[i] - OFFSET
-						&& e->s.center.x < platRight[i]
-							&& e->s.center.x > platLeft[i]
+						&& e->s.center.x <= platRight[i]
+							&& e->s.center.x >= platLeft[i]
 								&& e->velocity.y < 0) {
 					thump();
 					e->s.center.y = platTop[i];
 					e->velocity.y = 0;
+					if (e->s.center.x == platRight[i] || e->s.center.x == platLeft[i]) {
+					    e->velocity.x = -e->velocity.x;
+					}
 				}
 			}
 		}
@@ -496,7 +520,7 @@ void checkStart(Game *gm)
 		glPushMatrix();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 1.0, 0.7);
+		glColor4f(0.0, 0.0, 0.0, 0.0);
 		glTranslated(gm->xres/2, gm->yres/2, 0);
 		glBegin(GL_QUADS);
 			glVertex2i(-w, -h);
