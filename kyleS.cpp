@@ -494,7 +494,7 @@ void checkStart(Game *gm)
 		glPushMatrix();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 1.0, 0.7);
+		glColor4f(0.0, 0.0, 0.0, 0.0);
 		glTranslated(gm->xres/2, gm->yres/2, 0);
 		glBegin(GL_QUADS);
 			glVertex2i(-w, -h);
