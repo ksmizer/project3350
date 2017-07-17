@@ -369,6 +369,13 @@ void charCollision(Game *game, Character *p, Enemy *e)
 		}
 	}
 	// save point collision check
+	
+	// player falling check
+	if (p->velocity.y < -GRAVITY * 2) {
+		if (p->jumpCurrent < 1) {
+			p->jumpCurrent = 1;
+		}
+	}
 	charHurt(game, p, e);
 }
 
