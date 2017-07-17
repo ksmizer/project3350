@@ -68,7 +68,9 @@ extern void loadLevel(Game *g);
 extern void initialize_sound();
 extern void finish_sound();
 extern void background_music();
-
+extern void timer(int mode);
+extern void initializeTime();
+extern void countDeath();
 
 //declare player state
 PlayerState playerState;
@@ -100,6 +102,7 @@ SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 
 int main(void)
 {
+	initializeTime();
 	//initialize enemies
 	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	enemies.push_back(testEnemy);
@@ -294,6 +297,8 @@ void check_keys(XEvent *e) {
 					return;
 				}
 		if (gm.state == STATE_GAMEOVER) {
+			countDeath();
+			timer(1);// get time at death
                 	if (gm.keys[XK_r] || gm.keys[XK_R]) {
                         	makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;

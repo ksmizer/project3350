@@ -54,6 +54,7 @@ extern void throw_spear();
 extern void spikes();
 extern void death();
 extern void flames();
+extern void explosion();
 
 void makeWeapon(Game *game, Character *p);
 
