@@ -25,8 +25,11 @@
 //checkStart:
 // check if state is STARTMENU & create start menu
 //
-//chekcGameOver:
+//checkGameOver:
 // check if state is GAMEOVER & create Game Over screen
+//
+//savePointCheck:
+// check collision with save point
 
 
 #include <X11/Xlib.h>
@@ -120,11 +123,11 @@ void charHurtUpdate(Game *game, Character *p, Enemy *e)
 	// Character hurtbox shift for jumping
 	if (p->hurtJump == true) {
 		p->hurt.height = p->s.height - 15;
-		p->hurt.width = p->s.width + 10;
+		//p->hurt.width = p->s.width + 5;
 	}
 	if (p->hurtJump == false) {
 		p->hurt.height = p->s.height;
-		p->hurt.height = p->s.width;
+		//p->hurt.width = p->s.width;
 	}		
 }
 
@@ -365,6 +368,7 @@ void charCollision(Game *game, Character *p, Enemy *e)
 					> p->s.width * 2) {
 				p->l[i].s.center.x = -10;
 				p->l[i].hit.center.x = p->l[i].s.center.x;
+				p->l[i].velocity.x = 0;
 			}
 		}
 	}
@@ -449,7 +453,8 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 					thump();
 					e->s.center.y = platTop[i];
 					e->velocity.y = 0;
-					if (e->s.center.x == platRight[i] || e->s.center.x == platLeft[i]) {
+					if (e->s.center.x == platRight[i] ||
+							e->s.center.x == platLeft[i]) {
 					    e->velocity.x = -e->velocity.x;
 					}
 				}
@@ -477,6 +482,182 @@ void makeWeapon(Game *game, Character *p)
 	}
 }
 
+void savePointCheck(Character *p, SavePoint *sp)
+{
+	int x = sp->getX();
+	int y = sp->getY();
+	int charTop, charBottom, charLeft, charRight;
+	charTop = y + p->s.height;
+	charBottom = y - p->s.height;
+	charLeft = x - p->s.width;
+	charRight = x + p->s.width;
+	if (p->s.center.y < charTop && p->s.center.y > charBottom) {
+		if (p->s.center.x > charLeft && p->s.center.x < charRight) {
+			sp->enable();
+		}
+	}
+}
+/*
+void buttonInit(Game *gm)
+{
+	if (gm->state == STATE_STARTMENU) {
+		int nbuttons = gm->nbuttons = 0;
+		//===========//
+		//Play button//
+		//===========//
+		gm->button[nbuttons].r.width = 100;
+		gm->button[nbuttons].r.height = 50;
+		gm->button[nbuttons].r.left =
+			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
+		gm->button[nbuttons].r.bot =
+			gm->yres / 2 - gm->button[nbuttons].r.width / 2;
+		gm->button[nbuttons].r.right =
+			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
+		gm->button[nbuttons].r.top =
+			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
+		gm->button[nbuttons].r.centerx =
+			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
+		gm->button[nbuttons].r.centery =
+			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
+		strcpy(gm->button[nbuttons].text, "Play");
+		gm->button[nbuttons].down = 0;
+		gm->button[nbuttons].click = 0;
+		gm->button[nbuttons].color[0] = 0.4f;
+		gm->button[nbuttons].color[1] = 0.4f;
+		gm->button[nbuttons].color[2] = 0.7f;
+		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
+		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
+		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
+		gm->button[nbuttons].text_color = 0x00ffffff;
+		gm->nbuttons++;
+		//===============//
+		//Controls button//
+		//===============//
+		gm->button[nbuttons].r.width = 100;
+		gm->button[nbuttons].r.height = 50;
+		gm->button[nbuttons].r.left =
+			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
+		gm->button[nbuttons].r.bot =	gm->yres / 2 -
+			gm->button[nbuttons].r.height - gm->button[nbuttons].r.width / 2;
+		gm->button[nbuttons].r.right =
+			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
+		gm->button[nbuttons].r.top =
+			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
+		gm->button[nbuttons].r.centerx =
+			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
+		gm->button[nbuttons].r.centery =
+			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
+		strcpy(gm->button[nbuttons].text, "Controls");
+		gm->button[nbuttons].down = 0;
+		gm->button[nbuttons].click = 0;
+		gm->button[nbuttons].color[0] = 0.4f;
+		gm->button[nbuttons].color[1] = 0.4f;
+		gm->button[nbuttons].color[2] = 0.7f;
+		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
+		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
+		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
+		gm->button[nbuttons].text_color = 0x00ffffff;
+		gm->nbuttons++;
+		//===========//
+		//Exit button//
+		//===========//
+		gm->button[nbuttons].r.width = 100;
+		gm->button[nbuttons].r.height = 50;
+		gm->button[nbuttons].r.left =
+			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
+		gm->button[nbuttons].r.bot =	gm->yres / 2 -
+			gm->button[nbuttons].r.height*2 - gm->button[nbuttons].r.width / 2;
+		gm->button[nbuttons].r.right =
+			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
+		gm->button[nbuttons].r.top =
+			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
+		gm->button[nbuttons].r.centerx =
+			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
+		gm->button[nbuttons].r.centery =
+			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
+		strcpy(gm->button[nbuttons].text, "Exit");
+		gm->button[nbuttons].down = 0;
+		gm->button[nbuttons].click = 0;
+		gm->button[nbuttons].color[0] = 0.4f;
+		gm->button[nbuttons].color[1] = 0.4f;
+		gm->button[nbuttons].color[2] = 0.7f;
+		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
+		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
+		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
+		gm->button[nbuttons].text_color = 0x00ffffff;
+		gm->nbuttons++;
+	}
+}
+*/
+void mouseClick(Game *gm, int ibutton, int action, int x, int y)
+{
+	if (action == 1) {
+		for (int i = 0; i < gm->nbuttons; i++) {
+			if (gm->button[i].over) {
+				gm->button[i].down = 1;
+				gm->button[i].click = 1;
+				if (i == 0) {
+					//Pressed Play button
+					gm->state = STATE_GAMEPLAY;
+				}
+				if (i == 1) {
+					//Pressed Controls button
+					gm->state = STATE_CONTROLS;
+				}
+				if (i == 2) {
+					//Pressed Quit button
+					gm->done = 1;
+				}
+			}
+		}
+	}
+	if (action == 2) {
+		for (int i = 0; i < gm->nbuttons; i++) {
+			gm->button[i].down = 0;
+			gm->button[i].click = 0;
+		}
+	}
+}
+
+void checkControl(Game *gm)
+{
+	Flt h, w;
+	Rect r;
+	int c = 0xffffffff;
+	if (gm->state == STATE_CONTROLS) {
+		h = 100.0;
+		w = 200.0;
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(0.0, 0.0, 1.0, 0.9);
+		glTranslated(gm->xres/2, gm->yres/2, 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-w, -h);
+			glVertex2i(-w, +h);
+			glVertex2i(+w, +h);
+			glVertex2i(+w, -h);
+		glEnd();
+		glDisable(GL_BLEND);
+		glPopMatrix();
+		r.bot = gm->yres/2 + 80;
+		r.left = gm->xres/2;
+		r.center = 1;
+		ggprint8b(&r, 16, c, "CONTROLS");
+		r.center = 0;
+		r.left = gm->xres/2 - 100;
+		ggprint8b(&r, 16, c, "TAB -> Resume play");
+		ggprint8b(&r, 16, c, "SHIFT -> Run");
+		ggprint8b(&r, 16, c, "Right Arrow or A -> Walk right");
+		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
+		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
+		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
+		ggprint8b(&r, 16, c, "D - Enemy Move Test");
+		ggprint8b(&r, 16, c, "I - Toggle Save Point");
+		ggprint8b(&r, 16, c, "O - Test Save Point");
+	}
+
+}
 void checkPause(Game *gm)
 {
 	Flt h, w;
