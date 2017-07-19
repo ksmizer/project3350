@@ -392,7 +392,7 @@ void totalTimer(int mode)
 	if (mode == 1) {
 		clockTicksTaken = clock() - startTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		totalSeconds = timeInSeconds * 10;
+		totalSeconds = timeInSeconds * 12.5;
 		totalMinutes = totalSeconds / 60;
 		totalSeconds = totalSeconds % 60;
 	}
@@ -403,7 +403,7 @@ void currentTimer(int mode)
 	if (mode == 1) {
 		clockTicksTaken = clock() - thisTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		seconds = timeInSeconds * 10;
+		seconds = timeInSeconds * 12.5;
 		minutes = seconds / 60;
 		seconds = seconds % 60;
 	}
@@ -465,7 +465,7 @@ void outputCurrentScore(Game *gm)
 		glEnd();
 		glDisable(GL_BLEND);
 		glPopMatrix();
-		r.bot = gm->yres/2 + 250;
+		r.bot = gm->yres/2 + 400;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
