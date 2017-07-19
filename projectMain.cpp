@@ -44,10 +44,14 @@ void render(Game *game);
 extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, Enemy *e);
 extern void enemyCollision(Game *game, Character *p, Enemy *e);
+extern void savePointCheck(Character *p, SavePoint *sp);
+//extern void buttonInit(Game *game);
 extern void checkPause(Game *game);
+extern void checkControl(Game *game);
 extern void checkStart(Game *game);
 extern void checkGameOver(Game *game);
 extern void charHurt(Game *game, Character *p);
+extern void mouseClick(Game *game, int ibutton, int action, int x, int y);
 extern void setFrame(Game *g);
 extern void setLRDoor(Game *g);
 extern void levelText(Game *game, Level *lev);
@@ -84,6 +88,9 @@ Game gm;
 
 //declare level object
 Level lev;
+
+//declare button object
+Button button[MAXBUTTONS];
 
 //test enemy
 vector<Enemy> enemies;
@@ -245,6 +252,8 @@ void makeCharacter(Game *game, int x, int y)
 	p->velocity.x = 0;
 	p->s.height = p->hurt.height = runAnimation.getFrameHeight() - 10;// * 0.4;
 	p->s.width = p->hurt.width = runAnimation.getFrameWidth() - 20;// * 0.16;
+	p->hurt.height = runAnimation.getFrameHeight() - 15;// * 0.4;
+	p->hurt.width = runAnimation.getFrameWidth() - 30;// * 0.16;
 	p->hurtJump = false;
 	p->l[0].s.center.x = -2;
 	p->l[1].s.center.x = -2;
@@ -261,18 +270,20 @@ void check_mouse(XEvent *e)
         static int savex = 0;
         static int savey = 0;
         static int n = 0;
-
+		gm.lbutton = 0;
+		gm.rbutton = 0;
         if (e->type == ButtonRelease) {
-                return;
+			mouseClick(&gm, e->xbutton.button, 2, e->xbutton.x, e->xbutton.y);
+			return;
         }
         if (e->type == ButtonPress) {
-                if (e->xbutton.button==1) {
+                if (e->xbutton.button == 1) {
                         //Left button was pressed
-                        return;
+						gm.lbutton = 1;
                 }
-                if (e->xbutton.button==3) {
+                if (e->xbutton.button == 3) {
                         //Right button was pressed
-                        return;
+						gm.rbutton = 1;
                 }
         }
         //Did the mouse move?
@@ -282,6 +293,22 @@ void check_mouse(XEvent *e)
                 if (++n < 10)
                         return;
         }
+		//Check for mouse over any buttons
+		for (int i = 0; i < gm.nbuttons; i++) {
+			gm.button[i].over = 0;
+			gm.button[i].down = 0;
+			if (savex >= button[i].r.left &&
+					savex <= gm.button[i].r.right &&
+					savey >= gm.button[i].r.bot &&
+					savey <= gm.button[i].r.top) {
+				button[i].over = 1;
+				break;
+			}
+		}
+		if (gm.lbutton)
+			mouseClick(&gm, 1, 1, savex, savey);
+		if (gm.rbutton)
+			mouseClick(&gm, 2, 1, savex, savey);
 }
 
 void check_keys(XEvent *e) {
@@ -298,12 +325,12 @@ void check_keys(XEvent *e) {
         if (e->type == KeyPress) {
                 gm.keys[key] = 1;
                 if (gm.keys[XK_Shift_L] || gm.keys[XK_Shift_R]) {
-                	shift = 1;
+					shift = 1;
 					return;
 				}
 		if (gm.state == STATE_GAMEOVER) {
-                	if (gm.keys[XK_r] || gm.keys[XK_R]) {
-                        	makeCharacter(&gm, gm.xres/2, gm.yres/2);
+					if (gm.keys[XK_r] || gm.keys[XK_R]) {
+							makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;
 			}
                 }
@@ -318,6 +345,8 @@ void check_keys(XEvent *e) {
                 case XK_Tab:
                     if (gm.state == STATE_PAUSE)
                         gm.state = STATE_GAMEPLAY;
+					else if (gm.state == STATE_CONTROLS)
+						gm.state = STATE_STARTMENU;
                     else
                         gm.state = STATE_PAUSE;
                     break;
@@ -343,7 +372,7 @@ void check_keys(XEvent *e) {
 						loadLevel(&gm, &lev);
 						movePlayer(gm.character, sp1.getX(), sp1.getY());
 					}
-                	break;
+					break;
 				case XK_p:
                     if (gm.state == STATE_STARTMENU)
                         gm.state = STATE_GAMEPLAY;
@@ -391,6 +420,11 @@ void physics(Game *game, PlayerState ps)
 	movement(game, p, ps, gm.keys);
 	charCollision(game, p, e);
 	enemyCollision(game, p, e);
+	savePointCheck(p, &sp1);
+	if (!gm.button[0].r.width) {
+		//buttonInit(game);
+	}
+	
 
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
@@ -528,6 +562,7 @@ void render(Game *game)
 
 	//Check Game States
 	checkStart(&gm);
+	checkControl(&gm);
 	checkPause(&gm);
 	checkGameOver(&gm);
 	outputScore(&gm);
