@@ -197,10 +197,10 @@ void charHurt(Game *game, Character *p, Enemy *e)
 	}
 	// Enemy collision
 	int enemyHit[4];
-	enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.height;
-	enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.height;
-	enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.width;
-	enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.width;
+	enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.radius;
+	enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.radius;
+	enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.radius;
+	enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.radius;
 	if (p->s.center.y < enemyHit[0] && p->s.center.y > enemyHit[1]) {
 		if (p->s.center.x < enemyHit[2] && p->s.center.x > enemyHit[3]) {
 			p->velocity.y = 0;
