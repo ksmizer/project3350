@@ -72,10 +72,13 @@ extern void loadLevel(Game *g);
 extern void initialize_sound();
 extern void finish_sound();
 extern void background_music();
-extern void timer(int mode);
+extern void currentTimer(int mode);
+extern void totalTimer(int mode);
 extern void initializeTime();
+extern void resetTime();
 extern void countDeath();
 extern void outputScore(Game *game);
+extern void outputCurrentScore(Game *game);
 
 //declare player state
 PlayerState playerState;
@@ -240,6 +243,7 @@ void init_opengl(void)
 
 void makeCharacter(Game *game, int x, int y)
 {
+	resetTime();
 	//position of character
 	Character *p = &game->character;
 	p->s.center.x = p->hurt.center.x = x;
@@ -491,7 +495,9 @@ void physics(Game *game, PlayerState ps)
 	}
 	if (gm.state == STATE_GAMEOVER) {
 		countDeath();
-		timer(1);
+		totalTimer(1);
+	} if (gm.state == STATE_PAUSE) {
+		totalTimer(1);
 	}
 }
 
@@ -560,6 +566,7 @@ void render(Game *game)
 	checkPause(&gm);
 	checkGameOver(&gm);
 	outputScore(&gm);
+	outputCurrentScore(&gm);
 
 	//Temporary spike indicator
 	Rect r;
