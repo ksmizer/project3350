@@ -36,9 +36,12 @@
 #define USERAGENT "HTMLGET 1.0"
 int seconds = 0;
 int minutes = 0;
+int totalSeconds = 0;
+int totalMinutes = 0;
 int deaths = 0;
 int kills = 0;
 clock_t startTime;
+clock_t thisTime;
 clock_t clockTicksTaken;
 double timeInSeconds;
 
@@ -367,6 +370,13 @@ void initializeTime()
 	startTime = clock();
 }
 
+void resetTime()
+{
+	seconds = 0;
+	minutes = 0;
+	thisTime = clock();
+}
+
 void countDeath()
 {
 	deaths++;
@@ -377,10 +387,21 @@ void killCount()
 	kills++;
 }
 
-void timer(int mode)
+void totalTimer(int mode)
 {
 	if (mode == 1) {
 		clockTicksTaken = clock() - startTime;
+		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
+		totalSeconds = timeInSeconds * 10;
+		totalMinutes = totalSeconds / 60;
+		totalSeconds = totalSeconds % 60;
+	}
+}
+
+void currentTimer(int mode)
+{
+	if (mode == 1) {
+		clockTicksTaken = clock() - thisTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
 		seconds = timeInSeconds * 10;
 		minutes = seconds / 60;
@@ -412,10 +433,10 @@ void outputScore(Game *gm)
 		r.bot = gm->yres/2 + 40;
 		r.left = gm->xres/2.3;
 		r.center = .5;
-		if (seconds < 10) {
-			ggprint8b(&r, 16, c, "Time: %d:0%d", minutes, seconds);
+		if (totalSeconds < 10) {
+			ggprint8b(&r, 16, c, "Total Time: %d:0%d", totalMinutes, totalSeconds);
 		} else {
-			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
+			ggprint8b(&r, 16, c, "Total Time: %d:%d", totalMinutes, totalSeconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
 		//ggprint8b(&r, 16, c, "Kills: %d", kills);
@@ -428,7 +449,7 @@ void outputCurrentScore(Game *gm)
 	Rect r;
 	int c = 0xffffffff;
 	if (gm->state == STATE_GAMEPLAY) {
-		timer(1);
+		currentTimer(1);
 		h = 50;
 		w = 50;
 		glPushMatrix();
