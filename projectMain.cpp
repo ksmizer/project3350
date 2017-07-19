@@ -72,6 +72,7 @@ extern void timer(int mode);
 extern void initializeTime();
 extern void countDeath();
 extern void outputScore(Game *game);
+extern void outputCurrentScore(Game *game);
 
 //declare player state
 PlayerState playerState;
@@ -458,6 +459,8 @@ void physics(Game *game, PlayerState ps)
 	if (gm.state == STATE_GAMEOVER) {
 		countDeath();
 		timer(1);
+	} if (gm.state == STATE_PAUSE) {
+		timer(1);
 	}
 }
 
@@ -525,6 +528,7 @@ void render(Game *game)
 	checkPause(&gm);
 	checkGameOver(&gm);
 	outputScore(&gm);
+	outputCurrentScore(&gm);
 
 	//Temporary spike indicator
 	Rect r;
