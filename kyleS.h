@@ -54,6 +54,7 @@ struct Shape {
 
 struct Hurtbox {
 	Flt width, height;
+	Flt radius;
 	Vec center;
 };
 

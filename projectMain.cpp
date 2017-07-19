@@ -252,8 +252,7 @@ void makeCharacter(Game *game, int x, int y)
 	p->velocity.x = 0;
 	p->s.height = p->hurt.height = runAnimation.getFrameHeight() - 10;// * 0.4;
 	p->s.width = p->hurt.width = runAnimation.getFrameWidth() - 20;// * 0.16;
-	p->hurt.height = runAnimation.getFrameHeight() - 15;// * 0.4;
-	p->hurt.width = runAnimation.getFrameWidth() - 30;// * 0.16;
+	p->hurt.radius = (p->s.width-5)/2;
 	p->hurtJump = false;
 	p->l[0].s.center.x = -2;
 	p->l[1].s.center.x = -2;
