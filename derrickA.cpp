@@ -1181,6 +1181,177 @@ void setLevel5(Game *gm, Level *lev)
 	}
 }
 
+void setLevel6(Game *gm, Level *lev)
+{
+	if (lev->levelID == 6) {
+        //test platforms
+        gm->plat[0].width = 50;
+        gm->plat[0].height = 15;
+        gm->plat[0].center.x = 200;
+        gm->plat[0].center.y = 70;
+
+        //test platforms
+        gm->plat[1].width = 50;
+        gm->plat[1].height = 15;
+        gm->plat[1].center.x = 50;
+        gm->plat[1].center.y = 140;
+
+        //test platforms
+        gm->plat[2].width = 50;
+        gm->plat[2].height = 15;
+        gm->plat[2].center.x = 200;
+        gm->plat[2].center.y = 210;
+
+        //test platforms
+        gm->plat[3].width = 50;
+        gm->plat[3].height = 15;
+        gm->plat[3].center.x = gm->xres/2 - 80;
+        gm->plat[3].center.y = 200;
+
+        //test platforms
+        gm->plat[4].width = 50;
+        gm->plat[4].height = 15;
+        gm->plat[4].center.x = gm->xres/2 + 160;
+        gm->plat[4].center.y = 200;
+
+        //test spikes
+        gm->spike[0].width = 350;
+        gm->spike[0].height = 15;
+        gm->spike[0].center.x = gm->xres - 600;
+        gm->spike[0].center.y = 110;
+
+	//wall blocking right door	
+	gm->box[4].width = 15;
+	gm->box[4].height = gm->yres - 800;
+	gm->box[4].center.x = gm->xres - 150;
+	gm->box[4].center.y = 0;
+
+	//wall blocking left door	
+	gm->box[5].width = 15;
+	gm->box[5].height = gm->yres - 600;
+	gm->box[5].center.x = 250;
+	gm->box[5].center.y = 0;		
+
+	}
+}
+
+
+
+
+void drawLevel6(Game *gm, Level *lev)
+{
+	
+	float w, h;
+	if (lev->levelID == 6) {
+
+        //Draw test platform
+	Shape *test;
+	glColor3ub(80,110,70);
+	test = &gm->plat[0];
+	glPushMatrix();
+	glTranslatef(test->center.x, test->center.y, test->center.z);
+	w = test->width;
+	h = test->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+	
+	//set up spike	
+	Shape *spike;
+	glColor3ub(80,110,70);
+	spike = &gm->spike[0];
+	glPushMatrix();
+	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
+	w = spike->width;
+	h = spike->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+	
+
+        //Draw test platform 2
+	Shape *test2;
+	glColor3ub(80,110,70);
+	test2 = &gm->plat[1];
+	glPushMatrix();
+	glTranslatef(test2->center.x, test2->center.y, test2->center.z);
+	w = test2->width;
+	h = test2->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+
+	//Draw test platform 3
+	Shape *test3;
+	glColor3ub(80,110,70);
+	test3 = &gm->plat[2];
+	glPushMatrix();
+	glTranslatef(test3->center.x, test3->center.y, test3->center.z);
+	w = test3->width;
+	h = test3->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	//Draw test platform 4
+	Shape *test4;
+	glColor3ub(80,110,70);
+	test4 = &gm->plat[3];
+	glPushMatrix();
+	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
+	w = test4->width;
+	h = test4->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+	
+	//Draw test platform 5
+	Shape *test5;
+	glColor3ub(80,110,70);
+	test5 = &gm->plat[4];
+	glPushMatrix();
+	glTranslatef(test5->center.x, test5->center.y, test5->center.z);
+	w = test5->width;
+	h = test5->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	}
+
+
+
+
+
+
+}
+
+
 //sets games objects to 0 and draws the newly cleared game objects to remove them
 void clearLevel(Game *gm) 
 {
@@ -1312,6 +1483,70 @@ void clearLevel(Game *gm)
 	glEnd();
 	glPopMatrix();
 
+	//Draw test platform 6
+	Shape *test6;
+	glColor3ub(80,110,70);
+	test6 = &gm->plat[5];
+	glPushMatrix();
+	glTranslatef(test6->center.x, test6->center.y, test6->center.z);
+	w = test6->width;
+	h = test6->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	//Draw test platform 7
+	Shape *test7;
+	glColor3ub(80,110,70);
+	test7 = &gm->plat[6];
+	glPushMatrix();
+	glTranslatef(test7->center.x, test7->center.y, test7->center.z);
+	w = test7->width;
+	h = test7->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	//Draw test platform 8
+	Shape *test8;
+	glColor3ub(80,110,70);
+	test8 = &gm->plat[7];
+	glPushMatrix();
+	glTranslatef(test8->center.x, test8->center.y, test8->center.z);
+	w = test8->width;
+	h = test8->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	//Draw test platform 9
+	Shape *test9;
+	glColor3ub(80,110,70);
+	test9 = &gm->plat[8];
+	glPushMatrix();
+	glTranslatef(test9->center.x, test9->center.y, test9->center.z);
+	w = test9->width;
+	h = test9->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
 
 
 
@@ -1366,6 +1601,11 @@ void setLevelSwitch(Game *gm, Level *lev)
 		clearLevel(gm);
 		setLevel5(gm, lev);
 		drawLevel5(gm, lev);
+		break;
+	case 6:
+		clearLevel(gm);
+		setLevel6(gm, lev);
+		drawLevel6(gm, lev);
 		break;
 		
 	default:
