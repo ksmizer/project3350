@@ -37,6 +37,7 @@
 int seconds = 0;
 int minutes = 0;
 int deaths = 0;
+int kills = 0;
 clock_t startTime;
 clock_t clockTicksTaken;
 double timeInSeconds;
@@ -371,6 +372,11 @@ void countDeath()
 	deaths++;
 }
 
+void killCount()
+{
+	kills++;
+}
+
 void timer(int mode)
 {
 	if (mode == 1) {
@@ -406,8 +412,48 @@ void outputScore(Game *gm)
 		r.bot = gm->yres/2 + 40;
 		r.left = gm->xres/2.3;
 		r.center = .5;
-		ggprint8b(&r, 16, c, "Time: %d.%d", minutes, seconds);
+		if (seconds < 10) {
+			ggprint8b(&r, 16, c, "Time: %d:0%d", minutes, seconds);
+		} else {
+			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
+		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
+		//ggprint8b(&r, 16, c, "Kills: %d", kills);
 	}
-
 }
+
+void outputCurrentScore(Game *gm)
+{
+	Flt h, w;
+	Rect r;
+	int c = 0xffffffff;
+	if (gm->state == STATE_GAMEPLAY) {
+		timer(1);
+		h = 50;
+		w = 50;
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(0.0, 0.0, 0.0, 0.0);
+		glTranslated(gm->xres/2, gm->yres/2, 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-w, -h);
+			glVertex2i(-w, +h);
+			glVertex2i(+w, +h);
+			glVertex2i(+w, -h);
+		glEnd();
+		glDisable(GL_BLEND);
+		glPopMatrix();
+		r.bot = gm->yres/2 + 250;
+		r.left = gm->xres/45;
+		r.center = .5;
+		if (seconds < 10) {
+			ggprint8b(&r, 16, c, "Time: %d:0%d", minutes, seconds);
+		} else {
+			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
+		}
+		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
+		//ggprint8b(&r, 16, c, "Kills: %d", kills);
+	}
+}
+
