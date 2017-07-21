@@ -335,8 +335,8 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			}
 		}
 	}
-	int platTop[10], platBottom[10], platLeft[10], platRight[10];
-	for (int i = 0; i < 10; i++) {
+	int platTop[20], platBottom[20], platLeft[20], platRight[20];
+	for (int i = 0; i < 20; i++) {
 		Shape *s = &game->plat[i];
 		platTop[i] = s->center.y + s->height + p->s.height;
 		platBottom[i] = s->center.y - s->height - p->s.height;
