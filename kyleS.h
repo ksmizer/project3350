@@ -54,6 +54,7 @@ struct Shape {
 
 struct Hurtbox {
 	Flt width, height;
+	Flt radius;
 	Vec center;
 };
 
@@ -111,7 +112,7 @@ public:
 class Game {
 public:
 	Shape box[7];
-	Shape plat[10];
+	Shape plat[20];
 	Shape spike[10];
 	Character character;
 	State state;

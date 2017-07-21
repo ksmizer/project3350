@@ -110,7 +110,15 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 	}
 	if (keys[XK_Left] + keys[XK_Right] + keys[XK_a]
 			+ keys[XK_A] + keys[XK_d] + keys[XK_D] == 0) {
-		p->velocity.x = 0;
+		if (p->velocity.x <= WALK / 10 && p->velocity.x >= -WALK / 10) {
+			p->velocity.x = 0;
+		}
+		if (p->velocity.x > 0) {
+			p->velocity.x -= WALK / 10;
+		}
+		if (p->velocity.x < 0) {
+			p->velocity.x += WALK / 10;
+		}
 	}
 	if (keys[XK_j] || keys[XK_J]) {
 		makeWeapon(game, p);
@@ -197,10 +205,10 @@ void charHurt(Game *game, Character *p, Enemy *e)
 	}
 	// Enemy collision
 	int enemyHit[4];
-	enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.height;
-	enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.height;
-	enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.width;
-	enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.width;
+	enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.radius;
+	enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.radius;
+	enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.radius;
+	enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.radius;
 	if (p->s.center.y < enemyHit[0] && p->s.center.y > enemyHit[1]) {
 		if (p->s.center.x < enemyHit[2] && p->s.center.x > enemyHit[3]) {
 			p->velocity.y = 0;
@@ -335,8 +343,8 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			}
 		}
 	}
-	int platTop[10], platBottom[10], platLeft[10], platRight[10];
-	for (int i = 0; i < 10; i++) {
+	int platTop[20], platBottom[20], platLeft[20], platRight[20];
+	for (int i = 0; i < 20; i++) {
 		Shape *s = &game->plat[i];
 		platTop[i] = s->center.y + s->height + p->s.height;
 		platBottom[i] = s->center.y - s->height - p->s.height;
