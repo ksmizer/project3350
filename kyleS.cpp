@@ -110,7 +110,15 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 	}
 	if (keys[XK_Left] + keys[XK_Right] + keys[XK_a]
 			+ keys[XK_A] + keys[XK_d] + keys[XK_D] == 0) {
-		p->velocity.x = 0;
+		if (p->velocity.x <= WALK / 10 && p->velocity.x >= -WALK / 10) {
+			p->velocity.x = 0;
+		}
+		if (p->velocity.x > 0) {
+			p->velocity.x -= WALK / 10;
+		}
+		if (p->velocity.x < 0) {
+			p->velocity.x += WALK / 10;
+		}
 	}
 	if (keys[XK_j] || keys[XK_J]) {
 		makeWeapon(game, p);
