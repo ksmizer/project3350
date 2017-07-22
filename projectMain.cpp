@@ -43,15 +43,22 @@ void render(Game *game);
 //Extern function calls
 extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, Enemy *e);
+extern void enemyCollision(Game *game, Character *p, Enemy *e);
+extern void savePointCheck(Character *p, SavePoint *sp);
+//extern void buttonInit(Game *game);
 extern void checkPause(Game *game);
+extern void checkControl(Game *game);
 extern void checkStart(Game *game);
 extern void checkGameOver(Game *game);
 extern void charHurt(Game *game, Character *p);
+extern void mouseClick(Game *game, int ibutton, int action, int x, int y);
 extern void setFrame(Game *g);
 extern void setLRDoor(Game *g);
 extern void levelText(Game *game, Level *lev);
 extern void levelDrawBox(Game *g);
 extern void setLevelSwitch(Game *g, Level *lev);
+extern void nextLevel(Game *g, Level *lev);
+extern void previousLevel(Game *g, Level *lev);
 extern void gameOverLevelRestart(Game *game, Level *lev);
 extern void setLeftDoor(Game *g);
 extern void setRightDoor(Game *g);
@@ -65,7 +72,13 @@ extern void loadLevel(Game *g);
 extern void initialize_sound();
 extern void finish_sound();
 extern void background_music();
-
+extern void currentTimer(int mode);
+extern void totalTimer(int mode);
+extern void initializeTime();
+extern void resetTime();
+extern void countDeath();
+extern void outputScore(Game *game);
+extern void outputCurrentScore(Game *game);
 
 //declare player state
 PlayerState playerState;
@@ -75,6 +88,9 @@ Game gm;
 
 //declare level object
 Level lev;
+
+//declare button object
+Button button[MAXBUTTONS];
 
 //test enemy
 vector<Enemy> enemies;
@@ -98,6 +114,7 @@ SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 int main(void)
 {
 	//initialize enemies
+	initializeTime();
 	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	enemies.push_back(testEnemy);
 	//initialize sprites
@@ -122,20 +139,6 @@ int main(void)
 
 	//set ups spikes and plats for level 2
 	//setLevel2(&gm, &lev);
-
-	/*
-	//test platforms
-	gm.plat[0].width = 50;
-	gm.plat[0].height = 15;
-	gm.plat[0].center.x = 300;
-	gm.plat[0].center.y = runAnimation.getFrameHeight()*1.5;
-
-	//test spikes
-	gm.spike[0].width = 30;
-	gm.spike[0].height = 15;
-	gm.spike[0].center.x = 600;
-	gm.spike[0].center.y = 60;
-	*/
 
 	//play background_music
 	background_music();
@@ -240,6 +243,7 @@ void init_opengl(void)
 
 void makeCharacter(Game *game, int x, int y)
 {
+	resetTime();
 	//position of character
 	Character *p = &game->character;
 	p->s.center.x = p->hurt.center.x = x;
@@ -248,6 +252,7 @@ void makeCharacter(Game *game, int x, int y)
 	p->velocity.x = 0;
 	p->s.height = p->hurt.height = runAnimation.getFrameHeight() - 10;// * 0.4;
 	p->s.width = p->hurt.width = runAnimation.getFrameWidth() - 20;// * 0.16;
+	p->hurt.radius = (p->s.width-5)/2;
 	p->hurtJump = false;
 	p->l[0].s.center.x = -2;
 	p->l[1].s.center.x = -2;
@@ -264,18 +269,20 @@ void check_mouse(XEvent *e)
         static int savex = 0;
         static int savey = 0;
         static int n = 0;
-
+		gm.lbutton = 0;
+		gm.rbutton = 0;
         if (e->type == ButtonRelease) {
-                return;
+			mouseClick(&gm, e->xbutton.button, 2, e->xbutton.x, e->xbutton.y);
+			return;
         }
         if (e->type == ButtonPress) {
-                if (e->xbutton.button==1) {
+                if (e->xbutton.button == 1) {
                         //Left button was pressed
-                        return;
+						gm.lbutton = 1;
                 }
-                if (e->xbutton.button==3) {
+                if (e->xbutton.button == 3) {
                         //Right button was pressed
-                        return;
+						gm.rbutton = 1;
                 }
         }
         //Did the mouse move?
@@ -285,6 +292,22 @@ void check_mouse(XEvent *e)
                 if (++n < 10)
                         return;
         }
+		//Check for mouse over any buttons
+		for (int i = 0; i < gm.nbuttons; i++) {
+			gm.button[i].over = 0;
+			gm.button[i].down = 0;
+			if (savex >= button[i].r.left &&
+					savex <= gm.button[i].r.right &&
+					savey >= gm.button[i].r.bot &&
+					savey <= gm.button[i].r.top) {
+				button[i].over = 1;
+				break;
+			}
+		}
+		if (gm.lbutton)
+			mouseClick(&gm, 1, 1, savex, savey);
+		if (gm.rbutton)
+			mouseClick(&gm, 2, 1, savex, savey);
 }
 
 void check_keys(XEvent *e) {
@@ -301,12 +324,12 @@ void check_keys(XEvent *e) {
         if (e->type == KeyPress) {
                 gm.keys[key] = 1;
                 if (gm.keys[XK_Shift_L] || gm.keys[XK_Shift_R]) {
-                	shift = 1;
+					shift = 1;
 					return;
 				}
 		if (gm.state == STATE_GAMEOVER) {
-                	if (gm.keys[XK_r] || gm.keys[XK_R]) {
-                        	makeCharacter(&gm, gm.xres/2, gm.yres/2);
+					if (gm.keys[XK_r] || gm.keys[XK_R]) {
+							makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;
 			}
                 }
@@ -321,6 +344,8 @@ void check_keys(XEvent *e) {
                 case XK_Tab:
                     if (gm.state == STATE_PAUSE)
                         gm.state = STATE_GAMEPLAY;
+					else if (gm.state == STATE_CONTROLS)
+						gm.state = STATE_STARTMENU;
                     else
                         gm.state = STATE_PAUSE;
                     break;
@@ -343,9 +368,10 @@ void check_keys(XEvent *e) {
 					if (sp1.checkIsEnabled())
 					{
 						lev.levelID = 1;
+						loadLevel(&gm, &lev);
 						movePlayer(gm.character, sp1.getX(), sp1.getY());
 					}
-                	break;
+					break;
 				case XK_p:
                     if (gm.state == STATE_STARTMENU)
                         gm.state = STATE_GAMEPLAY;
@@ -356,6 +382,12 @@ void check_keys(XEvent *e) {
 				case XK_t:
 					if (enemies.size() > 0)
 						enemies.at(0).stateUnitTest();
+					break;
+				case XK_0:
+					nextLevel(&gm, &lev);
+					break;
+				case XK_9:
+					previousLevel(&gm, &lev);
 					break;
 					
         }
@@ -386,6 +418,12 @@ void physics(Game *game, PlayerState ps)
 	//kyleS.cpp	
 	movement(game, p, ps, gm.keys);
 	charCollision(game, p, e);
+	enemyCollision(game, p, e);
+	savePointCheck(p, &sp1);
+	if (!gm.button[0].r.width) {
+		//buttonInit(game);
+	}
+	
 
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
@@ -454,6 +492,12 @@ void physics(Game *game, PlayerState ps)
 		sp1.animations.at(0).disable();
 		sp1.animations.at(1).disable();
 	}
+	if (gm.state == STATE_GAMEOVER) {
+		countDeath();
+		totalTimer(1);
+	} if (gm.state == STATE_PAUSE) {
+		totalTimer(1);
+	}
 }
 
 void render(Game *game)
@@ -462,42 +506,6 @@ void render(Game *game)
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-
-/*	
-	//Draw test platform
-	Shape *test;
-	glColor3ub(80,110,70);
-	test = &game->plat[0];
-	glPushMatrix();
-	glTranslatef(test->center.x, test->center.y, test->center.z);
-	w = test->width;
-	h = test->height;
-	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
-
-	//Draw test platform
-	Shape *spike;
-	glColor3ub(80,110,70);
-	spike = &game->spike[0];
-	glPushMatrix();
-	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
-	w = spike->width;
-	h = spike->height;
-	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
-
-	*/
-
 	setLevelSwitch(&gm, &lev);
 	//set up level 2 
 	//setLevel2(&gm, &lev);
@@ -553,20 +561,24 @@ void render(Game *game)
 
 	//Check Game States
 	checkStart(&gm);
+	checkControl(&gm);
 	checkPause(&gm);
 	checkGameOver(&gm);
+	outputScore(&gm);
+	outputCurrentScore(&gm);
 
 	//Temporary spike indicator
 	Rect r;
 	int c = 0xffffffff;
 	if (gm.state == STATE_GAMEPLAY) {
-		h = gm.spike[0].height;
-		w = gm.spike[0].width;
+		for (int i = 0; i < 10; i++) {
+		h = gm.spike[i].height;
+		w = gm.spike[i].width;
 		glPushMatrix();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f(0.0, 0.0, 0.0, 0.0);
-		glTranslated(gm.spike[0].center.x, gm.spike[0].center.y, 0);
+		glTranslated(gm.spike[i].center.x, gm.spike[i].center.y, 0);
 		glBegin(GL_QUADS);
 			glVertex2i(-w, -h);
 			glVertex2i(-w, +h);
@@ -575,10 +587,11 @@ void render(Game *game)
 		glEnd();
 		glDisable(GL_BLEND);
 		glPopMatrix();
-		r.bot = gm.spike[0].center.y;
-		r.left = gm.spike[0].center.x;
+		r.bot = gm.spike[i].center.y;
+		r.left = gm.spike[i].center.x;
 		r.center = 1;
 		ggprint8b(&r, 16, c, "SPIKES");
+		}
 	}
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
@@ -613,21 +626,4 @@ unsigned char *buildAlphaData(Ppmimage *img)
 	}
 	return newdata;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
