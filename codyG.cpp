@@ -193,6 +193,10 @@ Enemy::~Enemy() { }
 //checks when enemy should turn around
 void Enemy::checkState()
 {
+	if (velocity.x == 0) {
+		velocity.x = 1;
+		isLeft = false;
+	}
 	if (s.center.x >= rightStop || s.center.x <= leftStop) {
 		velocity.x = -velocity.x;
 		isLeft = !isLeft;

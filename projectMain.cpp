@@ -369,12 +369,7 @@ void check_keys(XEvent *e) {
                     else
                         gm.state = STATE_PAUSE;
                     break;
-				case XK_d:
-					//move enemy to position
-					//enemies.erase(enemies.begin()); breaks game due to physics
-					if (enemies.size() > 0)
-						moveEnemy(enemies.at(0), 601, 48);
-					break;
+				
 				case XK_i:
 					//toggle savepoint
 					if (savePoints.at(0).checkIsEnabled())
@@ -407,6 +402,12 @@ void check_keys(XEvent *e) {
 				case XK_t:
 					if (enemies.size() > 0)
 						enemies.at(0).stateUnitTest();
+					break;
+				case XK_v:
+					//move enemy to position
+					//enemies.erase(enemies.begin()); breaks game due to physics
+					if (enemies.size() > 0)
+						moveEnemy(enemies.at(0), 601, 48);
 					break;
 				case XK_0:
 					nextLevel(&gm, &lev);
