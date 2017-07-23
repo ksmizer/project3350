@@ -311,6 +311,16 @@ void charCollision(Game *game, Character *p, Enemy *e)
 						p->velocity.y = 0;
 						p->jumpCurrent = 0;
 						p->hurtJump = false;
+						if (p->velocity.x <= WALK / 10 &&
+								p->velocity.x >= -WALK / 10) {
+							p->velocity.x = 0;
+						}
+						if (p->velocity.x > 0) {
+							p->velocity.x -= WALK / 10;
+						}
+						if (p->velocity.x < 0) {
+							p->velocity.x += WALK / 10;
+						}
 					}
 				}
 				//Bottom collision detection
