@@ -1,7 +1,8 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/15/17
+ *Last Modified: 7/23/17
  *Project: Dungeon Escape
+ * --------------------------------------------------------------------------
  *Week 4: Created SpriteAnimation class and functionality to add generic
  * sprite animations in game. 
  * USAGE: Create SpriteAnimation object somewhere in program, in
@@ -10,14 +11,22 @@
  * animation.enable() and animation.updateAnimation();
  * in void render(Game *game) call renderSprite(animation, x, y);
  * where x and y are the positions you want to render the sprite.
+ * --------------------------------------------------------------------------
  *Week 5: Added PlayerState to control player animations. Added control 
  * for facing left to render sprite reversed. 
+ * --------------------------------------------------------------------------
  *Week 6: Added Enemy class. Has no functionality with collision, simply moves
  * left and right while cycling through walk animation. Added Unit Test for
  * enemy which verifies it is between left and right stop points.
+ * --------------------------------------------------------------------------
  *Week 7: Added enemy vector. Added sprite vector for enemy class. 
  * Added moveEnemy function to move position of enemies as well as movePlayer 
  * function. Added SavePoint class.
+ * --------------------------------------------------------------------------
+ *Week 8: Added spear class which handles sprite for weapon class. Player may
+ * "kill" enemy with this. Spawn player at savepoint when respawning. Changed
+ * enemy behavior, including bounds and turning when colliding with object.
+ * --------------------------------------------------------------------------
  */
 
 #include "codyG.h"
@@ -206,6 +215,15 @@ void Enemy::move()
 	hitbox.center.x = s.center.x;
 }
 
+void Enemy::flipDirection() 
+{ 
+	velocity.x = -velocity.x; 
+	if (velocity.x < 0)
+		isLeft = true;
+	else
+		isLeft = false;
+}
+
 void Enemy::initAnimations()
 {
 	animations.clear();
@@ -213,6 +231,20 @@ void Enemy::initAnimations()
 		SpriteAnimation anim((char*)"zombie.png", 1, 5, 5, 0, 3, 27, 40, 0.1, true);
 		animations.push_back(anim);
 	}
+}
+
+void Enemy::killEnemy()
+{
+	this->setX(-100);
+	this->setY(this->getY());
+	this->velocity.x = 0;
+}
+
+void Enemy::spawn(int x, int y)
+{
+	s.center.x = x;
+	s.center.y = y;
+	velocity.x = 1;
 }
 
 //checks if enemy is between left and right stop values
@@ -257,6 +289,27 @@ bool SavePoint::checkIsEnabled() { return enabled; }
 void SavePoint::enable() { enabled = true; }
 
 void SavePoint::disable() { enabled = false; }
+
+//---------------------------------------------------------
+// Weapon class
+
+void Spear::initAnimations()
+{
+	SpriteAnimation anim((char*)"spear.png", 1, 1, 1, 0, 0, 38, 7, 0.1, true);
+	sprite = anim;
+}
+
+//returns true if left, false if right
+void Spear::initSpearDirection(Character p)
+{
+	if (p.isLeft)
+		isLeft = true;
+	else
+		isLeft = false;
+}
+
+bool Spear::checkIsLeft() { return isLeft; }
+
 
 //---------------------------------------------------------
 // FUNCTIONS
@@ -324,6 +377,14 @@ void renderSprite(SpriteAnimation sprite, int xposition,
 	}
 }
 
+void updateSpear(Character *p)
+{
+	for (int i = 0; i < 2; i++) {
+		p->l[i].s.center.x += p->l[i].velocity.x;
+	}
+}
+
+
 PlayerState getPlayerState(Character *p, char keys[])
 {
 	PlayerState tmp = STATE_IDLE;
@@ -334,5 +395,4 @@ PlayerState getPlayerState(Character *p, char keys[])
 		tmp = STATE_JUMP;
 	return tmp;
 }
-
 
