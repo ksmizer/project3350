@@ -94,7 +94,10 @@ Button button[MAXBUTTONS];
 
 //test enemy
 vector<Enemy> enemies;
-SavePoint sp1(200, 59, false);
+vector <SavePoint> savePoints;
+
+//spears
+Spear s1, s2;
 
 //zombie sprites
 //vector<SpriteAnimation> zombieAnimations;
@@ -115,14 +118,17 @@ int main(void)
 {
 	//initialize enemies
 	initializeTime();
-	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
+	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
 	enemies.push_back(testEnemy);
-	//initialize sprites
+		//initialize sprites
 	for (unsigned int i = 0; i < enemies.size(); i++) 
 		enemies.at(i).initAnimations();
-	sp1.initAnimations();
+	s1.initAnimations();
+	s2.initAnimations();
 	
-	
+	SavePoint sp1(200, 59, false);
+	savePoints.push_back(sp1);
+	savePoints.at(0).initAnimations();
 	#ifdef USE_OPENAL_SOUND
 	initialize_sound();
 	background_music();
@@ -142,6 +148,7 @@ int main(void)
 
 	//play background_music
 	background_music();
+	
 	//start animation
 	while (!gm.done) {
 		while (XPending(dpy)) {
@@ -152,6 +159,7 @@ int main(void)
 		}
 		if (gm.state == STATE_GAMEPLAY)
 			physics(&gm, playerState);
+
 		render(&gm);
 		glXSwapBuffers(dpy, win);
 	}
@@ -229,15 +237,21 @@ void init_opengl(void)
 	jumpAnimation.createTexture();
 	attackAnimation.convertToPpm();
 	attackAnimation.createTexture();
+	s1.sprite.convertToPpm();
+	s1.sprite.createTexture();
+	s2.sprite.convertToPpm();
+	s2.sprite.createTexture();
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
 			enemies.at(i).animations.at(j).convertToPpm();
 			enemies.at(i).animations.at(j).createTexture();
 		}
 	}
-	for (unsigned int i = 0; i < 2; i++) {
-		sp1.animations.at(i).convertToPpm();
-		sp1.animations.at(i).createTexture();
+	for (unsigned int j = 0; j < savePoints.size(); j++) {
+		for (unsigned int i = 0; i < 2; i++) {
+			savePoints[j].animations.at(i).convertToPpm();
+			savePoints[j].animations.at(i).createTexture();
+		}
 	}
 }
 
@@ -246,8 +260,14 @@ void makeCharacter(Game *game, int x, int y)
 	resetTime();
 	//position of character
 	Character *p = &game->character;
+	
 	p->s.center.x = p->hurt.center.x = x;
 	p->s.center.y = p->hurt.center.y = y;
+	for (unsigned int i = 0; i < savePoints.size(); i++) {
+		if (savePoints.at(i).checkIsEnabled())
+			movePlayer(game->character, savePoints.at(i).getX(),
+				savePoints.at(i).getY());
+	}
 	p->velocity.y = 0;
 	p->velocity.x = 0;
 	p->s.height = p->hurt.height = runAnimation.getFrameHeight() - 10;// * 0.4;
@@ -349,27 +369,25 @@ void check_keys(XEvent *e) {
                     else
                         gm.state = STATE_PAUSE;
                     break;
-				case XK_d:
-					//move enemy to position
-					//enemies.erase(enemies.begin()); breaks game due to physics
-					if (enemies.size() > 0)
-						moveEnemy(enemies.at(0), 601, 48);
-					break;
+				
 				case XK_i:
 					//toggle savepoint
-					if (sp1.checkIsEnabled())
-						sp1.disable();
+					if (savePoints.at(0).checkIsEnabled())
+						savePoints.at(0).disable();
 					else {
-						sp1.enable();
+						savePoints.at(0).enable();
 					}
 					break;
 				case XK_o:
 					//move player to savepoint if enabled
-					if (sp1.checkIsEnabled())
-					{
-						lev.levelID = 1;
-						loadLevel(&gm, &lev);
-						movePlayer(gm.character, sp1.getX(), sp1.getY());
+					for (unsigned int i = 0; i < savePoints.size(); i++) {
+						if (savePoints.at(i).checkIsEnabled())
+						{
+							lev.levelID = 1;
+							loadLevel(&gm, &lev);
+							movePlayer(gm.character, savePoints.at(i).getX(), 
+							savePoints.at(i).getY());
+						}
 					}
 					break;
 				case XK_p:
@@ -378,10 +396,18 @@ void check_keys(XEvent *e) {
                     break;
 				case XK_j:
 					playerState = STATE_ATTACK;
+					s1.initSpearDirection(gm.character);
+					s2.initSpearDirection(gm.character);
 					break;
 				case XK_t:
 					if (enemies.size() > 0)
 						enemies.at(0).stateUnitTest();
+					break;
+				case XK_v:
+					//move enemy to position
+					//enemies.erase(enemies.begin()); breaks game due to physics
+					if (enemies.size() > 0)
+						moveEnemy(enemies.at(0), 601, 48);
 					break;
 				case XK_0:
 					nextLevel(&gm, &lev);
@@ -419,11 +445,10 @@ void physics(Game *game, PlayerState ps)
 	movement(game, p, ps, gm.keys);
 	charCollision(game, p, e);
 	enemyCollision(game, p, e);
-	savePointCheck(p, &sp1);
+	savePointCheck(p, &savePoints.at(0));
 	if (!gm.button[0].r.width) {
 		//buttonInit(game);
 	}
-	
 
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
@@ -478,19 +503,25 @@ void physics(Game *game, PlayerState ps)
 		}
 	}
 
-	if (sp1.checkIsEnabled() && lev.levelID == 1) {
-		sp1.animations.at(0).disable();
-		sp1.animations.at(1).enable();
-		sp1.animations.at(1).updateAnimation();
+	s1.sprite.enable();
+	s2.sprite.enable();
+//	s1.sprite.updateAnimation();
+//	s2.sprite.updateAnimation();
+	updateSpear(&game->character);
+	
+	if (savePoints.at(0).checkIsEnabled() && lev.levelID == 1) {
+		savePoints.at(0).animations.at(0).disable();
+		savePoints.at(0).animations.at(1).enable();
+		savePoints.at(0).animations.at(1).updateAnimation();
 	}
 	else {
-		sp1.animations.at(1).disable();
-		sp1.animations.at(0).enable();
-		sp1.animations.at(0).updateAnimation();
+		savePoints.at(0).animations.at(1).disable();
+		savePoints.at(0).animations.at(0).enable();
+		savePoints.at(0).animations.at(0).updateAnimation();
 
 	if (lev.levelID != 1)
-		sp1.animations.at(0).disable();
-		sp1.animations.at(1).disable();
+		savePoints.at(0).animations.at(0).disable();
+		savePoints.at(0).animations.at(1).disable();
 	}
 	if (gm.state == STATE_GAMEOVER) {
 		countDeath();
@@ -505,7 +536,7 @@ void render(Game *game)
 	float w, h;
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	
+
 	setLevelSwitch(&gm, &lev);
 	//set up level 2 
 	//setLevel2(&gm, &lev);
@@ -548,15 +579,21 @@ void render(Game *game)
 		game->character.s.center.y, 1.0, game->character.isLeft);
 	renderSprite(attackAnimation, game->character.s.center.x,
 		game->character.s.center.y, 1.0, game->character.isLeft);
-
+	renderSprite(s1.sprite, game->character.l[0].s.center.x, 
+		game->character.l[1].s.center.y, 1.0, s1.checkIsLeft());
+	renderSprite(s2.sprite, game->character.l[0].s.center.x, 
+		game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
 			renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
 				enemies.at(i).getY(), 1.0, enemies.at(i).checkIsLeft());
 		}
 	}
-	for (unsigned int i = 0; i < 2; i++) {
-		renderSprite(sp1.animations.at(i), sp1.getX(), sp1.getY(), 4.0, false);
+	for (unsigned int j = 0; j < savePoints.size(); j++) {
+		for (unsigned int i = 0; i < 2; i++) {
+			renderSprite(savePoints.at(j).animations.at(i), savePoints.at(j).getX(),
+				savePoints.at(j).getY(), 4.0, false);
+		}
 	}
 
 	//Check Game States

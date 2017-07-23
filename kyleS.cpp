@@ -280,6 +280,7 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 		if (e->s.center.y < lance[i][0] && e->s.center.y > lance[i][1]) {
 			if (e->s.center.x < lance[i][2] && e->s.center.x > lance[i][3]) {
 				e->velocity.x = 0;
+				e->killEnemy();
 				//death();
 			}
 		}
@@ -380,6 +381,7 @@ void charCollision(Game *game, Character *p, Enemy *e)
 		}
 	}
 	// weapon update
+	/*
 	for (int i = 0; i < 2; i++) {
 		if (p->l[i].s.center.x > 0) {
 			if (abs(p->l[i].initThrow.x - p->l[i].s.center.x)
@@ -389,7 +391,7 @@ void charCollision(Game *game, Character *p, Enemy *e)
 				p->l[i].velocity.x = 0;
 			}
 		}
-	}
+	}*/
 	// save point collision check
 	
 	// player falling check
@@ -439,7 +441,7 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 								&& e->s.center.y > boxBottom[i] + OFFSET) {
 					e->s.center.x = boxRight[i];
 					if (e->velocity.x < 0)
-						e->velocity.x = 0;
+						e->flipDirection();
 				}
 				//Left Collision detection
 				if (e->s.center.x > boxLeft[i]
@@ -448,7 +450,7 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 								&& e->s.center.y > boxBottom[i] + OFFSET) {
 					e->s.center.x = boxLeft[i];
 					if (e->velocity.x > 0)
-						e->velocity.x = 0;
+						e->flipDirection();
 				}
 			}
 		}
@@ -485,7 +487,7 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 void makeWeapon(Game *game, Character *p)
 {
 	for (int i = 0; i < 2; i++) {
-		if (p->l[i].s.center.x < 0) {
+		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > W_WIDTH) {
 			p->l[i].s.center.x = p->s.center.x;
 			p->l[i].s.center.y = p->s.center.y;
 			p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
@@ -669,8 +671,9 @@ void checkControl(Game *gm)
 		ggprint8b(&r, 16, c, "Right Arrow or A -> Walk right");
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
 		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
+		ggprint8b(&r, 16, c, "J - Throw Spear");
+		ggprint8b(&r, 16, c, "V - Enemy Move Test");
 		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
-		ggprint8b(&r, 16, c, "D - Enemy Move Test");
 		ggprint8b(&r, 16, c, "I - Toggle Save Point");
 		ggprint8b(&r, 16, c, "O - Test Save Point");
 	}
@@ -708,8 +711,9 @@ void checkPause(Game *gm)
 		ggprint8b(&r, 16, c, "Right Arrow or A -> Walk right");
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
 		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
+		ggprint8b(&r, 16, c, "J - Throw Spear");
 		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
-		ggprint8b(&r, 16, c, "D - Enemy Move Test");
+		ggprint8b(&r, 16, c, "V - Enemy Move Test");
 		ggprint8b(&r, 16, c, "I - Toggle Save Point");
 		ggprint8b(&r, 16, c, "O - Test Save Point");
 	}

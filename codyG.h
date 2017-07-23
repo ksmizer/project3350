@@ -1,6 +1,6 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/15/17
+ *Last Modified: 7/23/17
  *Project: Dungeon Escape
  *
  */
@@ -73,6 +73,7 @@ class Enemy
 	Vec direction;
 	int leftStop, rightStop;
 	bool isLeft;
+	
 	public:
 	vector<SpriteAnimation> animations;
 	Shape s;
@@ -90,6 +91,10 @@ class Enemy
 	void move();
 	void stateUnitTest();
 	void initAnimations();
+	void killEnemy();
+	void flipDirection();
+	void enableMovement();
+	void spawn(int x, int y);
 };
 
 class SavePoint
@@ -109,7 +114,19 @@ class SavePoint
 	void disable();
 };
 
+class Spear
+{
+	protected:
+	bool isLeft;
+	public:
+	SpriteAnimation sprite;
+	void initAnimations();
+	void initSpearDirection(Character p);
+	bool checkIsLeft();
+};
+
 void movePlayer(Character &c, int xpos, int ypos);
 void moveEnemy(Enemy &e, int xpos, int ypos);
 void renderSprite(SpriteAnimation anim, int x, int y, Flt modifier, bool left);
+void updateSpear(Character *p);
 PlayerState getPlayerState(Character *p, char keys[]);
