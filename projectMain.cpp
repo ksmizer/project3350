@@ -284,6 +284,8 @@ void makeCharacter(Game *game, int x, int y)
 	p->hurtJump = false;
 	p->l[0].s.center.x = -50;
 	p->l[1].s.center.x = -50;
+	p->l[0].thrown = false;
+	p->l[1].thrown = false;
 	p->jumpCurrent = 0;
 	p->jumpMax = 2;
 	p->soundChk = true;

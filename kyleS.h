@@ -107,6 +107,7 @@ public:
 	Vec velocity;
 	Vec initThrow;
 	bool weaponSnd;
+	bool thrown;
 };
 
 class Character {

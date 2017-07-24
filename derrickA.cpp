@@ -13,6 +13,8 @@
 #include "fonts.h"
 #include <fcntl.h>
 
+extern void platforms(Game *g);
+
 //game box array to spawn sealed room
 void setFrame(Game *g) 
 {
@@ -262,7 +264,6 @@ void setLevel2(Game *gm, Level *lev)
 	gm->box[4].center.y = 0;		
 
 
-
 	}
 
 
@@ -356,7 +357,6 @@ void drawLevel2(Game *gm, Level *lev)
 		glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
-
 	}
 }
 

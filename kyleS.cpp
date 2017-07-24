@@ -492,17 +492,19 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 void makeWeapon(Game *game, Character *p)
 {
 	for (int i = 0; i < 2; i++) {
-		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > W_WIDTH*2) {
-			p->l[i].s.center.x = p->s.center.x;
-			p->l[i].s.center.y = p->s.center.y;
-			p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
-			p->l[i].hit.center.y = p->l[i].s.center.y;
-			p->l[i].hit.width = W_WIDTH;
-			p->l[i].hit.height = W_HEIGHT;
-			if (!p->isLeft)
-				p->l[i].velocity.x = WALK*2;
-			else
-				p->l[i].velocity.x = -WALK*2;
+		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > game->xres) {
+			if (p->l[i].thrown == false) {
+				p->l[i].s.center.x = p->s.center.x;
+				p->l[i].s.center.y = p->s.center.y + p->s.height*3/4;
+				p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
+				p->l[i].hit.center.y = p->l[i].s.center.y;
+				p->l[i].hit.width = W_WIDTH;
+				p->l[i].hit.height = W_HEIGHT;
+				if (!p->isLeft)
+					p->l[i].velocity.x = WALK*4;
+				else
+					p->l[i].velocity.x = -WALK*4;
+			}
 		}
 	}
 }
@@ -866,35 +868,29 @@ void background(Game *gm)
 			glVertex2i(gm->xres, gm->yres);
 		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[1]);
 			glVertex2i(gm->xres, 0); 
-		glEnd();
+	glEnd();
 }	
 
 void platforms(Game *gm)
 {
 	for (int i = 20; i < 20; i++) {
 		if (gm->plat[i].center.x > 0) {
-			Vec vertex[i][4]; // ^ < to bottom >, < to >, ^ to bottom
-			vertex[i][0].x = gm->plat[i].center.x - gm->plat[i].width;
-			vertex[i][0].y = gm->plat[i].center.y + gm->plat[i].height;
-			vertex[i][1].x = gm->plat[i].center.x + gm->plat[i].width;
-			vertex[i][1].y = gm->plat[i].center.y + gm->plat[i].height;
-			vertex[i][2].x = gm->plat[i].center.x - gm->plat[i].width;
-			vertex[i][2].y = gm->plat[i].center.y - gm->plat[i].height;
-			vertex[i][3].x = gm->plat[i].center.x + gm->plat[i].width;
-			vertex[i][3].y = gm->plat[i].center.y - gm->plat[i].height;
+			int h = gm->plat[i].height;
+			int w = gm->plat[i].width;
 			glClear(GL_COLOR_BUFFER_BIT);
 			glColor3f(1.0, 1.0, 1.0);
 			glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
+			glTranslated(gm->plat[i].center.x, gm->plat[i].center.y, 0);
 			glBegin(GL_QUADS);
-				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
-					glVertex2i(vertex[i][0].x, vertex[i][0].y); 
 				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
-					glVertex2i(vertex[i][1].x, vertex[i][1].y);
-				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
-					glVertex2i(vertex[i][3].x, vertex[i][3].y);
+					glVertex2i(-w,-h); 
+				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+					glVertex2i(-w, h);
 				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
-					glVertex2i(vertex[i][4].x, vertex[i][4].y); 
-				glEnd();
+					glVertex2i( w, h);
+				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+					glVertex2i( w,-h); 
+			glEnd();
 		}
 	}
 }
