@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include "ppm.h"
 //types
 typedef float Flt;
 typedef Flt Matrix[4][4];
@@ -83,6 +84,22 @@ enum State {
 	STATE_GAMEOVER
 };
 
+class Texture {
+public:
+	Ppmimage *background;
+	Ppmimage *spike;
+	Ppmimage *platform;
+	GLuint spikeTexture;
+	GLuint platTexture;
+	GLuint backTexture;
+	Flt xb[2];
+	Flt yb[2];
+	Flt xs[2];
+	Flt ys[2];
+	Flt xp[2];
+	Flt yp[2];
+};
+
 class Weapon {
 public:
 	Shape s;
@@ -116,6 +133,7 @@ public:
 	Shape spike[10];
 	Character character;
 	State state;
+	Texture tex;
 	Button button[MAXBUTTONS];
 	int nbuttons;
 	int lbutton;

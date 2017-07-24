@@ -282,6 +282,8 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 				e->velocity.x = 0;
 				e->killEnemy();
 				//death();
+				p->l[i].s.center.x = -50;
+				p->l[i].velocity.x = 0;
 			}
 		}
 	}
@@ -381,14 +383,17 @@ void charCollision(Game *game, Character *p, Enemy *e)
 		}
 	}
 	// weapon update
-	/*
-	for (int i = 0; i < 2; i++) {
+	/*for (int i = 0; i < 2; i++) {
 		if (p->l[i].s.center.x > 0) {
-			if (abs(p->l[i].initThrow.x - p->l[i].s.center.x)
-					> p->s.width * 2) {
-				p->l[i].s.center.x = -10;
-				p->l[i].hit.center.x = p->l[i].s.center.x;
-				p->l[i].velocity.x = 0;
+			if (p->l[i].s.center.x < e->s.center.x + e->s.width + W_WIDTH &&
+					p->l[i].s.center.x > e->s.center.x - e->s.width-W_WIDTH) {
+				if (p->l[i].s.center.y < e->s.center.y + e->s.height + W_HEIGHT
+						&& p->l[i].s.center.y > e->s.center.y -
+						e->s.height - W_HEIGHT) {
+					p->l[i].s.center.x = -10;
+					p->l[i].hit.center.x = p->l[i].s.center.x;
+					p->l[i].velocity.x = 0;
+				}
 			}
 		}
 	}*/
@@ -475,7 +480,7 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 					e->velocity.y = 0;
 					if (e->s.center.x == platRight[i] ||
 							e->s.center.x == platLeft[i]) {
-					    e->velocity.x = -e->velocity.x;
+						e->velocity.x = -e->velocity.x;
 					}
 				}
 			}
@@ -487,7 +492,7 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 void makeWeapon(Game *game, Character *p)
 {
 	for (int i = 0; i < 2; i++) {
-		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > W_WIDTH) {
+		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > W_WIDTH*2) {
 			p->l[i].s.center.x = p->s.center.x;
 			p->l[i].s.center.y = p->s.center.y;
 			p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
@@ -779,5 +784,117 @@ void checkGameOver(Game *gm)
 		r.center = 0;
 		r.left = gm->xres/2 - 100;
 		ggprint8b(&r, 16, c, "R - Restart");
+	}
+}
+
+void loadBackground(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/background.png tmp.ppm");
+	gm->tex.background = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.backTexture);
+	int w = gm->tex.background->width;
+	int h = gm->tex.background->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.background->data);
+	unlink("./tmp.ppm");
+	gm->tex.xb[0] = 0.0;
+	gm->tex.xb[1] = 1.0;
+	gm->tex.yb[0] = 0.0;
+	gm->tex.yb[1] = 1.0;
+}
+/*
+void loadSpikes(Game *gm)
+{
+	//load the images file into a ppm structure.
+	system("convert images/spikes.png tmp.ppm");
+	gm->tex.spike = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, gm->tex.spikeTexture);
+	int w = gm->tex.spike->width;
+	int h = gm->tex.spike->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
+	unlink("./tmp.ppm");
+	gm->tex.xs[0] = 0.0;
+	gm->tex.xs[1] = 1.0;
+	gm->tex.ys[0] = 0.0;
+	gm->tex.ys[1] = 1.0;
+}
+*/
+void loadPlatforms(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/platform.png tmp.ppm");
+	gm->tex.platform = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.platTexture);
+	int w = gm->tex.platform->width;
+	int h = gm->tex.platform->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.platform->data);
+	unlink("./tmp.ppm");
+	gm->tex.xp[0] = 0.0;
+	gm->tex.xp[1] = 1.0;
+	gm->tex.yp[0] = 0.0;
+	gm->tex.yp[1] = 1.0;
+}
+
+void background(Game *gm)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xb[0], gm->tex.yb[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xb[0], gm->tex.yb[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[1]);
+			glVertex2i(gm->xres, 0); 
+		glEnd();
+}	
+
+void platforms(Game *gm)
+{
+	for (int i = 20; i < 20; i++) {
+		if (gm->plat[i].center.x > 0) {
+			Vec vertex[i][4]; // ^ < to bottom >, < to >, ^ to bottom
+			vertex[i][0].x = gm->plat[i].center.x - gm->plat[i].width;
+			vertex[i][0].y = gm->plat[i].center.y + gm->plat[i].height;
+			vertex[i][1].x = gm->plat[i].center.x + gm->plat[i].width;
+			vertex[i][1].y = gm->plat[i].center.y + gm->plat[i].height;
+			vertex[i][2].x = gm->plat[i].center.x - gm->plat[i].width;
+			vertex[i][2].y = gm->plat[i].center.y - gm->plat[i].height;
+			vertex[i][3].x = gm->plat[i].center.x + gm->plat[i].width;
+			vertex[i][3].y = gm->plat[i].center.y - gm->plat[i].height;
+			glClear(GL_COLOR_BUFFER_BIT);
+			glColor3f(1.0, 1.0, 1.0);
+			glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
+			glBegin(GL_QUADS);
+				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+					glVertex2i(vertex[i][0].x, vertex[i][0].y); 
+				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+					glVertex2i(vertex[i][1].x, vertex[i][1].y);
+				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+					glVertex2i(vertex[i][3].x, vertex[i][3].y);
+				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+					glVertex2i(vertex[i][4].x, vertex[i][4].y); 
+				glEnd();
+		}
 	}
 }

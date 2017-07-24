@@ -46,6 +46,10 @@ extern void charCollision(Game *game, Character *p, Enemy *e);
 extern void enemyCollision(Game *game, Character *p, Enemy *e);
 extern void savePointCheck(Character *p, SavePoint *sp);
 //extern void buttonInit(Game *game);
+extern void loadBackground(Game *game);
+extern void background(Game *game);
+extern void loadPlatforms(Game *game);
+extern void platforms(Game *game);
 extern void checkPause(Game *game);
 extern void checkControl(Game *game);
 extern void checkStart(Game *game);
@@ -227,6 +231,10 @@ void init_opengl(void)
 	//Allow fonts
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
+	
+	//Ppm textures
+	loadBackground(&gm);
+	loadPlatforms(&gm);
 
 	//Sprites
 	runAnimation.convertToPpm();
@@ -274,8 +282,8 @@ void makeCharacter(Game *game, int x, int y)
 	p->s.width = p->hurt.width = runAnimation.getFrameWidth() - 20;// * 0.16;
 	p->hurt.radius = (p->s.width-5)/2;
 	p->hurtJump = false;
-	p->l[0].s.center.x = -2;
-	p->l[1].s.center.x = -2;
+	p->l[0].s.center.x = -50;
+	p->l[1].s.center.x = -50;
 	p->jumpCurrent = 0;
 	p->jumpMax = 2;
 	p->soundChk = true;
@@ -537,6 +545,9 @@ void render(Game *game)
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	//draw background
+	background(&gm);
+
 	setLevelSwitch(&gm, &lev);
 	//set up level 2 
 	//setLevel2(&gm, &lev);
@@ -553,6 +564,9 @@ void render(Game *game)
 
 	//draws level text
 	levelText(&gm, &lev);
+
+	//draw platforms & spikes
+	platforms(&gm);
 
 	//draw character here
 	glPushMatrix();
@@ -609,29 +623,32 @@ void render(Game *game)
 	int c = 0xffffffff;
 	if (gm.state == STATE_GAMEPLAY) {
 		for (int i = 0; i < 10; i++) {
-		h = gm.spike[i].height;
-		w = gm.spike[i].width;
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 0.0, 0.0);
-		glTranslated(gm.spike[i].center.x, gm.spike[i].center.y, 0);
-		glBegin(GL_QUADS);
-			glVertex2i(-w, -h);
-			glVertex2i(-w, +h);
-			glVertex2i(+w, +h);
-			glVertex2i(+w, -h);
-		glEnd();
-		glDisable(GL_BLEND);
-		glPopMatrix();
-		r.bot = gm.spike[i].center.y;
-		r.left = gm.spike[i].center.x;
-		r.center = 1;
-		ggprint8b(&r, 16, c, "SPIKES");
+			if (gm.spike[i].center.x > 0) {
+				h = gm.spike[i].height;
+				w = gm.spike[i].width;
+				glPushMatrix();
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glColor4f(0.0, 0.0, 0.0, 0.0);
+				glTranslated(gm.spike[i].center.x, gm.spike[i].center.y, 0);
+				glBegin(GL_QUADS);
+					glVertex2i(-w, -h);
+					glVertex2i(-w, +h);
+					glVertex2i(+w, +h);
+					glVertex2i(+w, -h);
+				glEnd();
+				glDisable(GL_BLEND);
+				glPopMatrix();
+				r.bot = gm.spike[i].center.y;
+				r.left = gm.spike[i].center.x;
+				r.center = 1;
+				ggprint8b(&r, 16, c, "SPIKES");
+			}
 		}
 	}
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
+
 }
 
 unsigned char *buildAlphaData(Ppmimage *img)
