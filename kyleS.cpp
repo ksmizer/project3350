@@ -870,27 +870,45 @@ void background(Game *gm)
 			glVertex2i(gm->xres, 0); 
 	glEnd();
 }	
-
+/*
 void platforms(Game *gm)
 {
-	for (int i = 20; i < 20; i++) {
-		if (gm->plat[i].center.x > 0) {
-			int h = gm->plat[i].height;
-			int w = gm->plat[i].width;
+	//for (int i = 20; i < 20; i++) {
+		//if (gm->plat[i].center.x > 0) {
+			//int h = gm->plat[i].height;
+			//int w = gm->plat[i].width;
 			glClear(GL_COLOR_BUFFER_BIT);
 			glColor3f(1.0, 1.0, 1.0);
 			glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
-			glTranslated(gm->plat[i].center.x, gm->plat[i].center.y, 0);
-			glBegin(GL_QUADS);
+			//glTranslated(gm->plat[i].center.x, gm->plat[i].center.y, 0);
+			//glBegin(GL_QUADS);
 				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
-					glVertex2i(-w,-h); 
+				//	glVertex2i(-w,-h); 
 				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
-					glVertex2i(-w, h);
+				//	glVertex2i(-w, h);
 				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
-					glVertex2i( w, h);
+				//	glVertex2i( w, h);
 				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
-					glVertex2i( w,-h); 
-			glEnd();
-		}
-	}
+				//	glVertex2i( w,-h); 
+			//glEnd();
+		//}
+	//}
+}
+*/
+void prepPlat(Game *gm)
+{
+//	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+}
+
+void platBind(Game *gm)
+{
+	glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+	glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+	glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+	glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 }

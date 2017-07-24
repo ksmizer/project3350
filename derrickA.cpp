@@ -13,7 +13,8 @@
 #include "fonts.h"
 #include <fcntl.h>
 
-extern void platforms(Game *g);
+extern void prepPlat(Game *g);
+extern void platBind(Game *g);
 
 //game box array to spawn sealed room
 void setFrame(Game *g) 
@@ -278,19 +279,25 @@ void drawLevel2(Game *gm, Level *lev)
 
         //Draw test platform
 	Shape *test;
-	glColor3ub(80,110,70);
+	//glColor3ub(80,110,70);
 	test = &gm->plat[0];
 	glPushMatrix();
 	glTranslatef(test->center.x, test->center.y, test->center.z);
 	w = test->width;
 	h = test->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 	
 	/*	
 	Shape *spike;
@@ -311,36 +318,46 @@ void drawLevel2(Game *gm, Level *lev)
 
         //Draw test platform 2
 	Shape *test2;
-	glColor3ub(80,110,70);
 	test2 = &gm->plat[1];
 	glPushMatrix();
 	glTranslatef(test2->center.x, test2->center.y, test2->center.z);
 	w = test2->width;
 	h = test2->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 
 	//Draw test platform 3
 	Shape *test3;
-	glColor3ub(80,110,70);
 	test3 = &gm->plat[2];
 	glPushMatrix();
 	glTranslatef(test3->center.x, test3->center.y, test3->center.z);
 	w = test3->width;
 	h = test3->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	//Draw test platform 4
 	Shape *test4;
@@ -350,13 +367,19 @@ void drawLevel2(Game *gm, Level *lev)
 	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
 	w = test4->width;
 	h = test4->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 	}
 }
 

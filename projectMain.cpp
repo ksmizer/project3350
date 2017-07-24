@@ -49,7 +49,8 @@ extern void savePointCheck(Character *p, SavePoint *sp);
 extern void loadBackground(Game *game);
 extern void background(Game *game);
 extern void loadPlatforms(Game *game);
-extern void platforms(Game *game);
+extern void prepPlat(Game *game);
+extern void platBind(Game *game);
 extern void checkPause(Game *game);
 extern void checkControl(Game *game);
 extern void checkStart(Game *game);
@@ -568,7 +569,7 @@ void render(Game *game)
 	levelText(&gm, &lev);
 
 	//draw platforms & spikes
-	platforms(&gm);
+	//platforms(&gm);
 
 	//draw character here
 	glPushMatrix();
