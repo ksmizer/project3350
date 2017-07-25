@@ -854,6 +854,28 @@ void loadPlatforms(Game *gm)
 	gm->tex.yp[1] = 1.0;
 }
 
+void loadBoxes(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/box.png tmp.ppm");
+	gm->tex.box = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.boxTexture);
+	int w = gm->tex.box->width;
+	int h = gm->tex.box->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.boxTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.box->data);
+	unlink("./tmp.ppm");
+	gm->tex.xB[0] = 0.0;
+	gm->tex.xB[1] = 1.0;
+	gm->tex.yB[0] = 0.0;
+	gm->tex.yB[1] = 1.0;
+}
+
 void background(Game *gm)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -869,35 +891,10 @@ void background(Game *gm)
 		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[1]);
 			glVertex2i(gm->xres, 0); 
 	glEnd();
-}	
-/*
-void platforms(Game *gm)
-{
-	//for (int i = 20; i < 20; i++) {
-		//if (gm->plat[i].center.x > 0) {
-			//int h = gm->plat[i].height;
-			//int w = gm->plat[i].width;
-			glClear(GL_COLOR_BUFFER_BIT);
-			glColor3f(1.0, 1.0, 1.0);
-			glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
-			//glTranslated(gm->plat[i].center.x, gm->plat[i].center.y, 0);
-			//glBegin(GL_QUADS);
-				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
-				//	glVertex2i(-w,-h); 
-				glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
-				//	glVertex2i(-w, h);
-				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
-				//	glVertex2i( w, h);
-				glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
-				//	glVertex2i( w,-h); 
-			//glEnd();
-		//}
-	//}
 }
-*/
+
 void prepPlat(Game *gm)
 {
-//	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0,1.0,1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
 	glEnable(GL_ALPHA_TEST);
@@ -905,10 +902,11 @@ void prepPlat(Game *gm)
 	glColor4ub(255,255,255,255);
 }
 
-void platBind(Game *gm)
+void prepBox(Game *gm)
 {
-	glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
-	glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
-	glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
-	glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+	glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.boxTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
 }

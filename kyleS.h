@@ -87,13 +87,17 @@ enum State {
 class Texture {
 public:
 	Ppmimage *background;
+	Ppmimage *box;
 	Ppmimage *spike;
 	Ppmimage *platform;
 	GLuint spikeTexture;
 	GLuint platTexture;
 	GLuint backTexture;
+	GLuint boxTexture;
 	Flt xb[2];
 	Flt yb[2];
+	Flt xB[2];
+	Flt yB[2];
 	Flt xs[2];
 	Flt ys[2];
 	Flt xp[2];

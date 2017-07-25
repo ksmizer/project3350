@@ -46,6 +46,8 @@ extern void charCollision(Game *game, Character *p, Enemy *e);
 extern void enemyCollision(Game *game, Character *p, Enemy *e);
 extern void savePointCheck(Character *p, SavePoint *sp);
 //extern void buttonInit(Game *game);
+extern void loadBoxes(Game *game);
+extern void prepBox(Game *game);
 extern void loadBackground(Game *game);
 extern void background(Game *game);
 extern void loadPlatforms(Game *game);

@@ -14,7 +14,7 @@
 #include <fcntl.h>
 
 extern void prepPlat(Game *g);
-extern void platBind(Game *g);
+extern void prepBox(Game *g);
 
 //game box array to spawn sealed room
 void setFrame(Game *g) 
@@ -148,13 +148,19 @@ void levelDrawBox(Game *g)
 		glTranslatef(s->center.x, s->center.y, s->center.z);
 		w = s->width;
 		h = s->height;
+		prepBox(g);
 		glBegin(GL_QUADS);
-			glVertex2i(-w,-h);
-			glVertex2i(-w, h);
-			glVertex2i( w, h);
-			glVertex2i( w,-h);
+			glTexCoord2f(g->tex.xB[0], g->tex.yB[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(g->tex.xB[0], g->tex.yB[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(g->tex.xB[1], g->tex.yB[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(g->tex.xB[1], g->tex.yB[0]);
+				glVertex2i( w,-h);
 		glEnd();
 		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
 	}
 }
 
@@ -361,7 +367,6 @@ void drawLevel2(Game *gm, Level *lev)
 
 	//Draw test platform 4
 	Shape *test4;
-	glColor3ub(80,110,70);
 	test4 = &gm->plat[3];
 	glPushMatrix();
 	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
