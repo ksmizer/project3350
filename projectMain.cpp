@@ -77,6 +77,7 @@ extern void totalTimer(int mode);
 extern void initializeTime();
 extern void resetTime();
 extern void countDeath();
+extern void setDeathTime();
 extern void outputScore(Game *game);
 extern void outputCurrentScore(Game *game);
 
@@ -114,7 +115,6 @@ SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 int main(void)
 {
 	//initialize enemies
-	initializeTime();
 	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	enemies.push_back(testEnemy);
 	//initialize sprites
@@ -243,6 +243,7 @@ void init_opengl(void)
 
 void makeCharacter(Game *game, int x, int y)
 {
+	initializeTime();
 	resetTime();
 	//position of character
 	Character *p = &game->character;
@@ -329,6 +330,7 @@ void check_keys(XEvent *e) {
 				}
 		if (gm.state == STATE_GAMEOVER) {
 					if (gm.keys[XK_r] || gm.keys[XK_R]) {
+							totalTimer(4);
 							makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;
 			}
@@ -493,9 +495,11 @@ void physics(Game *game, PlayerState ps)
 		sp1.animations.at(1).disable();
 	}
 	if (gm.state == STATE_GAMEOVER) {
+		setDeathTime();
 		countDeath();
 		totalTimer(1);
-	} if (gm.state == STATE_PAUSE) {
+	} 
+	if (gm.state == STATE_PAUSE) {
 		totalTimer(1);
 	}
 }

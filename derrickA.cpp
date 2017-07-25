@@ -13,6 +13,9 @@
 #include "fonts.h"
 #include <fcntl.h>
 
+extern void setLevel7(Game *gm, Level *lev);
+extern void drawLevel7(Game *gm, Level *lev);
+
 //game box array to spawn sealed room
 void setFrame(Game *g) 
 {
