@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include "ppm.h"
 //types
 typedef float Flt;
 typedef Flt Matrix[4][4];
@@ -83,6 +84,26 @@ enum State {
 	STATE_GAMEOVER
 };
 
+class Texture {
+public:
+	Ppmimage *background;
+	Ppmimage *box;
+	Ppmimage *spike;
+	Ppmimage *platform;
+	GLuint spikeTexture;
+	GLuint platTexture;
+	GLuint backTexture;
+	GLuint boxTexture;
+	Flt xb[2];
+	Flt yb[2];
+	Flt xB[2];
+	Flt yB[2];
+	Flt xs[2];
+	Flt ys[2];
+	Flt xp[2];
+	Flt yp[2];
+};
+
 class Weapon {
 public:
 	Shape s;
@@ -90,6 +111,7 @@ public:
 	Vec velocity;
 	Vec initThrow;
 	bool weaponSnd;
+	bool thrown;
 };
 
 class Character {
@@ -116,6 +138,7 @@ public:
 	Shape spike[10];
 	Character character;
 	State state;
+	Texture tex;
 	Button button[MAXBUTTONS];
 	int nbuttons;
 	int lbutton;
