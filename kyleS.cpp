@@ -164,6 +164,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeTop[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -175,6 +176,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeBottom[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -186,6 +188,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeRight[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -197,6 +200,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeLeft[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
