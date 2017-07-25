@@ -561,13 +561,14 @@ void drawLevel7(Game *gm, Level *lev)
 		glEnd();
 		glPopMatrix();
         	
-		//set up spike 2	
+		//set up spike 2
+		Shape *spike2;	
 		glColor3ub(80,110,70);
-		spike = &gm->spike[1];
+		spike2 = &gm->spike[1];
 		glPushMatrix();
-		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
-		w = spike->width;
-		h = spike->height;
+		glTranslatef(spike2->center.x, spike2->center.y, spike2->center.z);
+		w = spike2->width;
+		h = spike2->height;
 		glBegin(GL_QUADS);
 			glVertex2i(-w,-h);
 			glVertex2i(-w, h);
@@ -640,13 +641,14 @@ void drawLevel7(Game *gm, Level *lev)
 		glEnd();
 		glPopMatrix();
 		
-		//set up spike 3	
+		//set up spike 3
+		Shape *spike3;	
 		glColor3ub(80,110,70);
-		spike = &gm->spike[2];
+		spike3 = &gm->spike[2];
 		glPushMatrix();
-		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
-		w = spike->width;
-		h = spike->height;
+		glTranslatef(spike3->center.x, spike3->center.y, spike3->center.z);
+		w = spike3->width;
+		h = spike3->height;
 		glBegin(GL_QUADS);
 			glVertex2i(-w,-h);
 			glVertex2i(-w, h);
@@ -672,12 +674,13 @@ void drawLevel7(Game *gm, Level *lev)
 		glPopMatrix();
 	
 		//set up spike 4	
+		Shape *spike4;
 		glColor3ub(80,110,70);
-		spike = &gm->spike[3];
+		spike4 = &gm->spike[3];
 		glPushMatrix();
-		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
-		w = spike->width;
-		h = spike->height;
+		glTranslatef(spike4->center.x, spike4->center.y, spike4->center.z);
+		w = spike4->width;
+		h = spike4->height;
 		glBegin(GL_QUADS);
 			glVertex2i(-w,-h);
 			glVertex2i(-w, h);
@@ -719,12 +722,13 @@ void drawLevel7(Game *gm, Level *lev)
 		glPopMatrix();
 		
 		//set up spike 5	
+		Shape *spike5;
 		glColor3ub(80,110,70);
-		spike = &gm->spike[4];
+		spike5 = &gm->spike[4];
 		glPushMatrix();
-		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
-		w = spike->width;
-		h = spike->height;
+		glTranslatef(spike5->center.x, spike5->center.y, spike5->center.z);
+		w = spike5->width;
+		h = spike5->height;
 		glBegin(GL_QUADS);
 			glVertex2i(-w,-h);
 			glVertex2i(-w, h);
@@ -816,10 +820,10 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[1].center.y = 135;
 			
 		//test wall1
-		gm->box[7].width = 10;
-        	gm->box[7].height = 600;
-        	gm->box[7].center.x = 1100;
-        	gm->box[7].center.y = 0;
+		gm->box[4].width = 10;
+        	gm->box[4].height = 600;
+        	gm->box[4].center.x = 1100;
+        	gm->box[4].center.y = 0;
 	
 		//test platform1
 		gm->plat[0].width = 25;
@@ -852,10 +856,10 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[2].center.y = 450;
 		
 		//wall 2	
-		gm->box[8].width = 15;
-		gm->box[8].height = 115;
-		gm->box[8].center.x = 200;
-		gm->box[8].center.y = 550;
+		gm->box[5].width = 15;
+		gm->box[5].height = 115;
+		gm->box[5].center.x = 200;
+		gm->box[5].center.y = 550;
 		
 	        //test platforms5
 	        gm->plat[4].width = 15;
