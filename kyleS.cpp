@@ -126,7 +126,7 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 	return;
 }
 
-void charHurtUpdate(Game *game, Character *p, Enemy *e)
+void charHurtUpdate(Game *game, Character *p)
 {
 	// Character hurtbox shift for jumping
 	if (p->hurtJump == true) {
@@ -139,9 +139,10 @@ void charHurtUpdate(Game *game, Character *p, Enemy *e)
 	}		
 }
 
-void charHurt(Game *game, Character *p, Enemy *e)
+void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
-	charHurtUpdate(game, p, e);
+	Enemy *e = &enemies.at(0);
+	charHurtUpdate(game, p);
 	// Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
 	for (int i = 0; i < 5; i++) {
@@ -219,8 +220,9 @@ void charHurt(Game *game, Character *p, Enemy *e)
 	}
 }
 
-void enemyHurt(Game *game, Character *p, Enemy *e)
+void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
+	Enemy *e = &enemies.at(0);
 	//Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
 	for (int i = 0; i < 5; i++) {
@@ -289,7 +291,7 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 	}
 }
 
-void charCollision(Game *game, Character *p, Enemy *e)
+void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 {
 	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
 	for (int i = 0; i < 7; i++) {
@@ -405,11 +407,12 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			p->jumpCurrent = 1;
 		}
 	}
-	charHurt(game, p, e);
+	charHurt(game, p, enemies);
 }
 
-void enemyCollision(Game *game, Character *p, Enemy *e)
+void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 {
+	Enemy *e = &enemies.at(0);
 	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
 	for (int i = 0; i < 7; i++) {
 		Shape *s = &game->box[i];
@@ -486,7 +489,7 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 			}
 		}
 	}
-	enemyHurt(game, p, e);
+	enemyHurt(game, p, enemies);
 }
 
 void makeWeapon(Game *game, Character *p)

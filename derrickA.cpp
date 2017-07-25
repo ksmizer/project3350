@@ -141,7 +141,7 @@ void levelDrawBox(Game *g)
 {
 	float w, h;
 	Shape *s;
-	glColor3ub(90,140,90);
+	//glColor3ub(90,140,90);
 	for (int i = 0; i < 6; i++) {
 		s = &g->box[i];
 		glPushMatrix();

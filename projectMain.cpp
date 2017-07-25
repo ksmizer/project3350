@@ -42,8 +42,8 @@ void render(Game *game);
 
 //Extern function calls
 extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
-extern void charCollision(Game *game, Character *p, Enemy *e);
-extern void enemyCollision(Game *game, Character *p, Enemy *e);
+extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
+extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, SavePoint *sp);
 //extern void buttonInit(Game *game);
 extern void loadBoxes(Game *game);
@@ -456,8 +456,8 @@ void physics(Game *game, PlayerState ps)
 
 	//kyleS.cpp	
 	movement(game, p, ps, gm.keys);
-	charCollision(game, p, e);
-	enemyCollision(game, p, e);
+	charCollision(game, p, enemies);
+	enemyCollision(game, p, enemies);
 	savePointCheck(p, &savePoints.at(0));
 	if (!gm.button[0].r.width) {
 		//buttonInit(game);
