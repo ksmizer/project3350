@@ -1862,6 +1862,11 @@ void setLevelSwitch(Game *gm, Level *lev)
 		drawLevel6(gm, lev);
 		break;
 		
+	case 7:
+		clearLevel(gm);
+		//setLevel7(gm, lev);
+		//drawLevel7(gm, lev);
+	
 	default:
 		clearLevel(gm);
 		break;

@@ -118,7 +118,7 @@ SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 int main(void)
 {
 	//initialize enemies
-	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
+	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	initializeTime();
 	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
 	enemies.push_back(testEnemy);

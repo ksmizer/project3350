@@ -524,7 +524,7 @@ void outputCurrentScore(Game *gm)
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
 		//ggprint8b(&r, 16, c, "Kills: %d", kills);
-		r.bot = gm->yres/2 + 200;
+		/*r.bot = gm->yres/2 + 200;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
@@ -533,7 +533,7 @@ void outputCurrentScore(Game *gm)
 			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		//ggprint8b(&r, 16, c, "Kills: %d", kills);
+		//ggprint8b(&r, 16, c, "Kills: %d", kills);*/
 	}
 }
 
@@ -543,7 +543,7 @@ void drawLevel7(Game *gm, Level *lev)
 
 	
 	float w, h;
-	if (lev->levelID == 2) {
+	if (lev->levelID == 7) {
 
 		//set up spike 1	
 		Shape *spike;
@@ -802,7 +802,7 @@ void drawLevel7(Game *gm, Level *lev)
 
 void setLevel7(Game *gm, Level *lev)
 {
-	if (lev->levelID == 2) {
+	if (lev->levelID == 7) {
 	        //test spikes1
 	        gm->spike[0].width = 300;
 	        gm->spike[0].height = 15;
@@ -815,11 +815,11 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[1].center.x = gm->xres - 350;
 	        gm->spike[1].center.y = 135;
 			
-		//test wall
-		gm->box[4].width = 10;
-        	gm->box[4].height = 600;
-        	gm->box[4].center.x = 1100;
-        	gm->box[4].center.y = 0;
+		//test wall1
+		gm->box[7].width = 10;
+        	gm->box[7].height = 600;
+        	gm->box[7].center.x = 1100;
+        	gm->box[7].center.y = 0;
 	
 		//test platform1
 		gm->plat[0].width = 25;
@@ -852,10 +852,10 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[2].center.y = 450;
 		
 		//wall 2	
-		gm->box[5].width = 15;
-		gm->box[5].height = 115;
-		gm->box[5].center.x = 200;
-		gm->box[5].center.y = 550;
+		gm->box[8].width = 15;
+		gm->box[8].height = 115;
+		gm->box[8].center.x = 200;
+		gm->box[8].center.y = 550;
 		
 	        //test platforms5
 	        gm->plat[4].width = 15;
