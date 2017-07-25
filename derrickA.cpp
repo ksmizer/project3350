@@ -15,6 +15,8 @@
 
 extern void prepPlat(Game *g);
 extern void prepBox(Game *g);
+extern void setLevel7(Game *gm, Level *lev);
+extern void drawLevel7(Game *gm, Level *lev);
 
 //game box array to spawn sealed room
 void setFrame(Game *g) 
@@ -1887,6 +1889,11 @@ void setLevelSwitch(Game *gm, Level *lev)
 		drawLevel6(gm, lev);
 		break;
 		
+	case 7:
+		clearLevel(gm);
+		//setLevel7(gm, lev);
+		//drawLevel7(gm, lev);
+	
 	default:
 		clearLevel(gm);
 		break;

@@ -1,7 +1,24 @@
 // Cody Wright 
 // 6/21/2017
-// Purpose: Create sound effects for certain funcitons 
-// in the main file. 
+// ===============================================================
+// Purpose
+// ===============================================================
+// Create sound effects for the physics in the game.
+// 	-background music
+// 	-death sound
+// 	-jump sound
+//	-landing sound
+// 	-explosion
+// 	-NPC collision 
+//	-spikes
+// 	-throw spear
+// 	-flames
+// ===============================================================
+// Keep track of player stats
+// 	-time
+//	-death count
+// 	-kill count 
+// ===============================================================
 
 #include <fstream>
 #include <sys/socket.h>
@@ -14,6 +31,7 @@
 #include "fonts.h"
 #include "codyG.h"
 #include "kyleS.h"
+#include "derrickA.h"
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
@@ -38,10 +56,16 @@ int seconds = 0;
 int minutes = 0;
 int totalSeconds = 0;
 int totalMinutes = 0;
+int pauseSeconds = 0;
+int pauseMinutes = 0;
+int deadSeconds = 0;
+int deadMinutes = 0;
 int deaths = 0;
 int kills = 0;
 clock_t startTime;
+clock_t pauseTime;
 clock_t thisTime;
+clock_t deadTime;
 clock_t clockTicksTaken;
 double timeInSeconds;
 
@@ -367,7 +391,9 @@ void explosion()
 
 void initializeTime()
 {
-	startTime = clock();
+	if (minutes == 0 && seconds == 0) {
+		startTime = clock();
+	};
 }
 
 void resetTime()
@@ -375,6 +401,11 @@ void resetTime()
 	seconds = 0;
 	minutes = 0;
 	thisTime = clock();
+}
+
+void setDeathTime()
+{
+	deadTime = clock();
 }
 
 void countDeath()
@@ -389,23 +420,41 @@ void killCount()
 
 void totalTimer(int mode)
 {
+	// total time
 	if (mode == 1) {
 		clockTicksTaken = clock() - startTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		totalSeconds = timeInSeconds * 10;
+		totalSeconds = timeInSeconds * 7.5;
 		totalMinutes = totalSeconds / 60;
 		totalSeconds = totalSeconds % 60;
+	} 
+	// pause time
+	if (mode == 2) {
+		clockTicksTaken = clock() - pauseTime;
+		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
+		pauseSeconds = timeInSeconds * 7.5;
+		pauseMinutes = totalSeconds / 60;
+		pauseSeconds = totalSeconds % 60;
+		totalSeconds = totalSeconds - pauseSeconds;
+		totalMinutes = totalMinutes - pauseMinutes; 
 	}
-}
-
-void currentTimer(int mode)
-{
-	if (mode == 1) {
+	// current time
+	if (mode == 3) {
 		clockTicksTaken = clock() - thisTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		seconds = timeInSeconds * 10;
+		seconds = timeInSeconds * 7.5;
 		minutes = seconds / 60;
 		seconds = seconds % 60;
+	}
+	// time during gameover screen
+	if (mode == 4) {
+		clockTicksTaken = clock() - deadTime;
+		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
+		pauseSeconds = timeInSeconds * 7.5;
+		pauseMinutes = totalSeconds / 60;
+		pauseSeconds = totalSeconds % 60;
+		totalSeconds = totalSeconds - deadSeconds;
+		totalMinutes = totalMinutes - deadMinutes; 
 	}
 }
 
@@ -449,7 +498,7 @@ void outputCurrentScore(Game *gm)
 	Rect r;
 	int c = 0xffffffff;
 	if (gm->state == STATE_GAMEPLAY) {
-		currentTimer(1);
+		totalTimer(3);
 		h = 50;
 		w = 50;
 		glPushMatrix();
@@ -465,7 +514,7 @@ void outputCurrentScore(Game *gm)
 		glEnd();
 		glDisable(GL_BLEND);
 		glPopMatrix();
-		r.bot = gm->yres/2 + 250;
+		r.bot = gm->yres/2 + 400;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
@@ -475,6 +524,385 @@ void outputCurrentScore(Game *gm)
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
 		//ggprint8b(&r, 16, c, "Kills: %d", kills);
+		/*r.bot = gm->yres/2 + 200;
+		r.left = gm->xres/45;
+		r.center = .5;
+		if (seconds < 10) {
+			ggprint8b(&r, 16, c, "Time: %d:0%d", minutes, seconds);
+		} else {
+			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
+		}
+		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
+		//ggprint8b(&r, 16, c, "Kills: %d", kills);*/
 	}
 }
 
+
+void drawLevel7(Game *gm, Level *lev)
+{
+
+	
+	float w, h;
+	if (lev->levelID == 7) {
+
+		//set up spike 1	
+		Shape *spike;
+		glColor3ub(80,110,70);
+		spike = &gm->spike[0];
+		glPushMatrix();
+		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
+		w = spike->width;
+		h = spike->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+        	
+		//set up spike 2	
+		glColor3ub(80,110,70);
+		spike = &gm->spike[1];
+		glPushMatrix();
+		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
+		w = spike->width;
+		h = spike->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+			
+		//Draw test platform 1
+		Shape *test;
+		glColor3ub(80,110,70);
+		test = &gm->plat[0];
+		glPushMatrix();
+		glTranslatef(test->center.x, test->center.y, test->center.z);
+		w = test->width;
+		h = test->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+	        //Draw test platform 2
+		Shape *test2;
+		glColor3ub(80,110,70);
+		test2 = &gm->plat[1];
+		glPushMatrix();
+		glTranslatef(test2->center.x, test2->center.y, test2->center.z);
+		w = test2->width;
+		h = test2->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+		//Draw test platform 3
+		Shape *test3;
+		glColor3ub(80,110,70);
+		test3 = &gm->plat[2];
+		glPushMatrix();
+		glTranslatef(test3->center.x, test3->center.y, test3->center.z);
+		w = test3->width;
+		h = test3->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+	
+		//Draw test platform 4
+		Shape *test4;
+		glColor3ub(80,110,70);
+		test4 = &gm->plat[3];
+		glPushMatrix();
+		glTranslatef(test4->center.x, test4->center.y, test4->center.z);
+		w = test4->width;
+		h = test4->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+		//set up spike 3	
+		glColor3ub(80,110,70);
+		spike = &gm->spike[2];
+		glPushMatrix();
+		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
+		w = spike->width;
+		h = spike->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+		//Draw test platform 5
+		Shape *test5;
+		glColor3ub(80,110,70);
+		test5 = &gm->plat[4];
+		glPushMatrix();
+		glTranslatef(test5->center.x, test5->center.y, test5->center.z);
+		w = test5->width;
+		h = test5->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+	
+		//set up spike 4	
+		glColor3ub(80,110,70);
+		spike = &gm->spike[3];
+		glPushMatrix();
+		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
+		w = spike->width;
+		h = spike->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+		//Draw test platform 6
+		Shape *test6;
+		glColor3ub(80,110,70);
+		test6 = &gm->plat[5];
+		glPushMatrix();
+		glTranslatef(test6->center.x, test6->center.y, test6->center.z);
+		w = test6->width;
+		h = test6->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+		//Draw test platform 7
+		Shape *test7;
+		glColor3ub(80,110,70);
+		test7 = &gm->plat[6];
+		glPushMatrix();
+		glTranslatef(test7->center.x, test7->center.y, test7->center.z);
+		w = test7->width;
+		h = test7->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+		//set up spike 5	
+		glColor3ub(80,110,70);
+		spike = &gm->spike[4];
+		glPushMatrix();
+		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
+		w = spike->width;
+		h = spike->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		
+		//Draw test platform 8
+		Shape *test8;
+		glColor3ub(80,110,70);
+		test8 = &gm->plat[7];
+		glPushMatrix();
+		glTranslatef(test8->center.x, test8->center.y, test8->center.z);
+		w = test8->width;
+		h = test8->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+	
+		//Draw test platform 9
+		Shape *test9;
+		glColor3ub(80,110,70);
+		test9 = &gm->plat[8];
+		glPushMatrix();
+		glTranslatef(test9->center.x, test9->center.y, test9->center.z);
+		w = test9->width;
+		h = test9->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+	
+		//Draw test platform 10
+		Shape *test10;
+		glColor3ub(80,110,70);
+		test10 = &gm->plat[9];
+		glPushMatrix();
+		glTranslatef(test10->center.x, test10->center.y, test10->center.z);
+		w = test10->width;
+		h = test10->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+
+		//Draw test platform 11
+		Shape *test11;
+		glColor3ub(80,110,70);
+		test11 = &gm->plat[10];
+		glPushMatrix();
+		glTranslatef(test11->center.x, test11->center.y, test11->center.z);
+		w = test11->width;
+		h = test11->height;
+		glBegin(GL_QUADS);
+			glVertex2i(-w,-h);
+			glVertex2i(-w, h);
+			glVertex2i( w, h);
+			glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+	}	
+}
+
+
+void setLevel7(Game *gm, Level *lev)
+{
+	if (lev->levelID == 7) {
+	        //test spikes1
+	        gm->spike[0].width = 300;
+	        gm->spike[0].height = 15;
+	        gm->spike[0].center.x = gm->xres - 885;
+	        gm->spike[0].center.y = 135;
+		
+	        //test spikes2
+	        gm->spike[1].width = 150;
+	        gm->spike[1].height = 15;
+	        gm->spike[1].center.x = gm->xres - 350;
+	        gm->spike[1].center.y = 135;
+			
+		//test wall1
+		gm->box[7].width = 10;
+        	gm->box[7].height = 600;
+        	gm->box[7].center.x = 1100;
+        	gm->box[7].center.y = 0;
+	
+		//test platform1
+		gm->plat[0].width = 25;
+        	gm->plat[0].height = 15;
+        	gm->plat[0].center.x = 1075;
+        	gm->plat[0].center.y = 135;
+	
+	        //test platforms2
+	        gm->plat[1].width = 15;
+	        gm->plat[1].height = 15;
+	        gm->plat[1].center.x = 820;
+	        gm->plat[1].center.y = 250;
+	
+	        //test platforms3
+	        gm->plat[2].width = 15;
+	        gm->plat[2].height = 15;
+	        gm->plat[2].center.x = 180;
+	        gm->plat[2].center.y = 250;
+	
+	        //test platforms4
+	        gm->plat[3].width = 30;
+	        gm->plat[3].height = 15;
+	        gm->plat[3].center.x = 7;
+	        gm->plat[3].center.y = 400;
+	
+	        //test spikes3
+	        gm->spike[2].width = 450;
+	        gm->spike[2].height = 15;
+	        gm->spike[2].center.x = 650;
+	        gm->spike[2].center.y = 450;
+		
+		//wall 2	
+		gm->box[8].width = 15;
+		gm->box[8].height = 115;
+		gm->box[8].center.x = 200;
+		gm->box[8].center.y = 550;
+		
+	        //test platforms5
+	        gm->plat[4].width = 15;
+	        gm->plat[4].height = 15;
+	        gm->plat[4].center.x = 180;
+	        gm->plat[4].center.y = 450;
+	        
+		//test spikes4
+	        gm->spike[3].width = 60;
+	        gm->spike[3].height = 15;
+	        gm->spike[3].center.x = 60;
+	        gm->spike[3].center.y = 550;
+		
+	        //test platforms6
+	        gm->plat[5].width = 30;
+	        gm->plat[5].height = 10;
+	        gm->plat[5].center.x = 7;
+	        gm->plat[5].center.y = 560;
+		
+	        //test platforms7
+	        gm->plat[6].width = 50;
+	        gm->plat[6].height = 5;
+	        gm->plat[6].center.x = 415;
+	        gm->plat[6].center.y = 465;
+		
+		//test spikes5
+	        gm->spike[4].width = 350;
+	        gm->spike[4].height = 15;
+	        gm->spike[4].center.x = 670;
+	        gm->spike[4].center.y = 650;
+	        
+		//test platforms8
+	        gm->plat[7].width = 50;
+	        gm->plat[7].height = 5;
+	        gm->plat[7].center.x = 600;
+	        gm->plat[7].center.y = 465;
+		
+		//test platforms9
+	        gm->plat[8].width = 50;
+	        gm->plat[8].height = 5;
+	        gm->plat[8].center.x = 800;
+	        gm->plat[8].center.y = 465;
+		
+		//test platforms10
+	        gm->plat[9].width = 50;
+	        gm->plat[9].height = 5;
+	        gm->plat[9].center.x = 1000;
+	        gm->plat[9].center.y = 465;
+	}	
+}

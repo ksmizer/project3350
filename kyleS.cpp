@@ -165,6 +165,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 					p->s.center.y = spikeTop[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -176,6 +177,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 					p->s.center.y = spikeBottom[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -187,6 +189,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 					p->s.center.y = spikeRight[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -198,6 +201,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 					p->s.center.y = spikeLeft[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -497,6 +501,7 @@ void makeWeapon(Game *game, Character *p)
 	for (int i = 0; i < 2; i++) {
 		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > game->xres) {
 			if (p->l[i].thrown == false) {
+				throw_spear();
 				p->l[i].s.center.x = p->s.center.x;
 				p->l[i].s.center.y = p->s.center.y + p->s.height*3/4;
 				p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
