@@ -1552,9 +1552,9 @@ void drawLevel6(Game *gm, Level *lev)
 
 }
 
-void setLevel7(Game *gm, Level *lev)
+void setLevel8(Game *gm, Level *lev)
 {
-	if (lev->levelID == 7) {
+	if (lev->levelID == 8) {
         //test platforms
         gm->plat[0].width = 50;
         gm->plat[0].height = 15;
@@ -1669,11 +1669,11 @@ void setLevel7(Game *gm, Level *lev)
 
 
 
-void drawLevel7(Game *gm, Level *lev)
+void drawLevel8(Game *gm, Level *lev)
 {
 	
 	float w, h;
-	if (lev->levelID == 7) {
+	if (lev->levelID == 8) {
 
         //Draw test platform
 	Shape *test;
@@ -1953,7 +1953,7 @@ void clearLevel(Game *gm)
 	}
 
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 10; i++) {
         //test spikes
  		gm->spike[i].width = 0;
  		gm->spike[i].height = 0;
@@ -1988,6 +1988,7 @@ void clearLevel(Game *gm)
 		glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+
 	
 	//set up spike	
 	Shape *spike;
@@ -1997,6 +1998,38 @@ void clearLevel(Game *gm)
 	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
 	w = spike->width;
 	h = spike->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	//set up spike	
+	Shape *spike2;
+	glColor3ub(80,110,70);
+	spike2 = &gm->spike[1];
+	glPushMatrix();
+	glTranslatef(spike2->center.x, spike2->center.y, spike2->center.z);
+	w = spike2->width;
+	h = spike2->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+	
+	//set up spike	
+	Shape *spike3;
+	glColor3ub(80,110,70);
+	spike3 = &gm->spike[2];
+	glPushMatrix();
+	glTranslatef(spike3->center.x, spike3->center.y, spike3->center.z);
+	w = spike3->width;
+	h = spike3->height;
 	glBegin(GL_QUADS);
 		glVertex2i(-w,-h);
 		glVertex2i(-w, h);
@@ -2281,10 +2314,11 @@ void setLevelSwitch(Game *gm, Level *lev)
 		drawLevel7(gm, lev);
 		break;
 		
-	case 7:
+	case 8:
 		clearLevel(gm);
-		//setLevel7(gm, lev);
-		//drawLevel7(gm, lev);
+		setLevel8(gm, lev);
+		drawLevel8(gm, lev);
+		break;
 	
 	default:
 		clearLevel(gm);
