@@ -365,7 +365,6 @@ void check_keys(XEvent *e) {
                 gm.keys[key] = 1;
                 if (gm.keys[XK_Shift_L] || gm.keys[XK_Shift_R]) {
 					shift = 1;
-					return;
 				}
 		if (gm.state == STATE_GAMEOVER) {
 					if (gm.keys[XK_r] || gm.keys[XK_R]) {
