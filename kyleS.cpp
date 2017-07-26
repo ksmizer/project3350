@@ -126,7 +126,7 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 	return;
 }
 
-void charHurtUpdate(Game *game, Character *p, Enemy *e)
+void charHurtUpdate(Game *game, Character *p)
 {
 	// Character hurtbox shift for jumping
 	if (p->hurtJump == true) {
@@ -139,9 +139,10 @@ void charHurtUpdate(Game *game, Character *p, Enemy *e)
 	}		
 }
 
-void charHurt(Game *game, Character *p, Enemy *e)
+void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
-	charHurtUpdate(game, p, e);
+	Enemy *e = &enemies.at(0);
+	charHurtUpdate(game, p);
 	// Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
 	for (int i = 0; i < 5; i++) {
@@ -164,6 +165,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeTop[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -175,6 +177,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeBottom[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -186,6 +189,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeRight[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -197,6 +201,7 @@ void charHurt(Game *game, Character *p, Enemy *e)
 					p->s.center.y = spikeLeft[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 2;
+					spikes();
 					death();
 					game->state = STATE_GAMEOVER;
 				}
@@ -219,8 +224,9 @@ void charHurt(Game *game, Character *p, Enemy *e)
 	}
 }
 
-void enemyHurt(Game *game, Character *p, Enemy *e)
+void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
+	Enemy *e = &enemies.at(0);
 	//Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
 	for (int i = 0; i < 5; i++) {
@@ -282,12 +288,14 @@ void enemyHurt(Game *game, Character *p, Enemy *e)
 				e->velocity.x = 0;
 				e->killEnemy();
 				//death();
+				p->l[i].s.center.x = -50;
+				p->l[i].velocity.x = 0;
 			}
 		}
 	}
 }
 
-void charCollision(Game *game, Character *p, Enemy *e)
+void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 {
 	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
 	for (int i = 0; i < 7; i++) {
@@ -312,6 +320,16 @@ void charCollision(Game *game, Character *p, Enemy *e)
 						p->velocity.y = 0;
 						p->jumpCurrent = 0;
 						p->hurtJump = false;
+						if (p->velocity.x <= WALK / 10 &&
+								p->velocity.x >= -WALK / 10) {
+							p->velocity.x = 0;
+						}
+						if (p->velocity.x > 0) {
+							p->velocity.x -= WALK / 10;
+						}
+						if (p->velocity.x < 0) {
+							p->velocity.x += WALK / 10;
+						}
 					}
 				}
 				//Bottom collision detection
@@ -371,14 +389,17 @@ void charCollision(Game *game, Character *p, Enemy *e)
 		}
 	}
 	// weapon update
-	/*
-	for (int i = 0; i < 2; i++) {
+	/*for (int i = 0; i < 2; i++) {
 		if (p->l[i].s.center.x > 0) {
-			if (abs(p->l[i].initThrow.x - p->l[i].s.center.x)
-					> p->s.width * 2) {
-				p->l[i].s.center.x = -10;
-				p->l[i].hit.center.x = p->l[i].s.center.x;
-				p->l[i].velocity.x = 0;
+			if (p->l[i].s.center.x < e->s.center.x + e->s.width + W_WIDTH &&
+					p->l[i].s.center.x > e->s.center.x - e->s.width-W_WIDTH) {
+				if (p->l[i].s.center.y < e->s.center.y + e->s.height + W_HEIGHT
+						&& p->l[i].s.center.y > e->s.center.y -
+						e->s.height - W_HEIGHT) {
+					p->l[i].s.center.x = -10;
+					p->l[i].hit.center.x = p->l[i].s.center.x;
+					p->l[i].velocity.x = 0;
+				}
 			}
 		}
 	}*/
@@ -390,11 +411,12 @@ void charCollision(Game *game, Character *p, Enemy *e)
 			p->jumpCurrent = 1;
 		}
 	}
-	charHurt(game, p, e);
+	charHurt(game, p, enemies);
 }
 
-void enemyCollision(Game *game, Character *p, Enemy *e)
+void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 {
+	Enemy *e = &enemies.at(0);
 	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
 	for (int i = 0; i < 7; i++) {
 		Shape *s = &game->box[i];
@@ -465,29 +487,32 @@ void enemyCollision(Game *game, Character *p, Enemy *e)
 					e->velocity.y = 0;
 					if (e->s.center.x == platRight[i] ||
 							e->s.center.x == platLeft[i]) {
-					    e->velocity.x = -e->velocity.x;
+						e->velocity.x = -e->velocity.x;
 					}
 				}
 			}
 		}
 	}
-	enemyHurt(game, p, e);
+	enemyHurt(game, p, enemies);
 }
 
 void makeWeapon(Game *game, Character *p)
 {
 	for (int i = 0; i < 2; i++) {
-		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > W_WIDTH) {
-			p->l[i].s.center.x = p->s.center.x;
-			p->l[i].s.center.y = p->s.center.y;
-			p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
-			p->l[i].hit.center.y = p->l[i].s.center.y;
-			p->l[i].hit.width = W_WIDTH;
-			p->l[i].hit.height = W_HEIGHT;
-			if (!p->isLeft)
-				p->l[i].velocity.x = WALK*2;
-			else
-				p->l[i].velocity.x = -WALK*2;
+		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > game->xres) {
+			if (p->l[i].thrown == false) {
+				throw_spear();
+				p->l[i].s.center.x = p->s.center.x;
+				p->l[i].s.center.y = p->s.center.y + p->s.height*3/4;
+				p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
+				p->l[i].hit.center.y = p->l[i].s.center.y;
+				p->l[i].hit.width = W_WIDTH;
+				p->l[i].hit.height = W_HEIGHT;
+				if (!p->isLeft)
+					p->l[i].velocity.x = WALK*4;
+				else
+					p->l[i].velocity.x = -WALK*4;
+			}
 		}
 	}
 }
@@ -661,8 +686,9 @@ void checkControl(Game *gm)
 		ggprint8b(&r, 16, c, "Right Arrow or A -> Walk right");
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
 		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
+		ggprint8b(&r, 16, c, "J - Throw Spear");
+		ggprint8b(&r, 16, c, "V - Enemy Move Test");
 		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
-		ggprint8b(&r, 16, c, "D - Enemy Move Test");
 		ggprint8b(&r, 16, c, "I - Toggle Save Point");
 		ggprint8b(&r, 16, c, "O - Test Save Point");
 	}
@@ -700,8 +726,9 @@ void checkPause(Game *gm)
 		ggprint8b(&r, 16, c, "Right Arrow or A -> Walk right");
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
 		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
+		ggprint8b(&r, 16, c, "J - Throw Spear");
 		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
-		ggprint8b(&r, 16, c, "D - Enemy Move Test");
+		ggprint8b(&r, 16, c, "V - Enemy Move Test");
 		ggprint8b(&r, 16, c, "I - Toggle Save Point");
 		ggprint8b(&r, 16, c, "O - Test Save Point");
 	}
@@ -768,4 +795,126 @@ void checkGameOver(Game *gm)
 		r.left = gm->xres/2 - 100;
 		ggprint8b(&r, 16, c, "R - Restart");
 	}
+}
+
+void loadBackground(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/background.png tmp.ppm");
+	gm->tex.background = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.backTexture);
+	int w = gm->tex.background->width;
+	int h = gm->tex.background->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.background->data);
+	unlink("./tmp.ppm");
+	gm->tex.xb[0] = 0.0;
+	gm->tex.xb[1] = 1.0;
+	gm->tex.yb[0] = 0.0;
+	gm->tex.yb[1] = 1.0;
+}
+/*
+void loadSpikes(Game *gm)
+{
+	//load the images file into a ppm structure.
+	system("convert images/spikes.png tmp.ppm");
+	gm->tex.spike = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, gm->tex.spikeTexture);
+	int w = gm->tex.spike->width;
+	int h = gm->tex.spike->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
+	unlink("./tmp.ppm");
+	gm->tex.xs[0] = 0.0;
+	gm->tex.xs[1] = 1.0;
+	gm->tex.ys[0] = 0.0;
+	gm->tex.ys[1] = 1.0;
+}
+*/
+void loadPlatforms(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/platform.png tmp.ppm");
+	gm->tex.platform = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.platTexture);
+	int w = gm->tex.platform->width;
+	int h = gm->tex.platform->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.platform->data);
+	unlink("./tmp.ppm");
+	gm->tex.xp[0] = 0.0;
+	gm->tex.xp[1] = 1.0;
+	gm->tex.yp[0] = 0.0;
+	gm->tex.yp[1] = 1.0;
+}
+
+void loadBoxes(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/box.png tmp.ppm");
+	gm->tex.box = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.boxTexture);
+	int w = gm->tex.box->width;
+	int h = gm->tex.box->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.boxTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.box->data);
+	unlink("./tmp.ppm");
+	gm->tex.xB[0] = 0.0;
+	gm->tex.xB[1] = 1.0;
+	gm->tex.yB[0] = 0.0;
+	gm->tex.yB[1] = 1.0;
+}
+
+void background(Game *gm)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xb[0], gm->tex.yb[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xb[0], gm->tex.yb[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
+}
+
+void prepPlat(Game *gm)
+{
+	glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.platTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+}
+
+void prepBox(Game *gm)
+{
+	glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.boxTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
 }
