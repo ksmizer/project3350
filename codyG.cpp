@@ -85,6 +85,7 @@ SpriteAnimation::~SpriteAnimation() { }
 void SpriteAnimation::convertToPpm()
 {
 	char command[128];
+	command[0] = '\0';
 
 	strcpy(command, "convert ./images/");
 	strcat(command, sheetName);

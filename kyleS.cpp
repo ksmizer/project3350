@@ -214,7 +214,6 @@ bool enemyHurt(Game *game, Character *p, Enemy enemy)
 				e->velocity.x = 0;
 				e->killEnemy();
 				kill = true;
-				p->l[i].s.center.y = -50;
 				p->l[i].s.center.x = -50;
 				p->l[i].velocity.x = 0;
 			}
@@ -317,8 +316,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 		}
 	}
 	// weapon box collision update
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 2; j++) {
+	for (unsigned int i = 0; i < 10; i++) {
+		for (int j = 0; j < 1; j++) {
 			Shape *s = &game->box[i];
 			boxTop[i] = s->center.y + s->height + W_HEIGHT;
 			boxBottom[i] = s->center.y - s->height - W_HEIGHT;
