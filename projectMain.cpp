@@ -46,6 +46,8 @@ extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, SavePoint *sp);
 //extern void buttonInit(Game *game);
+extern void loadSpikes(Game *game);
+extern void prepSpike(Game *game);
 extern void loadBoxes(Game *game);
 extern void prepBox(Game *game);
 extern void loadBackground(Game *game);
@@ -241,6 +243,8 @@ void init_opengl(void)
 	//Ppm textures
 	loadBackground(&gm);
 	loadPlatforms(&gm);
+	loadBoxes(&gm);
+	loadSpikes(&gm);
 
 	//Sprites
 	runAnimation.convertToPpm();
@@ -631,34 +635,6 @@ void render(Game *game)
 	outputScore(&gm);
 	outputCurrentScore(&gm);
 
-	//Temporary spike indicator
-	Rect r;
-	int c = 0xffffffff;
-	if (gm.state == STATE_GAMEPLAY) {
-		for (int i = 0; i < 10; i++) {
-			if (gm.spike[i].center.x > 0) {
-				h = gm.spike[i].height;
-				w = gm.spike[i].width;
-				glPushMatrix();
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glColor4f(0.0, 0.0, 0.0, 0.0);
-				glTranslated(gm.spike[i].center.x, gm.spike[i].center.y, 0);
-				glBegin(GL_QUADS);
-					glVertex2i(-w, -h);
-					glVertex2i(-w, +h);
-					glVertex2i(+w, +h);
-					glVertex2i(+w, -h);
-				glEnd();
-				glDisable(GL_BLEND);
-				glPopMatrix();
-				r.bot = gm.spike[i].center.y;
-				r.left = gm.spike[i].center.x;
-				r.center = 1;
-				ggprint8b(&r, 16, c, "SPIKES");
-			}
-		}
-	}
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
 
