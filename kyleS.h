@@ -90,10 +90,12 @@ public:
 	Ppmimage *box;
 	Ppmimage *spike;
 	Ppmimage *platform;
+	Ppmimage *flames;
 	GLuint spikeTexture;
 	GLuint platTexture;
 	GLuint backTexture;
 	GLuint boxTexture;
+	GLuint flamesTexture;
 	Flt xb[2];
 	Flt yb[2];
 	Flt xB[2];
@@ -102,6 +104,8 @@ public:
 	Flt ys[2];
 	Flt xp[2];
 	Flt yp[2];
+	Flt xf[2];
+	Flt yf[2];
 };
 
 class Weapon {
@@ -135,7 +139,7 @@ class Game {
 public:
 	Shape box[7];
 	Shape plat[20];
-	Shape spike[10];
+	Shape spike[20];
 	Character character;
 	State state;
 	Texture tex;

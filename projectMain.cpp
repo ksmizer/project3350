@@ -90,6 +90,7 @@ extern void setDeathTime();
 extern void setPauseTime();
 extern void outputScore(Game *game);
 extern void outputCurrentScore(Game *game);
+extern void loadFlames(Game *game);
 
 //declare player state
 PlayerState playerState;
@@ -245,6 +246,7 @@ void init_opengl(void)
 	loadPlatforms(&gm);
 	loadBoxes(&gm);
 	loadSpikes(&gm);
+	loadFlames(&gm);
 
 	//Sprites
 	runAnimation.convertToPpm();
