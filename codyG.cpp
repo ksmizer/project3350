@@ -90,13 +90,14 @@ void SpriteAnimation::convertToPpm()
 	strcpy(command, "convert ./images/");
 	strcat(command, sheetName);
 	strcat(command, " ");
-
+	strcpy(sheetNamePpm, "");
 	strcat(sheetNamePpm, sheetName);
 	sheetNamePpm[strlen(sheetNamePpm) - 4] = 0;
 	strcat(sheetNamePpm, ".ppm");
 	strcat(command, sheetNamePpm);
 
 	system(command);
+	printf("NAME: **%s**\n", sheetNamePpm);
 	spriteSheet = ppm6GetImage(sheetNamePpm);
 }
 
@@ -236,6 +237,7 @@ void Enemy::initAnimations()
 		SpriteAnimation anim((char*)"zombie.png", 1, 5, 5, 0, 3, 27, 40, 0.1, true);
 		animations.push_back(anim);
 	}
+	printf("TESTING\n");
 }
 
 void Enemy::killEnemy()
@@ -401,4 +403,14 @@ PlayerState getPlayerState(Character *p, char keys[])
 	return tmp;
 }
 
-
+void spawnEnemies(int level, vector<Enemy> &e) 
+{
+    if (level == 1) {
+	Enemy e1(0,27,40,400,48,15,40,0,0,1,0,0,1200,false);
+	Enemy e2(0,27,40,300,48,15,40,0,0,-1,0,0,1200,true);
+	e1.initAnimations();
+	e2.initAnimations();
+	e.push_back(e1);
+	e.push_back(e2);
+    }
+}

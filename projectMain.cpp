@@ -129,13 +129,14 @@ int main(void)
 	//initialize enemies
 	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	initializeTime();
-	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
-	Enemy testEnemy2(0, 27, 40, 300, 48, 15, 40, 0, 0, -1, 0, 0, 1200, true);
-	enemies.push_back(testEnemy);
-	enemies.push_back(testEnemy2);
+	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
+	//Enemy testEnemy2(0, 27, 40, 300, 48, 15, 40, 0, 0, -1, 0, 0, 1200, true);
+	//enemies.push_back(testEnemy);
+	//enemies.push_back(testEnemy2);
+	
 		//initialize sprites
-	for (unsigned int i = 0; i < enemies.size(); i++) 
-		enemies.at(i).initAnimations();
+//	for (unsigned int i = 0; i < enemies.size(); i++) 
+//		enemies.at(i).initAnimations();
 	s1.initAnimations();
 	//s2.initAnimations();
 	
@@ -147,6 +148,8 @@ int main(void)
 	background_music();
 	srand(time(NULL));
 	initXWindows();
+	
+	spawnEnemies(lev.levelID, enemies);
 	init_opengl();
 	gm.n = 0; 
 	
@@ -444,6 +447,7 @@ void check_keys(XEvent *e) {
 
 void physics(Game *game, PlayerState ps)
 {
+    	//spawnEnemies(lev.levelID, enemies);
 	Character *p;
 
 	if (game->n <= 0)
@@ -473,10 +477,13 @@ void physics(Game *game, PlayerState ps)
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
 		loadLevel(&gm, &lev);
+		spawnEnemies(lev.levelID, enemies);
+		//enemies.at(0).initAnimations();
 		//game->n--;
 	}
 	if (p->s.center.x < 0.1 || p->s.center.x > gm.xres) {
 		loadLevel(&gm, &lev);
+		spawnEnemies(lev.levelID, enemies);
 		//game->n--;
 	}
 
@@ -613,7 +620,7 @@ void render(Game *game)
 	//	game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
-			renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
+		    	renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
 				enemies.at(i).getY(), 1.0, enemies.at(i).checkIsLeft());
 		}
 	}
