@@ -666,8 +666,8 @@ void drawLevel7(Game *gm, Level *lev)
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
 		
-		//set up spike 3	
-		Shape *spike3;
+		//set up spike 3
+		Shape *spike3;	
 		glColor3ub(80,110,70);
 		spike3 = &gm->spike[2];
 		glPushMatrix();
@@ -764,8 +764,8 @@ void drawLevel7(Game *gm, Level *lev)
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
 		
-		//set up spike 5
-		Shape *spike5;	
+		//set up spike 5	
+		Shape *spike5;
 		glColor3ub(80,110,70);
 		spike5 = &gm->spike[4];
 		glPushMatrix();
@@ -886,11 +886,11 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[1].center.x = gm->xres - 350;
 	        gm->spike[1].center.y = 135;
 			
-		//test wall1
-		gm->box[5].width = 10;
-        	gm->box[5].height = 600;
-        	gm->box[5].center.x = 1100;
-        	gm->box[5].center.y = 0;
+		//test wall1		
+		gm->box[4].width = 10;
+        	gm->box[4].height = 600;
+        	gm->box[4].center.x = 1100;
+        	gm->box[4].center.y = 0;
 	
 		//test platform1
 		gm->plat[0].width = 25;
@@ -923,10 +923,10 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[2].center.y = 450;
 		
 		//wall 2	
-		gm->box[4].width = 15;
-		gm->box[4].height = 115;
-		gm->box[4].center.x = 200;
-		gm->box[4].center.y = 550;
+		gm->box[5].width = 15;
+		gm->box[5].height = 115;
+		gm->box[5].center.x = 200;
+		gm->box[5].center.y = 550;
 		
 	        //test platforms5
 	        gm->plat[4].width = 15;
