@@ -85,6 +85,7 @@ extern void initializeTime();
 extern void resetTime();
 extern void countDeath();
 extern void setDeathTime();
+extern void setPauseTime();
 extern void outputScore(Game *game);
 extern void outputCurrentScore(Game *game);
 
@@ -365,7 +366,7 @@ void check_keys(XEvent *e) {
 				}
 		if (gm.state == STATE_GAMEOVER) {
 					if (gm.keys[XK_r] || gm.keys[XK_R]) {
-							totalTimer(4);
+							//totalTimer(4);
 							makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;
 			}
@@ -385,6 +386,7 @@ void check_keys(XEvent *e) {
 						gm.state = STATE_STARTMENU;
                     else
                         gm.state = STATE_PAUSE;
+		        //totalTimer(2);
                     break;
 				
 				case XK_i:
@@ -546,7 +548,7 @@ void physics(Game *game, PlayerState ps)
 		totalTimer(1);
 	} 
 	if (gm.state == STATE_PAUSE) {
-		totalTimer(1);
+		setPauseTime();
 	}
 }
 

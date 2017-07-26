@@ -411,6 +411,11 @@ void setDeathTime()
 	deadTime = clock();
 }
 
+void setPauseTime()
+{
+	pauseTime = clock();
+}
+
 void countDeath()
 {
 	deaths++;
@@ -427,7 +432,7 @@ void totalTimer(int mode)
 	if (mode == 1) {
 		clockTicksTaken = clock() - startTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		totalSeconds = timeInSeconds * 7.5;
+		totalSeconds = timeInSeconds * 25;
 		totalMinutes = totalSeconds / 60;
 		totalSeconds = totalSeconds % 60;
 	} 
@@ -435,7 +440,7 @@ void totalTimer(int mode)
 	if (mode == 2) {
 		clockTicksTaken = clock() - pauseTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		pauseSeconds = timeInSeconds * 7.5;
+		pauseSeconds = timeInSeconds * 25;
 		pauseMinutes = totalSeconds / 60;
 		pauseSeconds = totalSeconds % 60;
 		totalSeconds = totalSeconds - pauseSeconds;
@@ -445,7 +450,7 @@ void totalTimer(int mode)
 	if (mode == 3) {
 		clockTicksTaken = clock() - thisTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		seconds = timeInSeconds * 7.5;
+		seconds = timeInSeconds * 25;
 		minutes = seconds / 60;
 		seconds = seconds % 60;
 	}
@@ -453,7 +458,7 @@ void totalTimer(int mode)
 	if (mode == 4) {
 		clockTicksTaken = clock() - deadTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		pauseSeconds = timeInSeconds * 7.5;
+		pauseSeconds = timeInSeconds * 25;
 		pauseMinutes = totalSeconds / 60;
 		pauseSeconds = totalSeconds % 60;
 		totalSeconds = totalSeconds - deadSeconds;
