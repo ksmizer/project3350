@@ -400,3 +400,4 @@ PlayerState getPlayerState(Character *p, char keys[])
 	return tmp;
 }
 
+

@@ -128,7 +128,9 @@ int main(void)
 	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	initializeTime();
 	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
+	Enemy testEnemy2(0, 27, 40, 300, 48, 15, 40, 0, 0, -1, 0, 0, 1200, true);
 	enemies.push_back(testEnemy);
+	enemies.push_back(testEnemy2);
 		//initialize sprites
 	for (unsigned int i = 0; i < enemies.size(); i++) 
 		enemies.at(i).initAnimations();
@@ -440,23 +442,21 @@ void check_keys(XEvent *e) {
 void physics(Game *game, PlayerState ps)
 {
 	Character *p;
-	Enemy *e;
 
 	if (game->n <= 0)
 		makeCharacter(&gm, gm.xres/2, gm.yres/2);
 	
 	
 	p = &game->character;
-	e = &enemies.at(0);
 	
 	//Gravity and velocity update
 	p->velocity.y -= GRAVITY;
 	p->s.center.x += p->velocity.x;
 	p->s.center.y += p->velocity.y;
-	
-	e->move();
-	e->checkState();
-	
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		enemies.at(i).move();
+		enemies.at(i).checkState();
+	}
 
 	//kyleS.cpp	
 	movement(game, p, ps, gm.keys);
