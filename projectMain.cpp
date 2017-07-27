@@ -46,6 +46,7 @@ extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, SavePoint *sp);
 //extern void buttonInit(Game *game);
+extern void loadStart(Game *game);
 extern void loadSpikes(Game *game);
 extern void prepSpike(Game *game);
 extern void loadBoxes(Game *game);
@@ -247,37 +248,7 @@ void init_opengl(void)
 	initialize_fonts();
 	
 	//Ppm textures
-	loadBackground(&gm);
-	loadPlatforms(&gm);
-	loadBoxes(&gm);
-	loadSpikes(&gm);
-	loadFlames(&gm);
-
-	//Sprites
-	runAnimation.convertToPpm();
-	runAnimation.createTexture();
-	idleAnimation.convertToPpm();
-	idleAnimation.createTexture();
-	jumpAnimation.convertToPpm();
-	jumpAnimation.createTexture();
-	attackAnimation.convertToPpm();
-	attackAnimation.createTexture();
-	s1.sprite.convertToPpm();
-	s1.sprite.createTexture();
-	//s2.sprite.convertToPpm();
-	//s2.sprite.createTexture();
-	for (unsigned int i = 0; i < enemies.size(); i++) {
-		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
-			enemies.at(i).animations.at(j).convertToPpm();
-			enemies.at(i).animations.at(j).createTexture();
-		}
-	}
-	for (unsigned int j = 0; j < savePoints.size(); j++) {
-		for (unsigned int i = 0; i < 2; i++) {
-			savePoints[j].animations.at(i).convertToPpm();
-			savePoints[j].animations.at(i).createTexture();
-		}
-	}
+	loadStart(&gm);
 }
 
 void makeCharacter(Game *game, int x, int y)
@@ -421,7 +392,7 @@ void check_keys(XEvent *e) {
 					break;
 				case XK_p:
                     if (gm.state == STATE_STARTMENU)
-                        gm.state = STATE_GAMEPLAY;
+                        gm.state = STATE_LOADING;
                     break;
 				case XK_j:
 					playerState = STATE_ATTACK;
@@ -570,6 +541,41 @@ void render(Game *game)
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	if (gm->state == STATE_LOADING) {
+		//textures
+		loadBackground(&gm);
+		loadPlatforms(&gm);
+		loadBoxes(&gm);
+		loadSpikes(&gm);
+		loadFlames(&gm);
+
+		//Sprites
+		runAnimation.convertToPpm();
+		runAnimation.createTexture();
+		idleAnimation.convertToPpm();
+		idleAnimation.createTexture();
+		jumpAnimation.convertToPpm();
+		jumpAnimation.createTexture();
+		attackAnimation.convertToPpm();
+		attackAnimation.createTexture();
+		s1.sprite.convertToPpm();
+		s1.sprite.createTexture();
+		//s2.sprite.convertToPpm();
+		//s2.sprite.createTexture();
+		for (unsigned int i = 0; i < enemies.size(); i++) {
+			for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
+				enemies.at(i).animations.at(j).convertToPpm();
+				enemies.at(i).animations.at(j).createTexture();
+			}
+		}
+		for (unsigned int j = 0; j < savePoints.size(); j++) {
+			for (unsigned int i = 0; i < 2; i++) {
+				savePoints[j].animations.at(i).convertToPpm();
+				savePoints[j].animations.at(i).createTexture();
+			}
+		}
+		gm->state = STATE_GAMEPLAY;
+	}
 	//draw background
 	background(&gm);
 

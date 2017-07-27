@@ -24,7 +24,7 @@ const Flt timeslice = 1.0f;
 const Flt gravity = -0.2f;
 #define PI 3.141592653589793
 #define ALPHA 1
-#define WALK 2.0
+#define WALK 3.0
 #define JUMP 4.0
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900
@@ -78,6 +78,7 @@ struct Hitbox {
 enum State {
 	STATE_NONE,
 	STATE_STARTMENU,
+	STATE_LOADING,
 	STATE_GAMEPLAY,
 	STATE_PAUSE,
 	STATE_CONTROLS,
@@ -89,19 +90,27 @@ public:
 	Ppmimage *background;
 	Ppmimage *box;
 	Ppmimage *spike;
+	Ppmimage *start;
+	Ppmimage *loading;
 	Ppmimage *platform;
 	Ppmimage *flames;
 	GLuint spikeTexture;
+	GLuint startTexture;
+	GLuint loadTexture;
 	GLuint platTexture;
 	GLuint backTexture;
 	GLuint boxTexture;
 	GLuint flamesTexture;
+	Flt xl[2];
+	Flt yl[2];
 	Flt xb[2];
 	Flt yb[2];
 	Flt xB[2];
 	Flt yB[2];
 	Flt xs[2];
 	Flt ys[2];
+	Flt xS[2];
+	Flt yS[2];
 	Flt xp[2];
 	Flt yp[2];
 	Flt xf[2];

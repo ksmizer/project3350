@@ -62,6 +62,7 @@ extern void explosion();
 extern void timer(int mode);
 
 void makeWeapon(Game *game, Character *p);
+void start(Game *game);
 
 void movement(Game *game, Character *p, PlayerState ps, char keys[])
 {
@@ -72,13 +73,13 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x > -WALK)
 				p->velocity.x -= WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x > -WALK * 2)
+				if (p->velocity.x > -WALK * 4/3)
 					p->velocity.x -= WALK / 5;
 			}
 		}
 		else {
 			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = -WALK * 2;
+				p->velocity.x = -WALK * 4/3;
 			else
 				p->velocity.x = -WALK;
 		}
@@ -89,13 +90,13 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x < WALK)
 				p->velocity.x += WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x < WALK * 2)
+				if (p->velocity.x < WALK * 4/3)
 					p->velocity.x += WALK / 5;
 			}
 		}
 		else {
 			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = WALK * 2;
+				p->velocity.x = WALK * 4/3;
 			else
 				p->velocity.x = WALK;
 		}
@@ -688,29 +689,7 @@ void checkStart(Game *gm)
 	Rect r;
 	int c = 0xffffffff;
 	if (gm->state == STATE_STARTMENU) {
-		h = 100.0;
-		w = 200.0;
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 0.0, 0.0);
-		glTranslated(gm->xres/2, gm->yres/2, 0);
-		glBegin(GL_QUADS);
-			glVertex2i(-w, -h);
-			glVertex2i(-w, +h);
-			glVertex2i(+w, +h);
-			glVertex2i(+w, -h);
-		glEnd();
-		glDisable(GL_BLEND);
-		glPopMatrix();
-		r.bot = gm->yres/2 + 80;
-		r.left = gm->xres/2;
-		r.center = 1;
-		ggprint8b(&r, 16, c, "START MENU");
-		r.center = 0;
-		r.left = gm->xres/2 - 100;
-		ggprint8b(&r, 16, c, "P - Play");
-		ggprint8b(&r, 16, c, "TAB - Pause");
+		start(gm);
 	}
 }
 
@@ -765,6 +744,50 @@ void loadBackground(Game *gm)
 	gm->tex.xb[1] = 1.0;
 	gm->tex.yb[0] = 0.0;
 	gm->tex.yb[1] = 1.0;
+}
+
+void loadLoading(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/background.png tmp.ppm");
+	gm->tex.background = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.backTexture);
+	int w = gm->tex.background->width;
+	int h = gm->tex.background->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.background->data);
+	unlink("./tmp.ppm");
+	gm->tex.xb[0] = 0.0;
+	gm->tex.xb[1] = 1.0;
+	gm->tex.yb[0] = 0.0;
+	gm->tex.yb[1] = 1.0;
+}
+
+void loadStart(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/descape.png tmp.ppm");
+	gm->tex.start = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.startTexture);
+	int w = gm->tex.start->width;
+	int h = gm->tex.start->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.startTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.start->data);
+	unlink("./tmp.ppm");
+	gm->tex.xS[0] = 0.0;
+	gm->tex.xS[1] = 1.0;
+	gm->tex.yS[0] = 0.0;
+	gm->tex.yS[1] = 1.0;
 }
 
 void loadPlatforms(Game *gm)
@@ -832,6 +855,23 @@ void loadSpikes(Game *gm)
 	gm->tex.xs[1] = 1.0;
 	gm->tex.ys[0] = 0.0;
 	gm->tex.ys[1] = 1.0;
+}
+
+void start(Game *gm)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.startTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xS[0], gm->tex.yS[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xS[0], gm->tex.yS[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xS[1], gm->tex.yS[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xS[1], gm->tex.yS[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
 }
 
 void background(Game *gm)
