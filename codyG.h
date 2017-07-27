@@ -130,3 +130,4 @@ void moveEnemy(Enemy &e, int xpos, int ypos);
 void renderSprite(SpriteAnimation anim, int x, int y, Flt modifier, bool left);
 void updateSpear(Character *p);
 PlayerState getPlayerState(Character *p, char keys[]);
+void spawnEnemies(int level, vector<Enemy> &enemies);

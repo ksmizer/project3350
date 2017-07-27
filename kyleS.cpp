@@ -45,6 +45,7 @@
 #include "fonts.h"
 #include "codyG.h"
 #include "kyleS.h"
+#include <algorithm>
 //#include "derrickA.h"
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
@@ -141,7 +142,8 @@ void charHurtUpdate(Game *game, Character *p)
 
 void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
-	Enemy *e = &enemies.at(0);
+		
+    	//Enemy *e = &enemies.at(0);
 	charHurtUpdate(game, p);
 	// Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
@@ -153,80 +155,37 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 		spikeRight[i] = s->center.x + s->width + p->s.width;
 		if (p->s.center.y < spikeTop[i] && p->s.center.y > spikeBottom[i]) {
 			if (p->s.center.x > spikeLeft[i] && p->s.center.x < spikeRight[i]) {
-				//Top collision detection
-				if (p->s.center.y < spikeTop[i]
-					&& p->s.center.y > spikeTop[i] - OFFSET
-						&& p->s.center.x < spikeRight[i]
-							&& p->s.center.x > spikeLeft[i]
-								&& p->velocity.y < 0) {
-					if (p->soundChk == true) {
-						p->soundChk = !p->soundChk;
-					}
-					p->s.center.y = spikeTop[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
-				//Bottom collision detection
-				if (p->s.center.y > spikeBottom[i]
-						&& p->s.center.y < spikeBottom[i] + OFFSET
-							&& p->s.center.x < spikeRight[i] - OFFSET
-								&& p->s.center.x > spikeLeft[i] + OFFSET) {
-					p->s.center.y = spikeBottom[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
-				//Right collision detection
-				if (p->s.center.x < spikeRight[i]
-						&& p->s.center.x > s->center.x
-							&& p->s.center.y < spikeTop[i] - OFFSET
-								&& p->s.center.y > spikeBottom[i] + OFFSET) {
-					p->s.center.y = spikeRight[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
-				//Left Collision detection
-				if (p->s.center.x > spikeLeft[i]
-						&& p->s.center.x < s->center.x
-							&& p->s.center.y < spikeTop[i] - OFFSET
-								&& p->s.center.y > spikeBottom[i] + OFFSET) {
-					p->s.center.y = spikeLeft[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
+				p->velocity.y = 0;
+				p->jumpCurrent = 2;
+				spikes();
+				death();
+				game->state = STATE_GAMEOVER;
 			}
 		}
 	}
 	// Enemy collision
-	int enemyHit[4];
-	enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.radius;
-	enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.radius;
-	enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.radius;
-	enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.radius;
-	if (p->s.center.y < enemyHit[0] && p->s.center.y > enemyHit[1]) {
-		if (p->s.center.x < enemyHit[2] && p->s.center.x > enemyHit[3]) {
-			p->velocity.y = 0;
-			p->jumpMax = 0;
-			death();
-			game->state = STATE_GAMEOVER;
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+	    	Enemy *e = &enemies.at(i);
+		int enemyHit[4];
+		enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.radius;
+		enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.radius;
+		enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.radius;
+		enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.radius;
+		if (p->s.center.y < enemyHit[0] && p->s.center.y > enemyHit[1]) {
+			if (p->s.center.x < enemyHit[2] && p->s.center.x > enemyHit[3]) {
+				p->velocity.y = 0;
+				p->jumpMax = 0;
+				death();
+				game->state = STATE_GAMEOVER;
+			}
 		}
 	}
 }
 
-void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
+bool enemyHurt(Game *game, Character *p, Enemy enemy)
 {
-	Enemy *e = &enemies.at(0);
+    	bool kill = false;
+	Enemy *e = &enemy;
 	//Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
 	for (int i = 0; i < 5; i++) {
@@ -237,47 +196,14 @@ void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
 		spikeRight[i] = s->center.x + s->width + e->s.width;
 		if (e->s.center.y < spikeTop[i] && e->s.center.y > spikeBottom[i]) {
 			if (e->s.center.x > spikeLeft[i] && e->s.center.x < spikeRight[i]) {
-				//Top collision detection
-				if (e->s.center.y < spikeTop[i]
-					&& e->s.center.y > spikeTop[i] - OFFSET
-						&& e->s.center.x < spikeRight[i]
-							&& e->s.center.x > spikeLeft[i]) {
-					e->s.center.y = spikeTop[i];
-					e->velocity.y = 0;
-					death();
-				}
-				//Bottom collision detection
-				if (e->s.center.y > spikeBottom[i]
-						&& e->s.center.y < spikeBottom[i] + OFFSET
-							&& e->s.center.x < spikeRight[i] - OFFSET
-								&& e->s.center.x > spikeLeft[i] + OFFSET) {
-					e->s.center.y = spikeBottom[i];
-					e->velocity.y = 0;
-					death();
-				}
-				//Right collision detection
-				if (e->s.center.x < spikeRight[i]
-						&& e->s.center.x > s->center.x
-							&& e->s.center.y < spikeTop[i] - OFFSET
-								&& e->s.center.y > spikeBottom[i] + OFFSET) {
-					e->s.center.y = spikeRight[i];
-					e->velocity.y = 0;
-					death();
-				}
-				//Left Collision detection
-				if (e->s.center.x > spikeLeft[i]
-						&& e->s.center.x < s->center.x
-							&& e->s.center.y < spikeTop[i] - OFFSET
-								&& e->s.center.y > spikeBottom[i] + OFFSET) {
-					e->s.center.y = spikeLeft[i];
-					e->velocity.y = 0;
-					death();
-				}
+				e->s.center.y = spikeTop[i];
+				e->velocity.y = 0;
+				death();
 			}
 		}
 	}
 	//Lance death detection
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 1; i++) {
 		int lance[i][4];
 		lance[i][0] = p->l[i].s.center.y + p->l[i].hit.height + e->s.height;
 		lance[i][1] = p->l[i].s.center.y - p->l[i].hit.height - e->s.height;
@@ -287,12 +213,13 @@ void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
 			if (e->s.center.x < lance[i][2] && e->s.center.x > lance[i][3]) {
 				e->velocity.x = 0;
 				e->killEnemy();
-				//death();
+				kill = true;
 				p->l[i].s.center.x = -50;
 				p->l[i].velocity.x = 0;
 			}
 		}
 	}
+	return kill;
 }
 
 void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
@@ -389,13 +316,13 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 		}
 	}
 	// weapon box collision update
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 2; j++) {
+	for (unsigned int i = 0; i < 10; i++) {
+		for (int j = 0; j < 1; j++) {
 			Shape *s = &game->box[i];
-			boxTop[i] = s->center.y + s->height + p->l[j].s.height;
-			boxBottom[i] = s->center.y - s->height - p->l[j].s.height;
-			boxLeft[i] = s->center.x - s->width - p->l[j].s.width;
-			boxRight[i] = s->center.x + s->width + p->l[j].s.width;
+			boxTop[i] = s->center.y + s->height + W_HEIGHT;
+			boxBottom[i] = s->center.y - s->height - W_HEIGHT;
+			boxLeft[i] = s->center.x - s->width - W_WIDTH;
+			boxRight[i] = s->center.x + s->width + W_WIDTH;
 			if (p->l[j].s.center.x > 0) {
 				if (p->l[j].s.center.y < boxTop[i]
 						&& p->l[j].s.center.y > boxBottom[i]) {
@@ -431,7 +358,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 
 void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 {
-	Enemy *e = &enemies.at(0);
+    for (unsigned int j = 0; j < enemies.size(); j++) {
+	Enemy *e = &enemies.at(j);
 	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
 	for (int i = 0; i < 7; i++) {
 		Shape *s = &game->box[i];
@@ -508,7 +436,12 @@ void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 			}
 		}
 	}
-	enemyHurt(game, p, enemies);
+
+	if (enemyHurt(game, p, enemies.at(j))) {
+	    enemies.erase(enemies.begin() + j);
+	    break;
+	}
+    }
 }
 
 void makeWeapon(Game *game, Character *p)
@@ -833,28 +766,7 @@ void loadBackground(Game *gm)
 	gm->tex.yb[0] = 0.0;
 	gm->tex.yb[1] = 1.0;
 }
-/*
-void loadSpikes(Game *gm)
-{
-	//load the images file into a ppm structure.
-	system("convert images/spikes.png tmp.ppm");
-	gm->tex.spike = ppm6GetImage("./tmp.ppm");
-	//create opengl texture elements
-	glGenTextures(1, gm->tex.spikeTexture);
-	int w = gm->tex.spike->width;
-	int h = gm->tex.spike->height;
-	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
-	unlink("./tmp.ppm");
-	gm->tex.xs[0] = 0.0;
-	gm->tex.xs[1] = 1.0;
-	gm->tex.ys[0] = 0.0;
-	gm->tex.ys[1] = 1.0;
-}
-*/
+
 void loadPlatforms(Game *gm)
 {
 	Game *p = gm;
@@ -912,8 +824,9 @@ void loadSpikes(Game *gm)
 	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
+	gm->tex.spike->data = buildAlphaData(gm->tex.spike);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, gm->tex.spike->data);
 	unlink("./tmp.ppm");
 	gm->tex.xs[0] = 0.0;
 	gm->tex.xs[1] = 1.0;
@@ -961,8 +874,6 @@ void prepSpike(Game *gm)
 	glColor3f(1.0,1.0,1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
 	glEnable(GL_ALPHA_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 }

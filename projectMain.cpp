@@ -107,7 +107,7 @@ vector<Enemy> enemies;
 vector <SavePoint> savePoints;
 
 //spears
-Spear s1, s2;
+Spear s1;//2;
 
 //zombie sprites
 //vector<SpriteAnimation> zombieAnimations;
@@ -129,13 +129,16 @@ int main(void)
 	//initialize enemies
 	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	initializeTime();
-	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
-	enemies.push_back(testEnemy);
+	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
+	//Enemy testEnemy2(0, 27, 40, 300, 48, 15, 40, 0, 0, -1, 0, 0, 1200, true);
+	//enemies.push_back(testEnemy);
+	//enemies.push_back(testEnemy2);
+	
 		//initialize sprites
-	for (unsigned int i = 0; i < enemies.size(); i++) 
-		enemies.at(i).initAnimations();
+//	for (unsigned int i = 0; i < enemies.size(); i++) 
+//		enemies.at(i).initAnimations();
 	s1.initAnimations();
-	s2.initAnimations();
+	//s2.initAnimations();
 	
 	SavePoint sp1(200, 59, false);
 	savePoints.push_back(sp1);
@@ -145,6 +148,8 @@ int main(void)
 	background_music();
 	srand(time(NULL));
 	initXWindows();
+	
+	spawnEnemies(lev.levelID, enemies);
 	init_opengl();
 	gm.n = 0; 
 	
@@ -256,8 +261,8 @@ void init_opengl(void)
 	attackAnimation.createTexture();
 	s1.sprite.convertToPpm();
 	s1.sprite.createTexture();
-	s2.sprite.convertToPpm();
-	s2.sprite.createTexture();
+	//s2.sprite.convertToPpm();
+	//s2.sprite.createTexture();
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
 			enemies.at(i).animations.at(j).convertToPpm();
@@ -365,7 +370,6 @@ void check_keys(XEvent *e) {
                 gm.keys[key] = 1;
                 if (gm.keys[XK_Shift_L] || gm.keys[XK_Shift_R]) {
 					shift = 1;
-					return;
 				}
 		if (gm.state == STATE_GAMEOVER) {
 					if (gm.keys[XK_r] || gm.keys[XK_R]) {
@@ -418,7 +422,7 @@ void check_keys(XEvent *e) {
 				case XK_j:
 					playerState = STATE_ATTACK;
 					s1.initSpearDirection(gm.character);
-					s2.initSpearDirection(gm.character);
+					//s2.initSpearDirection(gm.character);
 					break;
 				case XK_t:
 					if (enemies.size() > 0)
@@ -443,24 +447,23 @@ void check_keys(XEvent *e) {
 
 void physics(Game *game, PlayerState ps)
 {
+    	//spawnEnemies(lev.levelID, enemies);
 	Character *p;
-	Enemy *e;
 
 	if (game->n <= 0)
 		makeCharacter(&gm, gm.xres/2, gm.yres/2);
 	
 	
 	p = &game->character;
-	e = &enemies.at(0);
 	
 	//Gravity and velocity update
 	p->velocity.y -= GRAVITY;
 	p->s.center.x += p->velocity.x;
 	p->s.center.y += p->velocity.y;
-	
-	e->move();
-	e->checkState();
-	
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		enemies.at(i).move();
+		enemies.at(i).checkState();
+	}
 
 	//kyleS.cpp	
 	movement(game, p, ps, gm.keys);
@@ -474,10 +477,13 @@ void physics(Game *game, PlayerState ps)
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
 		loadLevel(&gm, &lev);
+		spawnEnemies(lev.levelID, enemies);
+		//enemies.at(0).initAnimations();
 		//game->n--;
 	}
 	if (p->s.center.x < 0.1 || p->s.center.x > gm.xres) {
 		loadLevel(&gm, &lev);
+		spawnEnemies(lev.levelID, enemies);
 		//game->n--;
 	}
 
@@ -525,8 +531,8 @@ void physics(Game *game, PlayerState ps)
 	}
 
 	s1.sprite.enable();
-	s2.sprite.enable();
-//	s1.sprite.updateAnimation();
+	//s2.sprite.enable();
+	s1.sprite.updateAnimation();
 //	s2.sprite.updateAnimation();
 	updateSpear(&game->character);
 	
@@ -610,11 +616,11 @@ void render(Game *game)
 		game->character.s.center.y, 1.0, game->character.isLeft);
 	renderSprite(s1.sprite, game->character.l[0].s.center.x, 
 		game->character.l[1].s.center.y, 1.0, s1.checkIsLeft());
-	renderSprite(s2.sprite, game->character.l[0].s.center.x, 
-		game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
+	//renderSprite(s2.sprite, game->character.l[0].s.center.x, 
+	//	game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
-			renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
+		    	renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
 				enemies.at(i).getY(), 1.0, enemies.at(i).checkIsLeft());
 		}
 	}

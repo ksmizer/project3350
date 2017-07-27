@@ -441,7 +441,6 @@ void drawLevel3(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -646,7 +645,6 @@ void drawLevel4(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 
 	//set up spike	2
@@ -670,7 +668,6 @@ void drawLevel4(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 
 	//set up spike	3
 	Shape *spike3;
@@ -693,7 +690,6 @@ void drawLevel4(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -1054,7 +1050,6 @@ void drawLevel5(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 	//set up spike	2
 	Shape *spike2;
@@ -1077,7 +1072,6 @@ void drawLevel5(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 
 	//set up spike	3
 	Shape *spike3;
@@ -1100,7 +1094,6 @@ void drawLevel5(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -1555,7 +1548,6 @@ void drawLevel6(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -1957,8 +1949,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 	//set up spike	
@@ -1982,7 +1974,6 @@ void drawLevel8(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 
 	//set up spike2	
 	Shape *spike2;
@@ -2005,7 +1996,6 @@ void drawLevel8(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 	//set up spike3	
 	Shape *spike3;
@@ -2028,7 +2018,6 @@ void drawLevel8(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -2049,8 +2038,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2072,8 +2061,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2096,8 +2085,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2110,6 +2099,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test5->center.x, test5->center.y, test5->center.z);
 	w = test5->width;
 	h = test5->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2119,8 +2109,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2133,6 +2123,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test6->center.x, test6->center.y, test6->center.z);
 	w = test6->width;
 	h = test6->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2142,8 +2133,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2156,6 +2147,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test7->center.x, test7->center.y, test7->center.z);
 	w = test7->width;
 	h = test7->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2165,8 +2157,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2179,6 +2171,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test8->center.x, test8->center.y, test8->center.z);
 	w = test8->width;
 	h = test8->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2188,8 +2181,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2202,6 +2195,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test9->center.x, test9->center.y, test9->center.z);
 	w = test9->width;
 	h = test9->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2211,8 +2205,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2225,6 +2219,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test10->center.x, test10->center.y, test10->center.z);
 	w = test10->width;
 	h = test10->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2234,8 +2229,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2248,6 +2243,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test11->center.x, test11->center.y, test11->center.z);
 	w = test11->width;
 	h = test11->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2257,8 +2253,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2271,6 +2267,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test12->center.x, test12->center.y, test12->center.z);
 	w = test12->width;
 	h = test12->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2280,8 +2277,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
@@ -2294,6 +2291,7 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test13->center.x, test13->center.y, test13->center.z);
 	w = test13->width;
 	h = test13->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 			glVertex2i(-w,-h);
@@ -2303,8 +2301,8 @@ void drawLevel8(Game *gm, Level *lev)
 			glVertex2i( w, h);
 		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
 			glVertex2i( w,-h);
-			glEnd();	
-			glPopMatrix();
+	glEnd();	
+	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
 
