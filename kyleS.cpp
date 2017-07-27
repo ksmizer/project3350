@@ -824,8 +824,9 @@ void loadSpikes(Game *gm)
 	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
+	gm->tex.spike->data = buildAlphaData(gm->tex.spike);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, gm->tex.spike->data);
 	unlink("./tmp.ppm");
 	gm->tex.xs[0] = 0.0;
 	gm->tex.xs[1] = 1.0;
@@ -870,11 +871,9 @@ void prepBox(Game *gm)
 
 void prepSpike(Game *gm)
 {
-	//glColor3f(1.0,1.0,1.0);
+	glColor3f(1.0,1.0,1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
 	glEnable(GL_ALPHA_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 }

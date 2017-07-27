@@ -51,7 +51,7 @@ SpriteAnimation::SpriteAnimation(char* name, int maxr, int maxc,
 {
 	enabled = false;
 	loop = l;
-	sheetName = name;
+	sheetName =  name;
 	spriteSheet = NULL;
 	maxRow = maxr;
 	maxColumn = maxc;
@@ -90,8 +90,7 @@ void SpriteAnimation::convertToPpm()
 	strcpy(command, "convert ./images/");
 	strcat(command, sheetName);
 	strcat(command, " ");
-	strcpy(sheetNamePpm, "");
-	strcat(sheetNamePpm, sheetName);
+	strcpy(sheetNamePpm, sheetName);
 	sheetNamePpm[strlen(sheetNamePpm) - 4] = 0;
 	strcat(sheetNamePpm, ".ppm");
 	strcat(command, sheetNamePpm);
