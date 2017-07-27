@@ -89,7 +89,6 @@ void SpriteAnimation::convertToPpm()
 	strcpy(command, "convert ./images/");
 	strcat(command, sheetName);
 	strcat(command, " ");
-	//strcpy(sheetNamePpm, "");
 	strcpy(sheetNamePpm, sheetName);
 	sheetNamePpm[strlen(sheetNamePpm) - 4] = 0;
 	strcat(sheetNamePpm, ".ppm");
