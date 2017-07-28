@@ -44,7 +44,7 @@ void render(Game *game);
 extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
-extern void savePointCheck(Character *p, SavePoint *sp);
+extern void savePointCheck(Character *p, vector<SavePoint>& sp);
 //extern void buttonInit(Game *game);
 extern void loadBoxes(Game *game);
 extern void prepBox(Game *game);
@@ -100,9 +100,10 @@ Level lev;
 //declare button object
 Button button[MAXBUTTONS];
 
-//test enemy
+//vectors
 vector<Enemy> enemies;
-vector <SavePoint> savePoints;
+vector<SavePoint> savePoints;
+vector<SpriteAnimation> decorations;
 
 //spears
 Spear s1, s2;
@@ -122,6 +123,9 @@ SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 //SpriteAnimation zombieAnimation((char*)"zombie.png", 1, 5, 5, 0, 3,
 	//27, 40, 0.1, true);
 
+bool newLevel = false;
+
+
 int main(void)
 {
 	//initialize enemies
@@ -132,22 +136,25 @@ int main(void)
 	//enemies.push_back(testEnemy);
 	//enemies.push_back(testEnemy2);
 	
-		//initialize sprites
-//	for (unsigned int i = 0; i < enemies.size(); i++) 
-//		enemies.at(i).initAnimations();
+	//spawnEnemies(lev.levelID, enemies);
+		//initialize sprites/
+	//	for (unsigned int i = 0; i < enemies.size(); i++) 
+			//enemies.at(i).initAnimations();
 	s1.initAnimations();
 	s2.initAnimations();
 	
-	SavePoint sp1(200, 59, false);
+	SavePoint sp1(100, 59, false);
+	SavePoint sp2(100, 59, false);
 	savePoints.push_back(sp1);
+	savePoints.push_back(sp2);
 	savePoints.at(0).initAnimations();
+	savePoints.at(1).initAnimations();
 	#ifdef USE_OPENAL_SOUND
 	initialize_sound();
 	background_music();
 	srand(time(NULL));
 	initXWindows();
 	
-	spawnEnemies(lev.levelID, enemies);
 	init_opengl();
 	gm.n = 0; 
 	
@@ -173,7 +180,11 @@ int main(void)
 		}
 		if (gm.state == STATE_GAMEPLAY)
 			physics(&gm, playerState);
-
+		if (newLevel) {
+			spawnEntities(lev.levelID, enemies, savePoints, decorations);
+			//spawnEnemies(lev.levelID, enemies);
+			newLevel = false;
+		}
 		render(&gm);
 		glXSwapBuffers(dpy, win);
 	}
@@ -259,6 +270,8 @@ void init_opengl(void)
 	s1.sprite.createTexture();
 	s2.sprite.convertToPpm();
 	s2.sprite.createTexture();
+	if (enemies.size() > 0)
+		printf("SIZE: %i\n", (int)enemies.at(0).animations.size());
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
 			enemies.at(i).animations.at(j).convertToPpm();
@@ -283,9 +296,14 @@ void makeCharacter(Game *game, int x, int y)
 	p->s.center.x = p->hurt.center.x = x;
 	p->s.center.y = p->hurt.center.y = y;
 	for (unsigned int i = 0; i < savePoints.size(); i++) {
-		if (savePoints.at(i).checkIsEnabled())
+		if (savePoints.at(i).checkIsEnabled()) {
 			movePlayer(game->character, savePoints.at(i).getX(),
 				savePoints.at(i).getY());
+			if (getSavePointLevel(savePoints) > 0) {
+				lev.levelID = getSavePointLevel(savePoints);
+				loadLevel(game, &lev);
+			}
+		}
 	}
 	p->velocity.y = 0;
 	p->velocity.x = 0;
@@ -303,6 +321,7 @@ void makeCharacter(Game *game, int x, int y)
 	game->n++;
 	p->isLeft = false;
 	playerState = STATE_IDLE;
+	newLevel = true;
 }
 
 void check_mouse(XEvent *e)
@@ -407,6 +426,7 @@ void check_keys(XEvent *e) {
 						{
 							lev.levelID = 1;
 							loadLevel(&gm, &lev);
+							newLevel = true;
 							movePlayer(gm.character, savePoints.at(i).getX(), 
 							savePoints.at(i).getY());
 						}
@@ -433,9 +453,11 @@ void check_keys(XEvent *e) {
 					break;
 				case XK_0:
 					nextLevel(&gm, &lev);
+					spawnEntities(lev.levelID, enemies, savePoints, decorations);
 					break;
 				case XK_9:
 					previousLevel(&gm, &lev);
+					spawnEntities(lev.levelID, enemies, savePoints, decorations);
 					break;
 					
         }
@@ -444,7 +466,7 @@ void check_keys(XEvent *e) {
 
 void physics(Game *game, PlayerState ps)
 {
-    	//spawnEnemies(lev.levelID, enemies);
+	
 	Character *p;
 
 	if (game->n <= 0)
@@ -466,7 +488,7 @@ void physics(Game *game, PlayerState ps)
 	movement(game, p, ps, gm.keys);
 	charCollision(game, p, enemies);
 	enemyCollision(game, p, enemies);
-	savePointCheck(p, &savePoints.at(0));
+	savePointCheck(p, savePoints);
 	if (!gm.button[0].r.width) {
 		//buttonInit(game);
 	}
@@ -474,13 +496,14 @@ void physics(Game *game, PlayerState ps)
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
 		loadLevel(&gm, &lev);
-		spawnEnemies(lev.levelID, enemies);
-		//enemies.at(0).initAnimations();
+		newLevel = true;
+		//spawnEnemies(lev.levelID, enemies);
 		//game->n--;
 	}
 	if (p->s.center.x < 0.1 || p->s.center.x > gm.xres) {
 		loadLevel(&gm, &lev);
-		spawnEnemies(lev.levelID, enemies);
+		//spawnEnemies(lev.levelID, enemies);
+		newLevel = true;
 		//game->n--;
 	}
 
@@ -532,7 +555,16 @@ void physics(Game *game, PlayerState ps)
 //	s1.sprite.updateAnimation();
 //	s2.sprite.updateAnimation();
 	updateSpear(&game->character);
-	
+
+	for (unsigned int i = 0; i < savePoints.size(); i++) {
+		for (unsigned int j = 0; j < savePoints.at(i).animations.size(); j++) {
+			savePoints.at(i).animations.at(j).updateAnimation();
+			if (savePoints.at(i).checkIsEnabled()) {
+			}
+		}
+	}
+	checkSavePoints(lev.levelID, savePoints);
+	/*
 	if (savePoints.at(0).checkIsEnabled() && lev.levelID == 1) {
 		savePoints.at(0).animations.at(0).disable();
 		savePoints.at(0).animations.at(1).enable();
@@ -546,7 +578,7 @@ void physics(Game *game, PlayerState ps)
 	if (lev.levelID != 1)
 		savePoints.at(0).animations.at(0).disable();
 		savePoints.at(0).animations.at(1).disable();
-	}
+	}*/
 	if (gm.state == STATE_GAMEOVER) {
 		setDeathTime();
 		countDeath();

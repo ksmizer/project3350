@@ -531,18 +531,27 @@ void makeWeapon(Game *game, Character *p)
 	}
 }
 
-void savePointCheck(Character *p, SavePoint *sp)
+void savePointCheck(Character *p, vector<SavePoint> &sp)
 {
-	int x = sp->getX();
-	int y = sp->getY();
-	int charTop, charBottom, charLeft, charRight;
-	charTop = y + p->s.height;
-	charBottom = y - p->s.height;
-	charLeft = x - p->s.width;
-	charRight = x + p->s.width;
-	if (p->s.center.y < charTop && p->s.center.y > charBottom) {
-		if (p->s.center.x > charLeft && p->s.center.x < charRight) {
-			sp->enable();
+	for (unsigned int i = 0; i < sp.size(); i++) {
+		if (sp.at(i).animations.at(0).isEnabled() ||
+			sp.at(i).animations.at(1).isEnabled())
+		{
+			int x = sp.at(i).getX();
+			int y = sp.at(i).getY();
+			int charTop, charBottom, charLeft, charRight;
+			charTop = y + p->s.height;
+			charBottom = y - p->s.height;
+			charLeft = x - p->s.width;
+			charRight = x + p->s.width;
+			if (p->s.center.y < charTop && p->s.center.y > charBottom) {
+				if (p->s.center.x > charLeft && p->s.center.x < charRight) {
+					sp.at(i).enable();
+					for (unsigned int j = 0; j < sp.size(); j++)
+						if (j != i)
+							sp.at(j).disable();
+				}
+			}
 		}
 	}
 }
