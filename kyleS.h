@@ -24,7 +24,8 @@ const Flt timeslice = 1.0f;
 const Flt gravity = -0.2f;
 #define PI 3.141592653589793
 #define ALPHA 1
-#define WALK 3.0
+#define WALK 2.5
+#define RUN 4.0
 #define JUMP 4.0
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900

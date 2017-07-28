@@ -1,6 +1,6 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/23/17
+ *Last Modified: 7/27/17
  *Project: Dungeon Escape
  * --------------------------------------------------------------------------
  *Week 4: Created SpriteAnimation class and functionality to add generic
@@ -27,6 +27,8 @@
  * "kill" enemy with this. Spawn player at savepoint when respawning. Changed
  * enemy behavior, including bounds and turning when colliding with object.
  * --------------------------------------------------------------------------
+ *Week 9: Added Enemy spawner which clears enemy vector and adds specific
+ * enemies depending on the level.
  */
 
 #include "codyG.h"
@@ -96,7 +98,6 @@ void SpriteAnimation::convertToPpm()
 	strcat(command, sheetNamePpm);
 
 	system(command);
-	printf("NAME: **%s**\n", sheetNamePpm);
 	spriteSheet = ppm6GetImage(sheetNamePpm);
 }
 
@@ -223,20 +224,32 @@ void Enemy::move()
 void Enemy::flipDirection() 
 { 
 	velocity.x = -velocity.x; 
-	if (velocity.x < 0)
+	if (velocity.x < 0 && type == 0)
 		isLeft = true;
-	else
+	else if (velocity.x > 0 && type == 0)
 		isLeft = false;
+	if (velocity.x < 0 && type == 1)
+		isLeft = false;
+	else if (velocity.x > 0 && type == 1)
+		isLeft = true;
 }
 
 void Enemy::initAnimations()
 {
 	animations.clear();
+	/*
+	* TYPES
+	* 0 = Zombie
+	* 1 = Goblin
+	*/
 	if (type == 0) {
 		SpriteAnimation anim((char*)"zombie.png", 1, 5, 5, 0, 3, 27, 40, 0.1, true);
 		animations.push_back(anim);
 	}
-	printf("TESTING\n");
+	if (type == 1) {
+		SpriteAnimation anim((char*)"goblin.png", 1, 3, 3, 0, 2, 32, 27, 0.1, true);
+		animations.push_back(anim);
+	}
 }
 
 void Enemy::killEnemy()
@@ -402,14 +415,74 @@ PlayerState getPlayerState(Character *p, char keys[])
 	return tmp;
 }
 
-void spawnEnemies(int level, vector<Enemy> &e) 
+
+void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s, 
+	vector<SpriteAnimation> &d) 
 {
-    if (level == 1) {
-	Enemy e1(0,27,40,400,48,15,40,0,0,1,0,0,1200,false);
-	Enemy e2(0,27,40,300,48,15,40,0,0,-1,0,0,1200,true);
-	e1.initAnimations();
-	e2.initAnimations();
-	e.push_back(e1);
-	e.push_back(e2);
+	e.clear();
+	//disable all savepoint sprites
+	for (unsigned int i = 0; i < s.size(); i++) {
+		for (int j = 0 ; j < 2; j++) {
+			s.at(i).animations.at(j).disable();
+		}
+	}
+
+    if (level == 2) {
+		Enemy e1(0,27,40,400,48,15,40,0,0,1,0,0,1200,false);
+		Enemy e2(0,27,40,300,48,15,40,0,0,-1,0,0,1200,true);
+		e.push_back(e1);
+		e.push_back(e2);
     }
+
+	if (level == 3) {
+		Enemy e1(0,27,40,400,48,15,40,0,0,1,0,0,1200,false);
+		e.push_back(e1);
+		//if (s.at(0).checkIsEnabled())
+	//		s.at(0).animations.at(1).enable();
+//		else
+//			s.at(0).animations.at(0).enable();
+	}
+
+	if (level == 4) {
+		Enemy e1(1,32,27,500,48,26,27,0,0,-4,0,0,1200,false);
+		e.push_back(e1);
+	}
+
+	for (unsigned int i = 0; i < e.size(); i++) {
+		e.at(i).initAnimations();
+		for (unsigned int j = 0; j < e.at(i).animations.size(); j++) {
+			e.at(i).animations.at(j).convertToPpm();
+			e.at(i).animations.at(j).createTexture();
+		}
+	}
+}
+
+void checkSavePoints(int level, vector<SavePoint> &s)
+{
+	for (unsigned int i = 0; i < s.size(); i++) {
+		for (int j = 0; j < 2; j++) {
+			s.at(i).animations.at(j).disable();	
+		}	
+	}	
+	if (level == 3) {
+		if (s.at(0).checkIsEnabled())
+			s.at(0).animations.at(1).enable();
+		else
+			s.at(0).animations.at(0).enable();
+	}
+	if (level == 5) {
+		if (s.at(1).checkIsEnabled())
+			s.at(1).animations.at(1).enable();
+		else
+			s.at(1).animations.at(0).enable();
+	}
+}
+
+int getSavePointLevel(vector<SavePoint> &s) 
+{
+	if (s.at(0).checkIsEnabled())
+		return 3;
+	else if (s.at(1).checkIsEnabled())
+		return 5;
+	return -1;
 }

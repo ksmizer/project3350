@@ -74,18 +74,17 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x > -WALK)
 				p->velocity.x -= WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x > -WALK * 4/3)
+				if (p->velocity.x > -RUN)
 					p->velocity.x -= WALK / 5;
 			}
 		}
 		else {
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x >= -WALK * 4/3)
-					p->velocity.x += -WALK * 1/3;
+					p->velocity.x = -RUN;
 			}
-			else
-				if (p->velocity.x >= -WALK)
-					p->velocity.x += -WALK * 1/3;
+			else {
+					p->velocity.x = -WALK;
+			}
 		}
 	}
 	if (keys[XK_Right] || keys[XK_D] || keys[XK_d]) {
@@ -94,17 +93,17 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x < WALK)
 				p->velocity.x += WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x < WALK * 4/3)
+				if (p->velocity.x < RUN)
 					p->velocity.x += WALK / 5;
 			}
 		}
 		else {
-			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				if (p->velocity.x <= WALK * 4/3)
-					p->velocity.x += WALK * 1/3;
-			else
-				if (p->velocity.x <= WALK)
-					p->velocity.x += WALK * 1/3;
+			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+					p->velocity.x = RUN;
+			}
+			else {
+					p->velocity.x = WALK;
+			}
 		}
 	}
 	if (keys[XK_Up] ||  keys[XK_W] || keys[XK_w]) {
@@ -472,18 +471,27 @@ void makeWeapon(Game *game, Character *p)
 	}
 }
 
-void savePointCheck(Character *p, SavePoint *sp)
+void savePointCheck(Character *p, vector<SavePoint> &sp)
 {
-	int x = sp->getX();
-	int y = sp->getY();
-	int charTop, charBottom, charLeft, charRight;
-	charTop = y + p->s.height;
-	charBottom = y - p->s.height;
-	charLeft = x - p->s.width;
-	charRight = x + p->s.width;
-	if (p->s.center.y < charTop && p->s.center.y > charBottom) {
-		if (p->s.center.x > charLeft && p->s.center.x < charRight) {
-			sp->enable();
+	for (unsigned int i = 0; i < sp.size(); i++) {
+		if (sp.at(i).animations.at(0).isEnabled() ||
+			sp.at(i).animations.at(1).isEnabled())
+		{
+			int x = sp.at(i).getX();
+			int y = sp.at(i).getY();
+			int charTop, charBottom, charLeft, charRight;
+			charTop = y + p->s.height;
+			charBottom = y - p->s.height;
+			charLeft = x - p->s.width;
+			charRight = x + p->s.width;
+			if (p->s.center.y < charTop && p->s.center.y > charBottom) {
+				if (p->s.center.x > charLeft && p->s.center.x < charRight) {
+					sp.at(i).enable();
+					for (unsigned int j = 0; j < sp.size(); j++)
+						if (j != i)
+							sp.at(j).disable();
+				}
+			}
 		}
 	}
 }
@@ -698,8 +706,10 @@ void checkStart(Game *gm)
 
 void checkLoading(Game *gm)
 {
-	if (gm->state == STATE_LOADING)
+	if (gm->state == STATE_LOADING) {
 		loading(gm);
+		sleep(2);
+	}
 }
 
 void checkGameOver(Game *gm)
