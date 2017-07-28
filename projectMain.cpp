@@ -46,6 +46,8 @@ extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, SavePoint *sp);
 //extern void buttonInit(Game *game);
+extern void loadLoading(Game *game);
+extern void loading(Game *game);
 extern void loadStart(Game *game);
 extern void loadSpikes(Game *game);
 extern void prepSpike(Game *game);
@@ -59,6 +61,7 @@ extern void platBind(Game *game);
 extern void checkPause(Game *game);
 extern void checkControl(Game *game);
 extern void checkStart(Game *game);
+extern void checkLoading(Game *game);
 extern void checkGameOver(Game *game);
 extern void charHurt(Game *game, Character *p);
 extern void mouseClick(Game *game, int ibutton, int action, int x, int y);
@@ -249,6 +252,7 @@ void init_opengl(void)
 	
 	//Ppm textures
 	loadStart(&gm);
+	loadLoading(&gm);
 }
 
 void makeCharacter(Game *game, int x, int y)
@@ -391,8 +395,12 @@ void check_keys(XEvent *e) {
 					}
 					break;
 				case XK_p:
-                    if (gm.state == STATE_STARTMENU)
+                    if (gm.state == STATE_STARTMENU) {
+						loadLoading(&gm);
+						checkLoading(&gm);
+						sleep(2);
                         gm.state = STATE_LOADING;
+					}
                     break;
 				case XK_j:
 					playerState = STATE_ATTACK;
@@ -541,7 +549,8 @@ void render(Game *game)
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	if (gm->state == STATE_LOADING) {
+	if (gm.state == STATE_LOADING) {
+
 		//textures
 		loadBackground(&gm);
 		loadPlatforms(&gm);
@@ -574,7 +583,7 @@ void render(Game *game)
 				savePoints[j].animations.at(i).createTexture();
 			}
 		}
-		gm->state = STATE_GAMEPLAY;
+		gm.state = STATE_GAMEPLAY;
 	}
 	//draw background
 	background(&gm);
@@ -643,6 +652,7 @@ void render(Game *game)
 
 	//Check Game States
 	checkStart(&gm);
+	checkLoading(&gm);
 	checkControl(&gm);
 	checkPause(&gm);
 	checkGameOver(&gm);

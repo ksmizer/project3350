@@ -63,6 +63,7 @@ extern void timer(int mode);
 
 void makeWeapon(Game *game, Character *p);
 void start(Game *game);
+void loading(Game *game);
 
 void movement(Game *game, Character *p, PlayerState ps, char keys[])
 {
@@ -78,10 +79,13 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			}
 		}
 		else {
-			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = -WALK * 4/3;
+			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+				if (p->velocity.x >= -WALK * 4/3)
+					p->velocity.x += -WALK * 1/3;
+			}
 			else
-				p->velocity.x = -WALK;
+				if (p->velocity.x >= -WALK)
+					p->velocity.x += -WALK * 1/3;
 		}
 	}
 	if (keys[XK_Right] || keys[XK_D] || keys[XK_d]) {
@@ -96,9 +100,11 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 		}
 		else {
 			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = WALK * 4/3;
+				if (p->velocity.x <= WALK * 4/3)
+					p->velocity.x += WALK * 1/3;
 			else
-				p->velocity.x = WALK;
+				if (p->velocity.x <= WALK)
+					p->velocity.x += WALK * 1/3;
 		}
 	}
 	if (keys[XK_Up] ||  keys[XK_W] || keys[XK_w]) {
@@ -685,12 +691,15 @@ void checkPause(Game *gm)
 
 void checkStart(Game *gm)
 {
-	Flt h, w;
-	Rect r;
-	int c = 0xffffffff;
 	if (gm->state == STATE_STARTMENU) {
 		start(gm);
 	}
+}
+
+void checkLoading(Game *gm)
+{
+	if (gm->state == STATE_LOADING)
+		loading(gm);
 }
 
 void checkGameOver(Game *gm)
@@ -750,22 +759,22 @@ void loadLoading(Game *gm)
 {
 	Game *p = gm;
 	//load the images file into a ppm structure.
-	system("convert images/background.png tmp.ppm");
-	gm->tex.background = ppm6GetImage("./tmp.ppm");
+	system("convert images/loading.png tmp.ppm");
+	gm->tex.loading = ppm6GetImage("./tmp.ppm");
 	//create opengl texture elements
-	glGenTextures(1, &p->tex.backTexture);
-	int w = gm->tex.background->width;
-	int h = gm->tex.background->height;
-	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
+	glGenTextures(1, &p->tex.loadTexture);
+	int w = gm->tex.loading->width;
+	int h = gm->tex.loading->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.loadTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.background->data);
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.loading->data);
 	unlink("./tmp.ppm");
-	gm->tex.xb[0] = 0.0;
-	gm->tex.xb[1] = 1.0;
-	gm->tex.yb[0] = 0.0;
-	gm->tex.yb[1] = 1.0;
+	gm->tex.xl[0] = 0.0;
+	gm->tex.xl[1] = 1.0;
+	gm->tex.yl[0] = 0.0;
+	gm->tex.yl[1] = 1.0;
 }
 
 void loadStart(Game *gm)
@@ -870,6 +879,23 @@ void start(Game *gm)
 		glTexCoord2f(gm->tex.xS[1], gm->tex.yS[0]);
 			glVertex2i(gm->xres, gm->yres);
 		glTexCoord2f(gm->tex.xS[1], gm->tex.yS[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
+}
+
+void loading(Game *gm)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.loadTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xl[0], gm->tex.yl[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xl[0], gm->tex.yl[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xl[1], gm->tex.yl[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xl[1], gm->tex.yl[1]);
 			glVertex2i(gm->xres, 0); 
 	glEnd();
 }
