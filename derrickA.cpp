@@ -533,10 +533,26 @@ void drawLevel3(Game *gm, Level *lev)
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 
+	
+
+	//draw test plat 6
+	Shape *test6;
+	glColor3ub(80,110,70);
+	test6 = &gm->plat[5];
+	glPushMatrix();
+	glTranslatef(test6->center.x, test6->center.y, test6->center.z);
+	w = test6->width;
+	h = test6->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	
 	}
-
-
-
 }
 
 
@@ -573,8 +589,13 @@ void setLevel3(Game *gm, Level *lev)
         gm->plat[4].center.x = gm->xres/2 + 160;
         gm->plat[4].center.y = 200;
 
+		gm->plat[5].width = 50;
+		gm->plat[5].height = 15;
+		gm->plat[5].center.x = 300;
+		gm->plat[5].center.y = 110;
+
         //test spikes
-        gm->spike[0].width = 350;
+        gm->spike[0].width = 250;
         gm->spike[0].height = 15;
         gm->spike[0].center.x = gm->xres - 600;
         gm->spike[0].center.y = 110;
@@ -984,9 +1005,9 @@ void setLevel4(Game *gm, Level *lev)
         gm->spike[1].center.y = 400;
 
         //test spikes 3
-        gm->spike[2].width = 350;
+        gm->spike[2].width = 50;
         gm->spike[2].height = 15;
-        gm->spike[2].center.x = gm->xres -600;
+        gm->spike[2].center.x = 300;//gm->xres -600;
         gm->spike[2].center.y = 110;
 
 	//wall blocking right door	

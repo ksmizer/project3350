@@ -44,7 +44,7 @@ void render(Game *game);
 extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
-extern void savePointCheck(Character *p, SavePoint *sp);
+extern void savePointCheck(Character *p, vector<SavePoint>& sp);
 //extern void buttonInit(Game *game);
 extern void loadSpikes(Game *game);
 extern void prepSpike(Game *game);
@@ -102,9 +102,11 @@ Level lev;
 //declare button object
 Button button[MAXBUTTONS];
 
-//test enemy
+//vectors
 vector<Enemy> enemies;
-vector <SavePoint> savePoints;
+vector<SavePoint> savePoints;
+vector<SpriteAnimation> decorations;
+vector<Upgrade> upgrade;
 
 //spears
 Spear s1, s2;
@@ -121,30 +123,54 @@ SpriteAnimation jumpAnimation((char*)"player.png", 1, 12, 12, 8, 8,
 	46, 50, 0.1, true);
 SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 	46, 50, 0.1, false);
+SpriteAnimation runAnimation2((char*)"greenArmor.png", 1, 12, 12, 1, 6, 
+	36, 40, 0.1, true); 
+SpriteAnimation idleAnimation2((char*)"greenArmor.png", 1, 12, 12, 0, 0, 
+	36, 40, 0.1, true);
+SpriteAnimation jumpAnimation2((char*)"greenArmor.png", 1, 12, 12, 8, 8,
+	36, 40, 0.1, true);
+SpriteAnimation attackAnimation2((char*)"greenArmor.png", 1, 12, 12, 8, 10,
+	36, 40, 0.1, false);
+
+
 //SpriteAnimation zombieAnimation((char*)"zombie.png", 1, 5, 5, 0, 3,
 	//27, 40, 0.1, true);
+
+bool newLevel = false;
+
 
 int main(void)
 {
 	//initialize enemies
 	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	initializeTime();
-	Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
-	enemies.push_back(testEnemy);
-		//initialize sprites
-	for (unsigned int i = 0; i < enemies.size(); i++) 
-		enemies.at(i).initAnimations();
+	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
+	//Enemy testEnemy2(0, 27, 40, 300, 48, 15, 40, 0, 0, -1, 0, 0, 1200, true);
+	//enemies.push_back(testEnemy);
+	//enemies.push_back(testEnemy2);
+	
+	//spawnEnemies(lev.levelID, enemies);
+		//initialize sprites/
+	//	for (unsigned int i = 0; i < enemies.size(); i++) 
+			//enemies.at(i).initAnimations();
+	spawnEntities(0, enemies, savePoints, decorations, upgrade);
 	s1.initAnimations();
 	s2.initAnimations();
-	
-	SavePoint sp1(200, 59, false);
+	SavePoint sp1(100, 59, false);
+	SavePoint sp2(100, 59, false);
 	savePoints.push_back(sp1);
+	savePoints.push_back(sp2);
 	savePoints.at(0).initAnimations();
+	savePoints.at(1).initAnimations();
+	Upgrade u1(300, 48, true, "Jumping Armor", "Allows you to double jump");
+	upgrade.push_back(u1);
+	upgrade.at(0).initAnimation();
 	#ifdef USE_OPENAL_SOUND
 	initialize_sound();
 	background_music();
 	srand(time(NULL));
 	initXWindows();
+	
 	init_opengl();
 	gm.n = 0; 
 	
@@ -170,7 +196,11 @@ int main(void)
 		}
 		if (gm.state == STATE_GAMEPLAY)
 			physics(&gm, playerState);
-
+		if (newLevel) {
+			spawnEntities(lev.levelID, enemies, savePoints, decorations, upgrade);
+			//spawnEnemies(lev.levelID, enemies);
+			newLevel = false;
+		}
 		render(&gm);
 		glXSwapBuffers(dpy, win);
 	}
@@ -254,10 +284,21 @@ void init_opengl(void)
 	jumpAnimation.createTexture();
 	attackAnimation.convertToPpm();
 	attackAnimation.createTexture();
+	runAnimation2.convertToPpm();
+	runAnimation2.createTexture();
+	idleAnimation2.convertToPpm();
+	idleAnimation2.createTexture();
+	jumpAnimation2.convertToPpm();
+	jumpAnimation2.createTexture();
+	attackAnimation2.convertToPpm();
+	attackAnimation2.createTexture();
+
 	s1.sprite.convertToPpm();
 	s1.sprite.createTexture();
 	s2.sprite.convertToPpm();
 	s2.sprite.createTexture();
+	if (enemies.size() > 0)
+		printf("SIZE: %i\n", (int)enemies.at(0).animations.size());
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
 			enemies.at(i).animations.at(j).convertToPpm();
@@ -269,6 +310,14 @@ void init_opengl(void)
 			savePoints[j].animations.at(i).convertToPpm();
 			savePoints[j].animations.at(i).createTexture();
 		}
+	}
+	for (unsigned int i = 0; i < decorations.size(); i++) {
+		decorations.at(i).convertToPpm();
+		decorations.at(i).createTexture();
+	}
+	for (unsigned int i = 0; i < upgrade.size(); i++) {
+		upgrade.at(i).sprite.convertToPpm();
+		upgrade.at(i).sprite.createTexture();
 	}
 }
 
@@ -282,9 +331,14 @@ void makeCharacter(Game *game, int x, int y)
 	p->s.center.x = p->hurt.center.x = x;
 	p->s.center.y = p->hurt.center.y = y;
 	for (unsigned int i = 0; i < savePoints.size(); i++) {
-		if (savePoints.at(i).checkIsEnabled())
+		if (savePoints.at(i).checkIsEnabled()) {
 			movePlayer(game->character, savePoints.at(i).getX(),
 				savePoints.at(i).getY());
+			if (getSavePointLevel(savePoints) > 0) {
+				lev.levelID = getSavePointLevel(savePoints);
+				loadLevel(game, &lev);
+			}
+		}
 	}
 	p->velocity.y = 0;
 	p->velocity.x = 0;
@@ -297,11 +351,12 @@ void makeCharacter(Game *game, int x, int y)
 	p->l[0].thrown = false;
 	p->l[1].thrown = false;
 	p->jumpCurrent = 0;
-	p->jumpMax = 2;
+	p->jumpMax = p->jumpMax;
 	p->soundChk = true;
 	game->n++;
 	p->isLeft = false;
 	playerState = STATE_IDLE;
+	newLevel = true;
 }
 
 void check_mouse(XEvent *e)
@@ -406,6 +461,7 @@ void check_keys(XEvent *e) {
 						{
 							lev.levelID = 1;
 							loadLevel(&gm, &lev);
+							newLevel = true;
 							movePlayer(gm.character, savePoints.at(i).getX(), 
 							savePoints.at(i).getY());
 						}
@@ -432,9 +488,11 @@ void check_keys(XEvent *e) {
 					break;
 				case XK_0:
 					nextLevel(&gm, &lev);
+					spawnEntities(lev.levelID, enemies, savePoints, decorations, upgrade);
 					break;
 				case XK_9:
 					previousLevel(&gm, &lev);
+					spawnEntities(lev.levelID, enemies, savePoints, decorations, upgrade);
 					break;
 					
         }
@@ -443,30 +501,32 @@ void check_keys(XEvent *e) {
 
 void physics(Game *game, PlayerState ps)
 {
+	
 	Character *p;
-	Enemy *e;
 
-	if (game->n <= 0)
+	if (game->n <= 0) {
 		makeCharacter(&gm, gm.xres/2, gm.yres/2);
+		game->character.jumpMax = 1;
+	}
 	
 	
 	p = &game->character;
-	e = &enemies.at(0);
 	
 	//Gravity and velocity update
 	p->velocity.y -= GRAVITY;
 	p->s.center.x += p->velocity.x;
 	p->s.center.y += p->velocity.y;
-	
-	e->move();
-	e->checkState();
-	
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+		enemies.at(i).move();
+		enemies.at(i).checkState();
+	}
 
 	//kyleS.cpp	
 	movement(game, p, ps, gm.keys);
 	charCollision(game, p, enemies);
 	enemyCollision(game, p, enemies);
-	savePointCheck(p, &savePoints.at(0));
+	savePointCheck(p, savePoints);
+	upgradeCheck(p, upgrade);	
 	if (!gm.button[0].r.width) {
 		//buttonInit(game);
 	}
@@ -474,10 +534,14 @@ void physics(Game *game, PlayerState ps)
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
 		loadLevel(&gm, &lev);
+		newLevel = true;
+		//spawnEnemies(lev.levelID, enemies);
 		//game->n--;
 	}
 	if (p->s.center.x < 0.1 || p->s.center.x > gm.xres) {
 		loadLevel(&gm, &lev);
+		//spawnEnemies(lev.levelID, enemies);
+		newLevel = true;
 		//game->n--;
 	}
 
@@ -488,33 +552,63 @@ void physics(Game *game, PlayerState ps)
 		playerState = getPlayerState(p, gm.keys);
 	}
 	if (playerState == STATE_IDLE) {
-		idleAnimation.enable();
+		if (!game->character.upgrade)
+			idleAnimation.enable();
+		else
+			idleAnimation2.enable();
 		runAnimation.disable();
 		jumpAnimation.disable();
 		attackAnimation.disable();
+		runAnimation2.disable();
+		jumpAnimation2.disable();
+		attackAnimation2.disable();
+
 		idleAnimation.updateAnimation();
+		idleAnimation2.updateAnimation();
 	}
 	if (playerState == STATE_RUN) {
 		idleAnimation.disable();
-		runAnimation.enable();
+		idleAnimation2.disable();
+		if (!game->character.upgrade)
+			runAnimation.enable();
+		else
+			runAnimation2.enable();
 		jumpAnimation.disable();
 		attackAnimation.disable();
+		jumpAnimation2.disable();
+		attackAnimation2.disable();
+
 		runAnimation.updateAnimation();
+		runAnimation2.updateAnimation();
 	}
 	if (playerState == STATE_JUMP) {
 		idleAnimation.disable();
+		idleAnimation2.disable();
 		runAnimation.disable();
-		jumpAnimation.enable();
+		runAnimation2.disable();
+		if (!game->character.upgrade)
+			jumpAnimation.enable();
+		else
+			jumpAnimation2.enable();
 		attackAnimation.disable();
+		attackAnimation2.disable();
 		jumpAnimation.updateAnimation();
+		jumpAnimation2.updateAnimation();
 	}	
 	if (playerState == STATE_ATTACK) {
 		idleAnimation.disable();
+		idleAnimation2.disable();
 		runAnimation.disable();
+		runAnimation2.disable();
 		jumpAnimation.disable();
-		attackAnimation.enable();
+		jumpAnimation2.disable();
+		if (!game->character.upgrade)
+			attackAnimation.enable();
+		else
+			attackAnimation2.enable();
 		attackAnimation.updateAnimation();
-		if (!attackAnimation.isEnabled())
+		attackAnimation2.updateAnimation();
+		if (!attackAnimation.isEnabled() && !attackAnimation2.isEnabled())
 			playerState = STATE_IDLE;
 	}
 	for (unsigned int i = 0; i < enemies.size(); i++) {	
@@ -529,7 +623,25 @@ void physics(Game *game, PlayerState ps)
 //	s1.sprite.updateAnimation();
 //	s2.sprite.updateAnimation();
 	updateSpear(&game->character);
-	
+
+	for (unsigned int i = 0; i < savePoints.size(); i++) {
+		for (unsigned int j = 0; j < savePoints.at(i).animations.size(); j++) {
+			savePoints.at(i).animations.at(j).updateAnimation();
+			//if (savePoints.at(i).checkIsEnabled()) {
+			//}
+		}
+	}
+	for (unsigned int i = 0; i < decorations.size(); i++) {
+		decorations.at(i).enable();
+		decorations.at(i).updateAnimation();
+	}
+
+	checkSavePoints(lev.levelID, savePoints);
+	checkUpgrade(lev.levelID, upgrade);
+	for (unsigned int i = 0; i < upgrade.size(); i++) {
+		upgrade.at(i).sprite.updateAnimation();
+	}
+	/*
 	if (savePoints.at(0).checkIsEnabled() && lev.levelID == 1) {
 		savePoints.at(0).animations.at(0).disable();
 		savePoints.at(0).animations.at(1).enable();
@@ -543,7 +655,7 @@ void physics(Game *game, PlayerState ps)
 	if (lev.levelID != 1)
 		savePoints.at(0).animations.at(0).disable();
 		savePoints.at(0).animations.at(1).disable();
-	}
+	}*/
 	if (gm.state == STATE_GAMEOVER) {
 		setDeathTime();
 		countDeath();
@@ -563,6 +675,7 @@ void render(Game *game)
 	//draw background
 	background(&gm);
 
+	renderEntities(decorations);
 	setLevelSwitch(&gm, &lev);
 	//set up level 2 
 	//setLevel2(&gm, &lev);
@@ -599,7 +712,28 @@ void render(Game *game)
 		glPopMatrix();
 	}
 
+	
+	for (unsigned int i = 0; i < upgrade.size(); i++) {
+		renderSprite(upgrade.at(i).sprite, upgrade.at(i).getX(), 
+			upgrade.at(i).getY(), 1.0, false);
+	}
+
 	//Render Player Sprite
+	if (game->character.upgrade) {
+	renderSprite(idleAnimation2, game->character.s.center.x,
+		game->character.s.center.y, 1.0, game->character.isLeft);
+	renderSprite(runAnimation2, game->character.s.center.x, 
+		game->character.s.center.y, 1.0, game->character.isLeft);
+	renderSprite(jumpAnimation2, game->character.s.center.x,
+		game->character.s.center.y, 1.0, game->character.isLeft);
+	renderSprite(attackAnimation2, game->character.s.center.x,
+		game->character.s.center.y, 1.0, game->character.isLeft);
+	renderSprite(s1.sprite, game->character.l[0].s.center.x, 
+		game->character.l[1].s.center.y, 1.0, s1.checkIsLeft());
+	renderSprite(s2.sprite, game->character.l[0].s.center.x, 
+		game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
+	}
+	else {
 	renderSprite(idleAnimation, game->character.s.center.x,
 		game->character.s.center.y, 1.0, game->character.isLeft);
 	renderSprite(runAnimation, game->character.s.center.x, 
@@ -612,9 +746,10 @@ void render(Game *game)
 		game->character.l[1].s.center.y, 1.0, s1.checkIsLeft());
 	renderSprite(s2.sprite, game->character.l[0].s.center.x, 
 		game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
+	}
 	for (unsigned int i = 0; i < enemies.size(); i++) {
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
-			renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
+		    	renderSprite(enemies.at(i).animations.at(j), enemies.at(i).getX(),
 				enemies.at(i).getY(), 1.0, enemies.at(i).checkIsLeft());
 		}
 	}
@@ -624,6 +759,7 @@ void render(Game *game)
 				savePoints.at(j).getY(), 4.0, false);
 		}
 	}
+	
 
 	//Check Game States
 	checkStart(&gm);

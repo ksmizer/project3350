@@ -45,6 +45,7 @@
 #include "fonts.h"
 #include "codyG.h"
 #include "kyleS.h"
+#include <algorithm>
 //#include "derrickA.h"
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
@@ -141,7 +142,8 @@ void charHurtUpdate(Game *game, Character *p)
 
 void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
-	Enemy *e = &enemies.at(0);
+		
+    	//Enemy *e = &enemies.at(0);
 	charHurtUpdate(game, p);
 	// Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
@@ -209,24 +211,28 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 		}
 	}
 	// Enemy collision
-	int enemyHit[4];
-	enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.radius;
-	enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.radius;
-	enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.radius;
-	enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.radius;
-	if (p->s.center.y < enemyHit[0] && p->s.center.y > enemyHit[1]) {
-		if (p->s.center.x < enemyHit[2] && p->s.center.x > enemyHit[3]) {
-			p->velocity.y = 0;
-			p->jumpMax = 0;
-			death();
-			game->state = STATE_GAMEOVER;
+	for (unsigned int i = 0; i < enemies.size(); i++) {
+	    	Enemy *e = &enemies.at(i);
+		int enemyHit[4];
+		enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.radius;
+		enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.radius;
+		enemyHit[2] = e->s.center.x + e->hitbox.width + p->hurt.radius;
+		enemyHit[3] = e->s.center.x - e->hitbox.width - p->hurt.radius;
+		if (p->s.center.y < enemyHit[0] && p->s.center.y > enemyHit[1]) {
+			if (p->s.center.x < enemyHit[2] && p->s.center.x > enemyHit[3]) {
+				p->velocity.y = 0;
+				p->jumpMax = 0;
+				death();
+				game->state = STATE_GAMEOVER;
+			}
 		}
 	}
 }
 
-void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
+bool enemyHurt(Game *game, Character *p, Enemy enemy)
 {
-	Enemy *e = &enemies.at(0);
+    	bool kill = false;
+	Enemy *e = &enemy;
 	//Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
 	for (int i = 0; i < 5; i++) {
@@ -273,11 +279,11 @@ void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
 					e->velocity.y = 0;
 					death();
 				}
-			}
+			}			
 		}
 	}
 	//Lance death detection
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 1; i++) {
 		int lance[i][4];
 		lance[i][0] = p->l[i].s.center.y + p->l[i].hit.height + e->s.height;
 		lance[i][1] = p->l[i].s.center.y - p->l[i].hit.height - e->s.height;
@@ -287,12 +293,14 @@ void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
 			if (e->s.center.x < lance[i][2] && e->s.center.x > lance[i][3]) {
 				e->velocity.x = 0;
 				e->killEnemy();
-				//death();
+				kill = true;
+				p->l[i].s.center.y = -50;
 				p->l[i].s.center.x = -50;
 				p->l[i].velocity.x = 0;
 			}
 		}
 	}
+	return kill;
 }
 
 void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
@@ -431,7 +439,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 
 void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 {
-	Enemy *e = &enemies.at(0);
+    for (unsigned int j = 0; j < enemies.size(); j++) {
+	Enemy *e = &enemies.at(j);
 	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
 	for (int i = 0; i < 7; i++) {
 		Shape *s = &game->box[i];
@@ -508,7 +517,12 @@ void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 			}
 		}
 	}
-	enemyHurt(game, p, enemies);
+
+	if (enemyHurt(game, p, enemies.at(j))) {
+	    enemies.erase(enemies.begin() + j);
+	    break;
+	}
+    }
 }
 
 void makeWeapon(Game *game, Character *p)
@@ -532,18 +546,27 @@ void makeWeapon(Game *game, Character *p)
 	}
 }
 
-void savePointCheck(Character *p, SavePoint *sp)
+void savePointCheck(Character *p, vector<SavePoint> &sp)
 {
-	int x = sp->getX();
-	int y = sp->getY();
-	int charTop, charBottom, charLeft, charRight;
-	charTop = y + p->s.height;
-	charBottom = y - p->s.height;
-	charLeft = x - p->s.width;
-	charRight = x + p->s.width;
-	if (p->s.center.y < charTop && p->s.center.y > charBottom) {
-		if (p->s.center.x > charLeft && p->s.center.x < charRight) {
-			sp->enable();
+	for (unsigned int i = 0; i < sp.size(); i++) {
+		if (sp.at(i).animations.at(0).isEnabled() ||
+			sp.at(i).animations.at(1).isEnabled())
+		{
+			int x = sp.at(i).getX();
+			int y = sp.at(i).getY();
+			int charTop, charBottom, charLeft, charRight;
+			charTop = y + p->s.height;
+			charBottom = y - p->s.height;
+			charLeft = x - p->s.width;
+			charRight = x + p->s.width;
+			if (p->s.center.y < charTop && p->s.center.y > charBottom) {
+				if (p->s.center.x > charLeft && p->s.center.x < charRight) {
+					sp.at(i).enable();
+					for (unsigned int j = 0; j < sp.size(); j++)
+						if (j != i)
+							sp.at(j).disable();
+				}
+			}
 		}
 	}
 }
