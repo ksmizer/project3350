@@ -24,11 +24,11 @@ const Flt timeslice = 1.0f;
 const Flt gravity = -0.2f;
 #define PI 3.141592653589793
 #define ALPHA 1
-#define WALK 2.0
-#define JUMP 4.0
+#define WALK 2.5
+#define JUMP 6.0 //default 4.0
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900
-#define GRAVITY 0.1
+#define GRAVITY 0.2 //default 0.1
 #define OFFSET 15
 #define C_HEIGHT 2
 #define C_WIDTH 10
@@ -128,6 +128,7 @@ public:
 	bool hurtJump;
 	Flt angle;
 	Flt color[3];
+	bool upgrade;
 	bool isLeft;
 };
 
