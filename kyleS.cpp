@@ -469,7 +469,7 @@ void makeWeapon(Game *game, Character *p)
 			if (p->l[i].thrown == false) {
 				throw_spear();
 				p->l[i].s.center.x = p->s.center.x;
-				p->l[i].s.center.y = p->s.center.y + p->s.height*3/4;
+				p->l[i].s.center.y = p->s.center.y + p->s.height*1/3;
 				p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
 				p->l[i].hit.center.y = p->l[i].s.center.y;
 				p->l[i].hit.width = W_WIDTH;
@@ -732,7 +732,7 @@ void loadStart(Game *gm)
 {
 	Game *p = gm;
 	//load the images file into a ppm structure.
-	system("convert images/descape2.png tmp.ppm");
+	system("convert images/descape.png tmp.ppm");
 	gm->tex.start = ppm6GetImage("./tmp.ppm");
 	//create opengl texture elements
 	glGenTextures(1, &p->tex.startTexture);
