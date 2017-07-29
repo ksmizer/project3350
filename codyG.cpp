@@ -1,6 +1,6 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/27/17
+ *Last Modified: 7/29/17
  *Project: Dungeon Escape
  * --------------------------------------------------------------------------
  *Week 4: Created SpriteAnimation class and functionality to add generic
