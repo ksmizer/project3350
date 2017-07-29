@@ -42,12 +42,6 @@ struct Vec {
 	Flt x, y, z;
 };
 
-struct Rectangle {
-	Flt width, height;
-	Flt right, left, top, bot;
-	Flt centerx, centery;
-};
-
 struct Shape {
 	Flt width, height;
 	Flt radius;
@@ -61,14 +55,9 @@ struct Hurtbox {
 };
 
 struct Button {
-	Rectangle r;
-	char text[32];
-	int over;
-	int down;
-	int click;
-	float color[3];
-	float dcolor[3];
-	unsigned int text_color;
+	Flt width, height;
+	Vec center;
+	GLfloat alpha;
 };
 
 struct Hitbox {
@@ -153,10 +142,7 @@ public:
 	Character character;
 	State state;
 	Texture tex;
-	Button button[MAXBUTTONS];
-	int nbuttons;
-	int lbutton;
-	int rbutton;
+	Button button;
 	int n;
 	int xres, yres;
 	int done;
@@ -169,6 +155,9 @@ public:
 		yres = WINDOW_HEIGHT;
 		done = 0;
 		memset(keys, 0, 65536);
+		button.alpha = 1.0;
+		button.height = 50;
+		button.width = 100;
 	}
 };
 

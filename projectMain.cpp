@@ -45,7 +45,7 @@ extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, vector<SavePoint>& sp);
-//extern void buttonInit(Game *game);
+extern void selection(Game *game);
 extern void start(Game *game);
 extern void loadLoading(Game *game);
 extern void loading(Game *game);
@@ -264,7 +264,6 @@ void init_opengl(void)
 	
 	//Ppm textures
 	loadStart(&gm);
-	loadLoading(&gm);
 }
 
 void makeCharacter(Game *game, int x, int y)
@@ -310,8 +309,6 @@ void check_mouse(XEvent *e)
         static int savex = 0;
         static int savey = 0;
         static int n = 0;
-		gm.lbutton = 0;
-		gm.rbutton = 0;
         if (e->type == ButtonRelease) {
 			mouseClick(&gm, e->xbutton.button, 2, e->xbutton.x, e->xbutton.y);
 			return;
@@ -319,11 +316,9 @@ void check_mouse(XEvent *e)
         if (e->type == ButtonPress) {
                 if (e->xbutton.button == 1) {
                         //Left button was pressed
-						gm.lbutton = 1;
                 }
                 if (e->xbutton.button == 3) {
                         //Right button was pressed
-						gm.rbutton = 1;
                 }
         }
         //Did the mouse move?
@@ -333,22 +328,6 @@ void check_mouse(XEvent *e)
                 if (++n < 10)
                         return;
         }
-		//Check for mouse over any buttons
-		for (int i = 0; i < gm.nbuttons; i++) {
-			gm.button[i].over = 0;
-			gm.button[i].down = 0;
-			if (savex >= button[i].r.left &&
-					savex <= gm.button[i].r.right &&
-					savey >= gm.button[i].r.bot &&
-					savey <= gm.button[i].r.top) {
-				button[i].over = 1;
-				break;
-			}
-		}
-		if (gm.lbutton)
-			mouseClick(&gm, 1, 1, savex, savey);
-		if (gm.rbutton)
-			mouseClick(&gm, 2, 1, savex, savey);
 }
 
 void check_keys(XEvent *e) {
@@ -415,7 +394,8 @@ void check_keys(XEvent *e) {
 					break;
 				case XK_p:
                     if (gm.state == STATE_STARTMENU) {
-                        gm.state = STATE_LOADING;
+                        gm.state = STATE_NONE;
+						loadLoading(&gm);
 					}
                     break;
 				case XK_j:
@@ -471,9 +451,6 @@ void physics(Game *game, PlayerState ps)
 	charCollision(game, p, enemies);
 	enemyCollision(game, p, enemies);
 	savePointCheck(p, savePoints);
-	if (!gm.button[0].r.width) {
-		//buttonInit(game);
-	}
 
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
@@ -574,13 +551,17 @@ void physics(Game *game, PlayerState ps)
 void render(Game *game)
 {
 	float w, h;
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+//	glClearColor(0.0, 0.0, 0.0, 1.0);
+//	glClear(GL_COLOR_BUFFER_BIT);
+
+	if (gm.state == STATE_STARTMENU) {
+		loadStart(&gm);
+		checkStart(&gm);
+		selection(&gm);
+	}
 
 	if (gm.state == STATE_LOADING) {
 		//textures
-		loadLoading(&gm);
-		checkLoading(&gm);
 		loadBackground(&gm);
 		loadPlatforms(&gm);
 		loadBoxes(&gm);
@@ -687,7 +668,7 @@ void render(Game *game)
 	checkGameOver(&gm);
 	outputScore(&gm);
 	outputCurrentScore(&gm);
-
+	
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
 

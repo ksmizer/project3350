@@ -114,6 +114,18 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			jump();
 			p->soundChk = !p->soundChk;
 		}
+		if (game->state == STATE_STARTMENU) {
+			if (game->button.center.x >= game->yres+0.6) {
+				game->button.center.x += 100;
+			}
+		}
+	}
+	if (keys[XK_Down] || keys[XK_S] || keys[XK_s]) {
+		if (game->state == STATE_STARTMENU) {
+			if (game->button.center.x <= game->yres+0.4) {
+				game->button.center.x -= 100;
+			}
+		}
 	}
 	if (keys[XK_Left] + keys[XK_Right] + keys[XK_a]
 			+ keys[XK_A] + keys[XK_d] + keys[XK_D] == 0) {
@@ -495,125 +507,54 @@ void savePointCheck(Character *p, vector<SavePoint> &sp)
 		}
 	}
 }
-/*
-void buttonInit(Game *gm)
+
+void selection(Game *gm)
 {
+	Flt w, h;
+	Vec *c = &gm->button.center;
+	h = gm->button.height;
+	w = gm->button.width;
 	if (gm->state == STATE_STARTMENU) {
-		int nbuttons = gm->nbuttons = 0;
-		//===========//
-		//Play button//
-		//===========//
-		gm->button[nbuttons].r.width = 100;
-		gm->button[nbuttons].r.height = 50;
-		gm->button[nbuttons].r.left =
-			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.bot =
-			gm->yres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.right =
-			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
-		gm->button[nbuttons].r.top =
-			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
-		gm->button[nbuttons].r.centerx =
-			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
-		gm->button[nbuttons].r.centery =
-			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
-		strcpy(gm->button[nbuttons].text, "Play");
-		gm->button[nbuttons].down = 0;
-		gm->button[nbuttons].click = 0;
-		gm->button[nbuttons].color[0] = 0.4f;
-		gm->button[nbuttons].color[1] = 0.4f;
-		gm->button[nbuttons].color[2] = 0.7f;
-		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
-		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
-		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
-		gm->button[nbuttons].text_color = 0x00ffffff;
-		gm->nbuttons++;
-		//===============//
-		//Controls button//
-		//===============//
-		gm->button[nbuttons].r.width = 100;
-		gm->button[nbuttons].r.height = 50;
-		gm->button[nbuttons].r.left =
-			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.bot =	gm->yres / 2 -
-			gm->button[nbuttons].r.height - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.right =
-			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
-		gm->button[nbuttons].r.top =
-			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
-		gm->button[nbuttons].r.centerx =
-			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
-		gm->button[nbuttons].r.centery =
-			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
-		strcpy(gm->button[nbuttons].text, "Controls");
-		gm->button[nbuttons].down = 0;
-		gm->button[nbuttons].click = 0;
-		gm->button[nbuttons].color[0] = 0.4f;
-		gm->button[nbuttons].color[1] = 0.4f;
-		gm->button[nbuttons].color[2] = 0.7f;
-		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
-		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
-		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
-		gm->button[nbuttons].text_color = 0x00ffffff;
-		gm->nbuttons++;
-		//===========//
-		//Exit button//
-		//===========//
-		gm->button[nbuttons].r.width = 100;
-		gm->button[nbuttons].r.height = 50;
-		gm->button[nbuttons].r.left =
-			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.bot =	gm->yres / 2 -
-			gm->button[nbuttons].r.height*2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.right =
-			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
-		gm->button[nbuttons].r.top =
-			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
-		gm->button[nbuttons].r.centerx =
-			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
-		gm->button[nbuttons].r.centery =
-			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
-		strcpy(gm->button[nbuttons].text, "Exit");
-		gm->button[nbuttons].down = 0;
-		gm->button[nbuttons].click = 0;
-		gm->button[nbuttons].color[0] = 0.4f;
-		gm->button[nbuttons].color[1] = 0.4f;
-		gm->button[nbuttons].color[2] = 0.7f;
-		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
-		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
-		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
-		gm->button[nbuttons].text_color = 0x00ffffff;
-		gm->nbuttons++;
-	}
-}
-*/
-void mouseClick(Game *gm, int ibutton, int action, int x, int y)
-{
-	if (action == 1) {
-		for (int i = 0; i < gm->nbuttons; i++) {
-			if (gm->button[i].over) {
-				gm->button[i].down = 1;
-				gm->button[i].click = 1;
-				if (i == 0) {
-					//Pressed Play button
-					gm->state = STATE_GAMEPLAY;
-				}
-				if (i == 1) {
-					//Pressed Controls button
-					gm->state = STATE_CONTROLS;
-				}
-				if (i == 2) {
-					//Pressed Quit button
-					gm->done = 1;
-				}
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glPushMatrix();
+
+		if (gm->button.alpha >= 0.7) {
+			while (gm->button.alpha > 0.3) {
+				gm->button.alpha -= 0.05;
+				glClear(GL_COLOR_BUFFER_BIT);
+				glColor4f(1.0, 1.0, 1.0, gm->button.alpha);
+				glBegin(GL_QUADS);
+					glVertex2i(c->x-w, c->y-h);
+					glVertex2i(c->x-w, c->y+h);
+					glVertex2i(c->x+w, c->y+h);
+					glVertex2i(c->x+w, c->y-h);
+				glEnd();
+				glPopMatrix();
+			}
+		}
+		if (gm->button.alpha <= 0.3) {
+			while (gm->button.alpha < 0.7) {
+				gm->button.alpha += 0.05;
+				glClear(GL_COLOR_BUFFER_BIT);
+				glColor4f(1.0, 1.0, 1.0, gm->button.alpha);
+				glBegin(GL_QUADS);
+					glVertex2i(c->x-w, c->y-h);
+					glVertex2i(c->x-w, c->y+h);
+					glVertex2i(c->x+w, c->y+h);
+					glVertex2i(c->x+w, c->y-h);
+				glEnd();
+				glPopMatrix();
 			}
 		}
 	}
+}
+
+void mouseClick(Game *gm, int ibutton, int action, int x, int y)
+{
+	if (action == 1) {
+	}
 	if (action == 2) {
-		for (int i = 0; i < gm->nbuttons; i++) {
-			gm->button[i].down = 0;
-			gm->button[i].click = 0;
-		}
 	}
 }
 
@@ -706,9 +647,9 @@ void checkStart(Game *gm)
 
 void checkLoading(Game *gm)
 {
-	if (gm->state == STATE_LOADING) {
+	if (gm->state == STATE_NONE) {
 		loading(gm);
-		sleep(2);
+		gm->state = STATE_LOADING;
 	}
 }
 
@@ -791,7 +732,7 @@ void loadStart(Game *gm)
 {
 	Game *p = gm;
 	//load the images file into a ppm structure.
-	system("convert images/descape.png tmp.ppm");
+	system("convert images/descape2.png tmp.ppm");
 	gm->tex.start = ppm6GetImage("./tmp.ppm");
 	//create opengl texture elements
 	glGenTextures(1, &p->tex.startTexture);
@@ -878,6 +819,7 @@ void loadSpikes(Game *gm)
 
 void start(Game *gm)
 {
+	glPushMatrix();
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.startTexture);
@@ -891,11 +833,15 @@ void start(Game *gm)
 		glTexCoord2f(gm->tex.xS[1], gm->tex.yS[1]);
 			glVertex2i(gm->xres, 0); 
 	glEnd();
+	glPopMatrix();
 }
 
 void loading(Game *gm)
 {
+	glPushMatrix();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.loadTexture);
 	glBegin(GL_QUADS);
@@ -908,11 +854,15 @@ void loading(Game *gm)
 		glTexCoord2f(gm->tex.xl[1], gm->tex.yl[1]);
 			glVertex2i(gm->xres, 0); 
 	glEnd();
+	glPopMatrix();
 }
 
 void background(Game *gm)
 {
+	glPushMatrix();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
 	glBegin(GL_QUADS);
@@ -925,6 +875,7 @@ void background(Game *gm)
 		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[1]);
 			glVertex2i(gm->xres, 0); 
 	glEnd();
+	glPopMatrix();
 }
 
 void prepPlat(Game *gm)
