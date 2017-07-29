@@ -123,7 +123,7 @@ SpriteAnimation jumpAnimation((char*)"player.png", 1, 12, 12, 8, 8,
 	46, 50, 0.1, true);
 SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 	46, 50, 0.1, false);
-SpriteAnimation runAnimation2((char*)"greenArmor.png", 1, 12, 12, 1, 6, 
+SpriteAnimation runAnimation2((char*)"greenArmor.png", 1, 12, 12, 1, 5, 
 	36, 40, 0.1, true); 
 SpriteAnimation idleAnimation2((char*)"greenArmor.png", 1, 12, 12, 0, 0, 
 	36, 40, 0.1, true);
@@ -351,7 +351,10 @@ void makeCharacter(Game *game, int x, int y)
 	p->l[0].thrown = false;
 	p->l[1].thrown = false;
 	p->jumpCurrent = 0;
-	p->jumpMax = p->jumpMax;
+	if (p->upgrade)
+		p->jumpMax = 2;
+	else
+		p->jumpMax = 1;
 	p->soundChk = true;
 	game->n++;
 	p->isLeft = false;
