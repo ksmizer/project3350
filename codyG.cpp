@@ -591,7 +591,7 @@ void upgradeCheck(Character *p, vector<Upgrade> &u)
 {
 	if (u.size() < 1)
 		return;		
-	if (u.at(0).checkIsEnabled())
+	if (u.at(0).checkIsEnabled() && u.at(0).sprite.isEnabled())
 	{
 		int x = u.at(0).getX();
 		int y = u.at(0).getY();

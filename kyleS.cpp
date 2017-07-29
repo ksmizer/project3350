@@ -328,15 +328,15 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 						p->velocity.y = 0;
 						p->jumpCurrent = 0;
 						p->hurtJump = false;
-						if (p->velocity.x <= WALK / 10 &&
-								p->velocity.x >= -WALK / 10) {
+						if (p->velocity.x <= WALK / 5 &&
+								p->velocity.x >= -WALK / 5) {
 							p->velocity.x = 0;
 						}
 						if (p->velocity.x > 0) {
-							p->velocity.x -= WALK / 10;
+							p->velocity.x -= WALK / 5;
 						}
 						if (p->velocity.x < 0) {
-							p->velocity.x += WALK / 10;
+							p->velocity.x += WALK / 5;
 						}
 					}
 				}
@@ -396,21 +396,36 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 			}
 		}
 	}
-	// weapon update
-	/*for (int i = 0; i < 2; i++) {
-		if (p->l[i].s.center.x > 0) {
-			if (p->l[i].s.center.x < e->s.center.x + e->s.width + W_WIDTH &&
-					p->l[i].s.center.x > e->s.center.x - e->s.width-W_WIDTH) {
-				if (p->l[i].s.center.y < e->s.center.y + e->s.height + W_HEIGHT
-						&& p->l[i].s.center.y > e->s.center.y -
-						e->s.height - W_HEIGHT) {
-					p->l[i].s.center.x = -10;
-					p->l[i].hit.center.x = p->l[i].s.center.x;
-					p->l[i].velocity.x = 0;
+	// weapon box collision update
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 2; j++) {
+			Shape *s = &game->box[i];
+			boxTop[i] = s->center.y + s->height + p->l[j].s.height;
+			boxBottom[i] = s->center.y - s->height - p->l[j].s.height;
+			boxLeft[i] = s->center.x - s->width - p->l[j].s.width;
+			boxRight[i] = s->center.x + s->width + p->l[j].s.width;
+			if (p->l[j].s.center.x > 0) {
+				if (p->l[j].s.center.y < boxTop[i]
+						&& p->l[j].s.center.y > boxBottom[i]) {
+					if (p->l[j].s.center.x > boxLeft[i]
+							&& p->l[j].s.center.x < boxRight[i]) {
+						//Right collision detection
+						if (p->l[j].s.center.x < boxRight[i]
+								&& p->l[j].s.center.x > s->center.x) {
+							p->l[j].velocity.x = 0;
+							p->l[j].s.center.x = -50;
+						}
+						//Left Collision detection
+						if (p->l[j].s.center.x > boxLeft[i]
+								&& p->l[j].s.center.x < s->center.x) {
+							p->l[j].velocity.x = 0;
+							p->l[j].s.center.x = -50;
+						}
+					}
 				}
 			}
 		}
-	}*/
+	}
 	// save point collision check
 	
 	// player falling check
@@ -907,6 +922,28 @@ void loadBoxes(Game *gm)
 	gm->tex.yB[1] = 1.0;
 }
 
+void loadSpikes(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/spike.png tmp.ppm");
+	gm->tex.spike = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.spikeTexture);
+	int w = gm->tex.spike->width;
+	int h = gm->tex.spike->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
+	unlink("./tmp.ppm");
+	gm->tex.xs[0] = 0.0;
+	gm->tex.xs[1] = 1.0;
+	gm->tex.ys[0] = 0.0;
+	gm->tex.ys[1] = 1.0;
+}
+
 void background(Game *gm)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -938,6 +975,17 @@ void prepBox(Game *gm)
 	glColor3f(1.0,1.0,1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.boxTexture);
 	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+}
+
+void prepSpike(Game *gm)
+{
+	glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
 }

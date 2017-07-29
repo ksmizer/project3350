@@ -15,6 +15,7 @@
 
 extern void prepPlat(Game *g);
 extern void prepBox(Game *g);
+extern void prepSpike(Game *g);
 extern void setLevel7(Game *gm, Level *lev);
 extern void drawLevel7(Game *gm, Level *lev);
 
@@ -405,13 +406,19 @@ void drawLevel3(Game *gm, Level *lev)
 	glTranslatef(test->center.x, test->center.y, test->center.z);
 	w = test->width;
 	h = test->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 	
 	//set up spike	
 	Shape *spike;
@@ -421,13 +428,20 @@ void drawLevel3(Game *gm, Level *lev)
 	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
 	w = spike->width;
 	h = spike->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -438,13 +452,19 @@ void drawLevel3(Game *gm, Level *lev)
 	glTranslatef(test2->center.x, test2->center.y, test2->center.z);
 	w = test2->width;
 	h = test2->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 
 	//Draw test platform 3
@@ -455,13 +475,19 @@ void drawLevel3(Game *gm, Level *lev)
 	glTranslatef(test3->center.x, test3->center.y, test3->center.z);
 	w = test3->width;
 	h = test3->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	//Draw test platform 4
 	Shape *test4;
@@ -471,14 +497,20 @@ void drawLevel3(Game *gm, Level *lev)
 	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
 	w = test4->width;
 	h = test4->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
-	
+	glDisable(GL_ALPHA_TEST);
+    
 	//Draw test platform 5
 	Shape *test5;
 	glColor3ub(80,110,70);
@@ -487,13 +519,19 @@ void drawLevel3(Game *gm, Level *lev)
 	glTranslatef(test5->center.x, test5->center.y, test5->center.z);
 	w = test5->width;
 	h = test5->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	
 
@@ -594,13 +632,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test->center.x, test->center.y, test->center.z);
 	w = test->width;
 	h = test->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	//set up spike	
 	Shape *spike;
@@ -610,14 +654,22 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
 	w = spike->width;
 	h = spike->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
+
 	//set up spike	2
 	Shape *spike2;
 	glColor3ub(80,110,70);
@@ -626,13 +678,20 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(spike2->center.x, spike2->center.y, spike2->center.z);
 	w = spike2->width;
 	h = spike2->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 
 	//set up spike	3
 	Shape *spike3;
@@ -642,13 +701,20 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(spike3->center.x, spike3->center.y, spike3->center.z);
 	w = spike3->width;
 	h = spike3->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -659,13 +725,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test2->center.x, test2->center.y, test2->center.z);
 	w = test2->width;
 	h = test2->height;
+		prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 
 	//Draw test platform 3
@@ -676,13 +748,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test3->center.x, test3->center.y, test3->center.z);
 	w = test3->width;
 	h = test3->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);	
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	//Draw test platform 4
 	Shape *test4;
@@ -692,13 +770,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
 	w = test4->width;
 	h = test4->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);		
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 	
 	//Draw test platform 5
 	Shape *test5;
@@ -708,13 +792,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test5->center.x, test5->center.y, test5->center.z);
 	w = test5->width;
 	h = test5->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);	
+			glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 
         //Draw test platform 6
@@ -725,13 +815,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test6->center.x, test6->center.y, test6->center.z);
 	w = test6->width;
 	h = test6->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);	
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 
 
@@ -743,13 +839,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test7->center.x, test7->center.y, test7->center.z);
 	w = test2->width;
 	h = test2->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);	
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 
 	//Draw test platform 8
@@ -760,13 +862,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test8->center.x, test8->center.y, test8->center.z);
 	w = test8->width;
 	h = test8->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);	
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	//Draw test platform 9
 	Shape *test9;
@@ -776,13 +884,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test9->center.x, test9->center.y, test9->center.z);
 	w = test9->width;
 	h = test9->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 	
 	//Draw test platform 10
 	Shape *test10;
@@ -792,13 +906,19 @@ void drawLevel4(Game *gm, Level *lev)
 	glTranslatef(test10->center.x, test10->center.y, test10->center.z);
 	w = test10->width;
 	h = test10->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);	
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	}
 
@@ -921,13 +1041,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test->center.x, test->center.y, test->center.z);
 	w = test->width;
 	h = test->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	//set up spike	
 	Shape *spike;
@@ -937,13 +1062,20 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
 	w = spike->width;
 	h = spike->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
 	//set up spike	2
 	Shape *spike2;
@@ -953,13 +1085,20 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(spike2->center.x, spike2->center.y, spike2->center.z);
 	w = spike2->width;
 	h = spike2->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 
 	//set up spike	3
 	Shape *spike3;
@@ -969,13 +1108,20 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(spike3->center.x, spike3->center.y, spike3->center.z);
 	w = spike3->width;
 	h = spike3->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -986,13 +1132,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test2->center.x, test2->center.y, test2->center.z);
 	w = test2->width;
 	h = test2->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 
 	//Draw test platform 3
@@ -1003,13 +1154,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test3->center.x, test3->center.y, test3->center.z);
 	w = test3->width;
 	h = test3->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	//Draw test platform 4
 	Shape *test4;
@@ -1019,13 +1175,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
 	w = test4->width;
 	h = test4->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 	
 	//Draw test platform 5
 	Shape *test5;
@@ -1035,13 +1196,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test5->center.x, test5->center.y, test5->center.z);
 	w = test5->width;
 	h = test5->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 
         //Draw test platform 6
@@ -1052,13 +1218,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test6->center.x, test6->center.y, test6->center.z);
 	w = test6->width;
 	h = test6->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 
 
@@ -1070,13 +1241,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test7->center.x, test7->center.y, test7->center.z);
 	w = test2->width;
 	h = test2->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 
 	//Draw test platform 8
@@ -1087,13 +1263,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test8->center.x, test8->center.y, test8->center.z);
 	w = test8->width;
 	h = test8->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	//Draw test platform 9
 	Shape *test9;
@@ -1103,13 +1284,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test9->center.x, test9->center.y, test9->center.z);
 	w = test9->width;
 	h = test9->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 	
 	//Draw test platform 10
 	Shape *test10;
@@ -1119,13 +1305,18 @@ void drawLevel5(Game *gm, Level *lev)
 	glTranslatef(test10->center.x, test10->center.y, test10->center.z);
 	w = test10->width;
 	h = test10->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	}
 
@@ -1351,13 +1542,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test->center.x, test->center.y, test->center.z);
 	w = test->width;
 	h = test->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 	
 	//set up spike	
 	Shape *spike;
@@ -1367,13 +1563,20 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
 	w = spike->width;
 	h = spike->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -1384,13 +1587,19 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test2->center.x, test2->center.y, test2->center.z);
 	w = test2->width;
 	h = test2->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+
 
 
 	//Draw test platform 3
@@ -1401,13 +1610,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test3->center.x, test3->center.y, test3->center.z);
 	w = test3->width;
 	h = test3->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	//Draw test platform 4
 	Shape *test4;
@@ -1417,13 +1631,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
 	w = test4->width;
 	h = test4->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 	
 	//Draw test platform 5
 	Shape *test5;
@@ -1433,13 +1652,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test5->center.x, test5->center.y, test5->center.z);
 	w = test5->width;
 	h = test5->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	//Draw test platform 6
 	Shape *test6;
@@ -1449,13 +1673,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test6->center.x, test6->center.y, test6->center.z);
 	w = test6->width;
 	h = test6->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	//Draw test platform 5
 	Shape *test7;
@@ -1465,13 +1694,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test7->center.x, test7->center.y, test7->center.z);
 	w = test7->width;
 	h = test7->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 		//Draw test platform 5
 	Shape *test8;
@@ -1481,13 +1715,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test8->center.x, test8->center.y, test8->center.z);
 	w = test8->width;
 	h = test8->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 		//Draw test platform 5
 	Shape *test9;
@@ -1497,13 +1736,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test9->center.x, test9->center.y, test9->center.z);
 	w = test9->width;
 	h = test9->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 		//Draw test platform 5
 	Shape *test10;
@@ -1513,13 +1757,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test10->center.x, test10->center.y, test10->center.z);
 	w = test10->width;
 	h = test10->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 		//Draw test platform 5
 	Shape *test11;
@@ -1529,13 +1778,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test11->center.x, test11->center.y, test11->center.z);
 	w = test11->width;
 	h = test11->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 		//Draw test platform 5
 	Shape *test12;
@@ -1545,13 +1799,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test12->center.x, test12->center.y, test12->center.z);
 	w = test12->width;
 	h = test12->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 		//Draw test platform 5
 	Shape *test13;
@@ -1561,13 +1820,18 @@ void drawLevel6(Game *gm, Level *lev)
 	glTranslatef(test13->center.x, test13->center.y, test13->center.z);
 	w = test13->width;
 	h = test13->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 
 	}
 
@@ -1704,13 +1968,19 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test->center.x, test->center.y, test->center.z);
 	w = test->width;
 	h = test->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 	//set up spike	
 	Shape *spike;
@@ -1720,13 +1990,20 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
 	w = spike->width;
 	h = spike->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 
 	//set up spike2	
 	Shape *spike2;
@@ -1736,13 +2013,20 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(spike2->center.x, spike2->center.y, spike2->center.z);
 	w = spike2->width;
 	h = spike2->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
 	//set up spike3	
 	Shape *spike3;
@@ -1752,13 +2036,20 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(spike3->center.x, spike3->center.y, spike3->center.z);
 	w = spike3->width;
 	h = spike3->height;
+	prepSpike(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
 	
 
         //Draw test platform 2
@@ -1769,13 +2060,19 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test2->center.x, test2->center.y, test2->center.z);
 	w = test2->width;
 	h = test2->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
 
 
 	//Draw test platform 3
@@ -1786,13 +2083,21 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test3->center.x, test3->center.y, test3->center.z);
 	w = test3->width;
 	h = test3->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 	//Draw test platform 4
 	Shape *test4;
@@ -1802,13 +2107,21 @@ void drawLevel8(Game *gm, Level *lev)
 	glTranslatef(test4->center.x, test4->center.y, test4->center.z);
 	w = test4->width;
 	h = test4->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 	
 	//Draw test platform 5
 	Shape *test5;
@@ -1819,12 +2132,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test5->width;
 	h = test5->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 	//Draw test platform 6
 	Shape *test6;
@@ -1835,12 +2155,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test6->width;
 	h = test6->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 	//Draw test platform 5
 	Shape *test7;
@@ -1851,12 +2178,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test7->width;
 	h = test7->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 		//Draw test platform 5
 	Shape *test8;
@@ -1867,12 +2201,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test8->width;
 	h = test8->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 		//Draw test platform 5
 	Shape *test9;
@@ -1883,12 +2224,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test9->width;
 	h = test9->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 		//Draw test platform 5
 	Shape *test10;
@@ -1899,12 +2247,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test10->width;
 	h = test10->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 		//Draw test platform 5
 	Shape *test11;
@@ -1915,12 +2270,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test11->width;
 	h = test11->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 		//Draw test platform 5
 	Shape *test12;
@@ -1931,12 +2293,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test12->width;
 	h = test12->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 		//Draw test platform 5
 	Shape *test13;
@@ -1947,12 +2316,19 @@ void drawLevel8(Game *gm, Level *lev)
 	w = test13->width;
 	h = test13->height;
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+
+
 
 	}
 
@@ -2042,7 +2418,7 @@ void clearLevel(Game *gm)
 		glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
-	
+
 	//set up spike	
 	Shape *spike3;
 	glColor3ub(80,110,70);
@@ -2051,6 +2427,38 @@ void clearLevel(Game *gm)
 	glTranslatef(spike3->center.x, spike3->center.y, spike3->center.z);
 	w = spike3->width;
 	h = spike3->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	//set up spike	
+	Shape *spike4;
+	glColor3ub(80,110,70);
+	spike4 = &gm->spike[3];
+	glPushMatrix();
+	glTranslatef(spike4->center.x, spike4->center.y, spike4->center.z);
+	w = spike4->width;
+	h = spike4->height;
+	glBegin(GL_QUADS);
+		glVertex2i(-w,-h);
+		glVertex2i(-w, h);
+		glVertex2i( w, h);
+		glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+
+	//set up spike	
+	Shape *spike5;
+	glColor3ub(80,110,70);
+	spike5 = &gm->spike[4];
+	glPushMatrix();
+	glTranslatef(spike5->center.x, spike5->center.y, spike5->center.z);
+	w = spike5->width;
+	h = spike5->height;
 	glBegin(GL_QUADS);
 		glVertex2i(-w,-h);
 		glVertex2i(-w, h);
