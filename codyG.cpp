@@ -36,6 +36,7 @@
 
 #include "codyG.h"
 
+extern void flames();
 extern void death();
 Timers timers;
 

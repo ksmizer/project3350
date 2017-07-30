@@ -360,7 +360,7 @@ void check_mouse(XEvent *e)
 					sw = w;
 					sh = h;
 					sx = gm.xres*0.1 + w/2;
-					sy = gm.yres*0.2 + h/2;
+					sy = 1 - gm.yres*0.2 + h/2;
 				}
 			}
 			else if (y < gm.yres*0.55 && y > gm.yres*0.5) {
@@ -372,7 +372,7 @@ void check_mouse(XEvent *e)
 					sw = w;
 					sh = h;
 					sx = gm.xres*0.08 + w/2;
-					sy = gm.yres*0.5 + h/2;
+					sy = 1 - gm.yres*0.5 + h/2;
 				}
 			}
 			else if (y < gm.yres*0.63 && y > gm.yres*.55) {
@@ -384,7 +384,7 @@ void check_mouse(XEvent *e)
 					sw = w;
 					sh = h;
 					sx = gm.xres*0.11 + w/2;
-					sy = gm.yres*0.55 + h/2;
+					sy = 1 - gm.yres*0.55 + h/2;
 				}
 			}
 			else

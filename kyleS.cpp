@@ -221,7 +221,6 @@ bool enemyHurt(Game *game, Character *p, Enemy enemy)
 			if (e->s.center.x > spikeLeft[i] && e->s.center.x < spikeRight[i]) {
 				e->s.center.y = spikeTop[i];
 				e->velocity.y = 0;
-				death();
 			}
 		}
 	}
