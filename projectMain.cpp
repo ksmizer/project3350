@@ -140,6 +140,9 @@ SpriteAnimation jumpAnimation2((char*)"greenArmor.png", 1, 12, 12, 8, 8,
 SpriteAnimation attackAnimation2((char*)"greenArmor.png", 1, 12, 12, 8, 10,
 	36, 40, 0.1, false);
 
+// selection
+bool hasSelection = false;
+int sx, sy, sh, sw;
 
 //SpriteAnimation zombieAnimation((char*)"zombie.png", 1, 5, 5, 0, 3,
 	//27, 40, 0.1, true);
@@ -356,23 +359,41 @@ void check_mouse(XEvent *e)
 				if (x > gm.xres*0.1 && x < gm.xres*0.23) {
 					w = gm.xres*0.23 - gm.xres*0.1;
 					h = gm.yres*0.3 - gm.yres*0.2;
-					selection(&gm, x, y, h, w);
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h;
+					sx = x;
+					sy = y;
 				}
 			}
-			if (y < gm.yres*0.55 && y > gm.yres*0.5) {
+			else if (y < gm.yres*0.55 && y > gm.yres*0.5) {
 				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
 					w = gm.xres*0.23 - gm.xres*0.08;
 					h = gm.yres*0.55 - gm.yres*0.5;
-					selection(&gm, x, y, h, w);
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h;
+					sx = x;
+					sy = y;
 				}
 			}
-			if (y < gm.yres*0.63 && y > gm.yres*.55) {
+			else if (y < gm.yres*0.63 && y > gm.yres*.55) {
 				if (x > gm.xres*0.11 && x < gm.xres*0.22) {
 					w = gm.xres*0.22 - gm.xres*0.11;
 					h = gm.yres*0.63 - gm.yres*0.55;
-					selection(&gm, x, y, h, w);
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h;
+					sx = x;
+					sy = y;
 				}
 			}
+			else
+				hasSelection = false;
+
 		}
 	}
 }
@@ -636,7 +657,7 @@ void render(Game *game)
 	if (gm.state == STATE_STARTMENU) {
 		loadStart(&gm);
 		checkStart(&gm);
-	}
+			}
 
 	if (gm.state == STATE_LOADING) {
 
@@ -782,6 +803,7 @@ void render(Game *game)
 				savePoints.at(j).getY(), 4.0, false);
 		}
 	}
+
 	
 
 	//Check Game States
@@ -792,6 +814,11 @@ void render(Game *game)
 	//checkGameOver(&gm);
 	outputScore(&gm);
 	outputCurrentScore(&gm);
+
+	if (gm.state == STATE_STARTMENU)
+		if (hasSelection)
+			selection(&gm, sx, sy, sh, sw);
+
 	
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);

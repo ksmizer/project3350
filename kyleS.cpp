@@ -522,6 +522,7 @@ void selection(Game *gm, int x, int y, int h, int w)
 	w = gm->button.width;
 	if (gm->state == STATE_STARTMENU) {
 		glPushMatrix();
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glColor4f(1.0, 1.0, 1.0, 0.3);
 		glBegin(GL_QUADS);

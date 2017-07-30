@@ -1350,9 +1350,29 @@ void drawLevel5(Game *gm, Level *lev)
 			glEnd();	
 			glPopMatrix();
 
-	}
 
-	
+		//Draw test platform 11
+	Shape *test11;
+	glColor3ub(80,110,70);
+	test11 = &gm->plat[10];
+	glPushMatrix();
+	glTranslatef(test11->center.x, test11->center.y, test11->center.z);
+	w = test11->width;
+	h = test11->height;
+	prepPlat(gm);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
+
+	}
 
 
 
@@ -1396,9 +1416,15 @@ void setLevel5(Game *gm, Level *lev)
         gm->plat[5].width = 50;
         gm->plat[5].height = 15;
         gm->plat[5].center.x = gm->xres - 50;
-        gm->plat[5].center.y = 240;
-
-        //test platforms above traps
+        gm->plat[5].center.y = 220;
+		
+		//test platform above rdoor
+        gm->plat[10].width = 50;
+        gm->plat[10].height = 15;
+        gm->plat[10].center.x = gm->xres - 50;
+        gm->plat[10].center.y = 320;
+        
+		//test platforms above traps
         gm->plat[6].width = 50;
         gm->plat[6].height = 15;
         gm->plat[6].center.x = 1000;
