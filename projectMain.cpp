@@ -131,7 +131,7 @@ SpriteAnimation jumpAnimation((char*)"player.png", 1, 12, 12, 8, 8,
 	46, 50, 0.1, true);
 SpriteAnimation attackAnimation((char*)"player.png", 1, 12, 12, 8, 10,
 	46, 50, 0.1, false);
-SpriteAnimation runAnimation2((char*)"greenArmor.png", 1, 12, 12, 1, 6, 
+SpriteAnimation runAnimation2((char*)"greenArmor.png", 1, 12, 12, 1, 5, 
 	36, 40, 0.1, true); 
 SpriteAnimation idleAnimation2((char*)"greenArmor.png", 1, 12, 12, 0, 0, 
 	36, 40, 0.1, true);
@@ -166,10 +166,13 @@ int main(void)
 	s2.initAnimations();
 	SavePoint sp1(100, 59, false);
 	SavePoint sp2(100, 59, false);
+	SavePoint sp3(100, 59, false);
 	savePoints.push_back(sp1);
 	savePoints.push_back(sp2);
+	savePoints.push_back(sp3);
 	savePoints.at(0).initAnimations();
 	savePoints.at(1).initAnimations();
+	savePoints.at(2).initAnimations();
 	Upgrade u1(300, 48, true, "Jumping Armor", "Allows you to double jump");
 	upgrade.push_back(u1);
 	upgrade.at(0).initAnimation();
@@ -311,7 +314,10 @@ void makeCharacter(Game *game, int x, int y)
 	p->l[0].thrown = false;
 	p->l[1].thrown = false;
 	p->jumpCurrent = 0;
-	p->jumpMax = p->jumpMax;
+	if (p->upgrade)
+		p->jumpMax = 2;
+	else
+		p->jumpMax = 1;
 	p->soundChk = true;
 	game->n++;
 	p->isLeft = false;
@@ -454,6 +460,9 @@ void check_keys(XEvent *e) {
 					//enemies.erase(enemies.begin()); breaks game due to physics
 					if (enemies.size() > 0)
 						moveEnemy(enemies.at(0), 601, 48);
+					break;
+				case XK_z:
+					gm.character.upgrade2 = true;
 					break;
 				case XK_0:
 					nextLevel(&gm, &lev);
@@ -607,21 +616,7 @@ void physics(Game *game, PlayerState ps)
 	for (unsigned int i = 0; i < upgrade.size(); i++) {
 		upgrade.at(i).sprite.updateAnimation();
 	}
-	/*
-	if (savePoints.at(0).checkIsEnabled() && lev.levelID == 1) {
-		savePoints.at(0).animations.at(0).disable();
-		savePoints.at(0).animations.at(1).enable();
-		savePoints.at(0).animations.at(1).updateAnimation();
-	}
-	else {
-		savePoints.at(0).animations.at(1).disable();
-		savePoints.at(0).animations.at(0).enable();
-		savePoints.at(0).animations.at(0).updateAnimation();
-
-	if (lev.levelID != 1)
-		savePoints.at(0).animations.at(0).disable();
-		savePoints.at(0).animations.at(1).disable();
-	}*/
+	
 	if (gm.state == STATE_GAMEOVER) {
 		setDeathTime();
 		countDeath();

@@ -74,17 +74,19 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x > -WALK)
 				p->velocity.x -= WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x > -RUN)
+				if (p->velocity.x > -RUN && p->upgrade2)
 					p->velocity.x -= WALK / 5;
 			}
 		}
 		else {
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+				if(p->upgrade2)
 					p->velocity.x = -RUN;
-			}
-			else {
+				else
 					p->velocity.x = -WALK;
 			}
+			else
+				p->velocity.x = -WALK;
 		}
 	}
 	if (keys[XK_Right] || keys[XK_D] || keys[XK_d]) {
@@ -93,17 +95,20 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x < WALK)
 				p->velocity.x += WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x < RUN)
+				if (p->velocity.x < RUN && p->upgrade2)
 					p->velocity.x += WALK / 5;
 			}
 		}
 		else {
-			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+			if (keys[XK_Shift_L] || keys[XK_Shift_R])
+			{
+				if (p->upgrade2)
 					p->velocity.x = RUN;
-			}
-			else {
+				else
 					p->velocity.x = WALK;
 			}
+			else
+				p->velocity.x = WALK;
 		}
 	}
 	if (keys[XK_Up] ||  keys[XK_W] || keys[XK_w]) {
@@ -705,7 +710,7 @@ void loadGameover(Game *gm)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glFlush();
 	glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, gm->tex.loadTexture);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.diedTexture);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xd[0], gm->tex.yd[1]);
 			glVertex2i(0, 0); 
@@ -932,12 +937,18 @@ void mouseClick(Game *gm, int action, int x, int y)
 				if (x > gm->xres*0.08 && x < gm->xres*0.26) {
 					gm->state = STATE_CONTROLS;
 					checkControl(gm);
-					cout << "control set" << endl;
 				}
 			}
 			if (y < gm->yres*0.63 && y > gm->yres*.55) {
 				if (x > gm->xres*0.11 && x < gm->xres*0.22) {
 					gm->done = 1;
+				}
+			}
+		}
+		if (gm->state == STATE_GAMEOVER) {
+			if (y < gm->yres*0.3 && y > gm->yres*.2) {
+				if (x > gm->xres*0.45 && x < gm->xres*0.55) {
+					gm->state = STATE_GAMEPLAY;
 				}
 			}
 		}
