@@ -177,7 +177,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 		spikeLeft[i] = s->center.x - s->width - p->s.width;
 		spikeRight[i] = s->center.x + s->width + p->s.width;
 		if (p->s.center.y < spikeTop[i] - 10 && p->s.center.y > spikeBottom[i] + 15) {
-			if (p->s.center.x > spikeLeft[i] && p->s.center.x < spikeRight[i]) {
+			if (p->s.center.x > spikeLeft[i] + 10 && p->s.center.x < spikeRight[i] - 10) {
 				p->velocity.y = 0;
 				p->jumpCurrent = 2;
 				spikes();

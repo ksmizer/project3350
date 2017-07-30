@@ -1541,7 +1541,7 @@ void setLevel6(Game *gm, Level *lev)
         //test platforms
         gm->plat[9].width = 50;
         gm->plat[9].height = 15;
-        gm->plat[9].center.x = 800;
+        gm->plat[9].center.x = 1000;
         gm->plat[9].center.y = 150;
 
         //test platforms
@@ -1561,6 +1561,13 @@ void setLevel6(Game *gm, Level *lev)
         gm->plat[12].height = 15;
         gm->plat[12].center.x = gm->xres - 300;
         gm->plat[12].center.y = 600;
+		
+		//test platforms
+        gm->plat[13].width = 50;
+        gm->plat[13].height = 15;
+        gm->plat[13].center.x = 800;
+        gm->plat[13].center.y = 150;
+
 
         //test spikes
         gm->spike[0].width = 350;
@@ -1890,8 +1897,28 @@ void drawLevel6(Game *gm, Level *lev)
 			glEnd();	
 			glPopMatrix();
 
+	
+	//Draw test platform 5
+	Shape *test14;
+	glColor3ub(80,110,70);
+	test14 = &gm->plat[13];
+	glPushMatrix();
+	glTranslatef(test14->center.x, test14->center.y, test14->center.z);
+	w = test14->width;
+	h = test14->height;
+	prepPlat(gm);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+			glEnd();	
+			glPopMatrix();
 	}
-
 }
 
 void setLevel8(Game *gm, Level *lev)

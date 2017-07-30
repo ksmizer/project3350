@@ -129,11 +129,12 @@ class Upgrade
 {
 	protected:
 	int xPos, yPos;
+	int type;
 	bool enabled;
 	string name;
 	string description;
 	public:
-	Upgrade(int x, int y, bool e, string n, string d);
+	Upgrade(int t, int x, int y, bool e, string n, string d);
 	~Upgrade();
 	SpriteAnimation sprite;
 	int getX();

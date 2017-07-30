@@ -170,15 +170,25 @@ int main(void)
 	SavePoint sp1(100, 59, false);
 	SavePoint sp2(100, 59, false);
 	SavePoint sp3(100, 59, false);
+	SavePoint sp4(100, 59, false);
+	SavePoint sp5(1100, 59, false);
 	savePoints.push_back(sp1);
 	savePoints.push_back(sp2);
 	savePoints.push_back(sp3);
+	savePoints.push_back(sp4);
+	savePoints.push_back(sp5);
+
 	savePoints.at(0).initAnimations();
 	savePoints.at(1).initAnimations();
 	savePoints.at(2).initAnimations();
-	Upgrade u1(300, 48, true, "Jumping Armor", "Allows you to double jump");
+	savePoints.at(3).initAnimations();
+	savePoints.at(4).initAnimations();
+	Upgrade u1(0, 300, 48, true, "Jumping Armor", "Allows you to double jump");
+	Upgrade u2(1, 800, 760, true, "Sprinting Boots", "Allows you to spring");
 	upgrade.push_back(u1);
+	upgrade.push_back(u2);
 	upgrade.at(0).initAnimation();
+	upgrade.at(1).initAnimation();
 	#ifdef USE_OPENAL_SOUND
 	initialize_sound();
 	background_music();
@@ -469,8 +479,11 @@ void check_keys(XEvent *e) {
                     break;
 				case XK_j:
 					playerState = STATE_ATTACK;
-					s1.initSpearDirection(gm.character);
-					//s2.initSpearDirection(gm.character);
+						if (gm.character.l[0].s.center.x < 0 || 
+							gm.character.l[0].s.center.x > gm.xres) {
+							s1.initSpearDirection(gm.character);
+							s2.initSpearDirection(gm.character);
+						}
 					break;
 				case XK_t:
 					if (enemies.size() > 0)

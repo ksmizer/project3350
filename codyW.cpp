@@ -1200,14 +1200,14 @@ void setLevel7(Game *gm, Level *lev)
 	        //test platforms3
 	        gm->plat[2].width = 15;
 	        gm->plat[2].height = 15;
-	        gm->plat[2].center.x = 180;
+	        gm->plat[2].center.x = 200;
 	        gm->plat[2].center.y = 250;
 	
 	        //test platforms4
 	        gm->plat[3].width = 30;
 	        gm->plat[3].height = 15;
 	        gm->plat[3].center.x = 7;
-	        gm->plat[3].center.y = 400;
+	        gm->plat[3].center.y = 375;
 	
 	        //test spikes3
 	        gm->spike[2].width = 50;
