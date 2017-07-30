@@ -361,8 +361,8 @@ void check_mouse(XEvent *e)
 			}
 			if (y < gm.yres*0.55 && y > gm.yres*0.5) {
 				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
-					w = gm.xres*0.23 - gm.xres*0.08;
-					h = gm.yres*0.55 - gm.yres*0.5;
+					w = gm.xres*0.26 - gm.xres*0.08;
+					h = gm.yres*0.45 - gm.yres*0.37;
 					selection(&gm, x, y, h, w);
 				}
 			}

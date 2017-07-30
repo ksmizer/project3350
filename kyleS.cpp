@@ -523,6 +523,8 @@ void selection(Game *gm, int x, int y, int h, int w)
 	if (gm->state == STATE_STARTMENU) {
 		glPushMatrix();
 		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f(1.0, 1.0, 1.0, 0.3);
 		glBegin(GL_QUADS);
 			glVertex2i(c->x-w, c->y-h);
@@ -839,6 +841,7 @@ void start(Game *gm)
 {
 	glPushMatrix();
 	glClear(GL_COLOR_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.startTexture);
 	glBegin(GL_QUADS);
