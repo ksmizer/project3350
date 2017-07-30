@@ -45,7 +45,12 @@ extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, vector<SavePoint>& sp);
-//extern void buttonInit(Game *game);
+extern void selection(Game *game, int x, int y, int h, int w);
+extern void start(Game *game);
+extern void loadGameover(Game *game);
+extern void loadLoading(Game *game);
+extern void loading(Game *game);
+extern void loadStart(Game *game);
 extern void loadSpikes(Game *game);
 extern void prepSpike(Game *game);
 extern void loadBoxes(Game *game);
@@ -58,9 +63,10 @@ extern void platBind(Game *game);
 extern void checkPause(Game *game);
 extern void checkControl(Game *game);
 extern void checkStart(Game *game);
+extern void checkLoading(Game *game);
 extern void checkGameOver(Game *game);
 extern void charHurt(Game *game, Character *p);
-extern void mouseClick(Game *game, int ibutton, int action, int x, int y);
+extern void mouseClick(Game *game, int action, int x, int y);
 extern void setFrame(Game *g);
 extern void setLRDoor(Game *g);
 extern void levelText(Game *game, Level *lev);
@@ -87,8 +93,10 @@ extern void initializeTime();
 extern void resetTime();
 extern void countDeath();
 extern void setDeathTime();
+extern void setPauseTime();
 extern void outputScore(Game *game);
 extern void outputCurrentScore(Game *game);
+extern void loadFlames(Game *game);
 
 //declare player state
 PlayerState playerState;
@@ -273,55 +281,7 @@ void init_opengl(void)
 	initialize_fonts();
 	
 	//Ppm textures
-	loadBackground(&gm);
-	loadPlatforms(&gm);
-	loadBoxes(&gm);
-	loadSpikes(&gm);
-
-	//Sprites
-	runAnimation.convertToPpm();
-	runAnimation.createTexture();
-	idleAnimation.convertToPpm();
-	idleAnimation.createTexture();
-	jumpAnimation.convertToPpm();
-	jumpAnimation.createTexture();
-	attackAnimation.convertToPpm();
-	attackAnimation.createTexture();
-	runAnimation2.convertToPpm();
-	runAnimation2.createTexture();
-	idleAnimation2.convertToPpm();
-	idleAnimation2.createTexture();
-	jumpAnimation2.convertToPpm();
-	jumpAnimation2.createTexture();
-	attackAnimation2.convertToPpm();
-	attackAnimation2.createTexture();
-
-	s1.sprite.convertToPpm();
-	s1.sprite.createTexture();
-	s2.sprite.convertToPpm();
-	s2.sprite.createTexture();
-	if (enemies.size() > 0)
-		printf("SIZE: %i\n", (int)enemies.at(0).animations.size());
-	for (unsigned int i = 0; i < enemies.size(); i++) {
-		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
-			enemies.at(i).animations.at(j).convertToPpm();
-			enemies.at(i).animations.at(j).createTexture();
-		}
-	}
-	for (unsigned int j = 0; j < savePoints.size(); j++) {
-		for (unsigned int i = 0; i < 2; i++) {
-			savePoints[j].animations.at(i).convertToPpm();
-			savePoints[j].animations.at(i).createTexture();
-		}
-	}
-	for (unsigned int i = 0; i < decorations.size(); i++) {
-		decorations.at(i).convertToPpm();
-		decorations.at(i).createTexture();
-	}
-	for (unsigned int i = 0; i < upgrade.size(); i++) {
-		upgrade.at(i).sprite.convertToPpm();
-		upgrade.at(i).sprite.createTexture();
-	}
+	loadStart(&gm);
 }
 
 void makeCharacter(Game *game, int x, int y)
@@ -370,45 +330,51 @@ void check_mouse(XEvent *e)
         static int savex = 0;
         static int savey = 0;
         static int n = 0;
-		gm.lbutton = 0;
-		gm.rbutton = 0;
         if (e->type == ButtonRelease) {
-			mouseClick(&gm, e->xbutton.button, 2, e->xbutton.x, e->xbutton.y);
 			return;
         }
         if (e->type == ButtonPress) {
                 if (e->xbutton.button == 1) {
-                        //Left button was pressed
-						gm.lbutton = 1;
+                	//Left button was pressed
+					mouseClick(&gm, 1, e->xbutton.x, e->xbutton.y);
                 }
                 if (e->xbutton.button == 3) {
-                        //Right button was pressed
-						gm.rbutton = 1;
+                	//Right button was pressed
+					mouseClick(&gm, 2, e->xbutton.x, e->xbutton.y);
                 }
         }
         //Did the mouse move?
-        if (savex != e->xbutton.x || savey != e->xbutton.y) {
-                savex = e->xbutton.x;
-                savey = e->xbutton.y;
-                if (++n < 10)
-                        return;
-        }
-		//Check for mouse over any buttons
-		for (int i = 0; i < gm.nbuttons; i++) {
-			gm.button[i].over = 0;
-			gm.button[i].down = 0;
-			if (savex >= button[i].r.left &&
-					savex <= gm.button[i].r.right &&
-					savey >= gm.button[i].r.bot &&
-					savey <= gm.button[i].r.top) {
-				button[i].over = 1;
-				break;
+	if (savex != e->xbutton.x || savey != e->xbutton.y) {
+		int x, y;
+		savex = x = e->xbutton.x;
+		savey = y = e->xbutton.y;
+		if (++n < 10)
+			return;
+		if (gm.state == STATE_STARTMENU) {
+			int w, h;
+			if (y < gm.yres*0.3 && y > gm.yres*0.2) {
+				if (x > gm.xres*0.1 && x < gm.xres*0.23) {
+					w = gm.xres*0.23 - gm.xres*0.1;
+					h = gm.yres*0.3 - gm.yres*0.2;
+					selection(&gm, x, y, h, w);
+				}
+			}
+			if (y < gm.yres*0.55 && y > gm.yres*0.5) {
+				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
+					w = gm.xres*0.23 - gm.xres*0.08;
+					h = gm.yres*0.55 - gm.yres*0.5;
+					selection(&gm, x, y, h, w);
+				}
+			}
+			if (y < gm.yres*0.63 && y > gm.yres*.55) {
+				if (x > gm.xres*0.11 && x < gm.xres*0.22) {
+					w = gm.xres*0.22 - gm.xres*0.11;
+					h = gm.yres*0.63 - gm.yres*0.55;
+					selection(&gm, x, y, h, w);
+				}
 			}
 		}
-		if (gm.lbutton)
-			mouseClick(&gm, 1, 1, savex, savey);
-		if (gm.rbutton)
-			mouseClick(&gm, 2, 1, savex, savey);
+	}
 }
 
 void check_keys(XEvent *e) {
@@ -426,11 +392,10 @@ void check_keys(XEvent *e) {
                 gm.keys[key] = 1;
                 if (gm.keys[XK_Shift_L] || gm.keys[XK_Shift_R]) {
 					shift = 1;
-					return;
 				}
 		if (gm.state == STATE_GAMEOVER) {
 					if (gm.keys[XK_r] || gm.keys[XK_R]) {
-							totalTimer(4);
+							//totalTimer(4);
 							makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;
 			}
@@ -446,12 +411,14 @@ void check_keys(XEvent *e) {
                 case XK_Tab:
                     if (gm.state == STATE_PAUSE)
                         gm.state = STATE_GAMEPLAY;
-					else if (gm.state == STATE_CONTROLS)
-						gm.state = STATE_STARTMENU;
                     else
                         gm.state = STATE_PAUSE;
+		        //totalTimer(2);
                     break;
-				
+				case XK_m:
+					if (gm.state == STATE_CONTROLS)
+						gm.state = STATE_STARTMENU;
+					break;
 				case XK_i:
 					//toggle savepoint
 					if (savePoints.at(0).checkIsEnabled())
@@ -474,13 +441,15 @@ void check_keys(XEvent *e) {
 					}
 					break;
 				case XK_p:
-                    if (gm.state == STATE_STARTMENU)
-                        gm.state = STATE_GAMEPLAY;
+                    if (gm.state == STATE_STARTMENU) {
+                        gm.state = STATE_NONE;
+						loadLoading(&gm);
+					}
                     break;
 				case XK_j:
 					playerState = STATE_ATTACK;
 					s1.initSpearDirection(gm.character);
-					s2.initSpearDirection(gm.character);
+					//s2.initSpearDirection(gm.character);
 					break;
 				case XK_t:
 					if (enemies.size() > 0)
@@ -536,10 +505,7 @@ void physics(Game *game, PlayerState ps)
 	enemyCollision(game, p, enemies);
 	savePointCheck(p, savePoints);
 	upgradeCheck(p, upgrade);	
-	if (!gm.button[0].r.width) {
-		//buttonInit(game);
-	}
-
+	
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
 		loadLevel(&gm, &lev);
@@ -629,7 +595,7 @@ void physics(Game *game, PlayerState ps)
 
 	s1.sprite.enable();
 	s2.sprite.enable();
-//	s1.sprite.updateAnimation();
+	s1.sprite.updateAnimation();
 //	s2.sprite.updateAnimation();
 	updateSpear(&game->character);
 
@@ -657,16 +623,78 @@ void physics(Game *game, PlayerState ps)
 		totalTimer(1);
 	} 
 	if (gm.state == STATE_PAUSE) {
-		totalTimer(1);
+		setPauseTime();
 	}
 }
 
 void render(Game *game)
 {
 	float w, h;
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+//	glClearColor(0.0, 0.0, 0.0, 1.0);
+//	glClear(GL_COLOR_BUFFER_BIT);
 
+	if (gm.state == STATE_STARTMENU) {
+		loadStart(&gm);
+		checkStart(&gm);
+	}
+
+	if (gm.state == STATE_LOADING) {
+
+		//textures
+		loadBackground(&gm);
+		loadPlatforms(&gm);
+		loadBoxes(&gm);
+		loadSpikes(&gm);
+	
+		//Sprites
+		runAnimation.convertToPpm();
+		runAnimation.createTexture();
+		idleAnimation.convertToPpm();
+		idleAnimation.createTexture();
+		jumpAnimation.convertToPpm();
+		jumpAnimation.createTexture();
+		attackAnimation.convertToPpm();
+		attackAnimation.createTexture();
+		runAnimation2.convertToPpm();
+		runAnimation2.createTexture();
+		idleAnimation2.convertToPpm();
+		idleAnimation2.createTexture();
+		jumpAnimation2.convertToPpm();
+		jumpAnimation2.createTexture();
+		attackAnimation2.convertToPpm();
+		attackAnimation2.createTexture();
+	
+		s1.sprite.convertToPpm();
+		s1.sprite.createTexture();
+		s2.sprite.convertToPpm();
+		s2.sprite.createTexture();
+		if (enemies.size() > 0)
+			printf("SIZE: %i\n", (int)enemies.at(0).animations.size());
+		for (unsigned int i = 0; i < enemies.size(); i++) {
+			for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
+				enemies.at(i).animations.at(j).convertToPpm();
+				enemies.at(i).animations.at(j).createTexture();
+			}
+		}
+		for (unsigned int j = 0; j < savePoints.size(); j++) {
+			for (unsigned int i = 0; i < 2; i++) {
+				savePoints[j].animations.at(i).convertToPpm();
+				savePoints[j].animations.at(i).createTexture();
+			}
+		}
+		for (unsigned int i = 0; i < decorations.size(); i++) {
+			decorations.at(i).convertToPpm();
+			decorations.at(i).createTexture();
+		}
+		for (unsigned int i = 0; i < upgrade.size(); i++) {
+			upgrade.at(i).sprite.convertToPpm();
+			upgrade.at(i).sprite.createTexture();
+		}
+		gm.state = STATE_GAMEPLAY;
+	}
+	if (gm.state == STATE_GAMEOVER) {
+		loadGameover(&gm);
+	}
 	//draw background
 	background(&gm);
 
@@ -758,12 +786,13 @@ void render(Game *game)
 
 	//Check Game States
 	checkStart(&gm);
+	checkLoading(&gm);
 	checkControl(&gm);
 	checkPause(&gm);
-	checkGameOver(&gm);
+	//checkGameOver(&gm);
 	outputScore(&gm);
 	outputCurrentScore(&gm);
-
+	
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
 
