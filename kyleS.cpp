@@ -72,13 +72,17 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x > -WALK)
 				p->velocity.x -= WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x > -WALK * 2)
+				if (p->velocity.x > -WALK * 2 && p->upgrade2)
 					p->velocity.x -= WALK / 5;
 			}
 		}
 		else {
-			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = -WALK * 2;
+			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+				if (p->upgrade2)
+					p->velocity.x = -WALK * 1.5;
+				else
+					p->velocity.x = -WALK;
+			}
 			else
 				p->velocity.x = -WALK;
 		}
@@ -89,13 +93,18 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x < WALK)
 				p->velocity.x += WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x < WALK * 2)
+				if (p->velocity.x < WALK * 1.5 && p->upgrade2)
 					p->velocity.x += WALK / 5;
 			}
 		}
 		else {
 			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = WALK * 2;
+			{
+				if (p->upgrade2)
+					p->velocity.x = WALK * 1.5;
+				else
+					p->velocity.x = WALK;
+			}
 			else
 				p->velocity.x = WALK;
 		}

@@ -508,6 +508,11 @@ void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s,
 		e.push_back(e2);
 	}
 
+	if (level == 7) {
+		Enemy e1(1,32,27,300,48,26,27,0,0,4,0,0,1200,true);
+		e.push_back(e1);
+	}
+
 	for (unsigned int i = 0; i < e.size(); i++) {
 		e.at(i).initAnimations();
 		for (unsigned int j = 0; j < e.at(i).animations.size(); j++) {
@@ -521,11 +526,6 @@ void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s,
 		d.at(i).createTexture();
 	}
 
-	/*for (unsigned int i = 0; i < u.size(); i++) {
-		u.at(i).initAnimation();
-		u.at(i).sprite.convertToPpm();
-		u.at(i).sprite.createTexture();
-	}*/
 }
 
 void renderEntities(vector<SpriteAnimation> &d)
@@ -575,6 +575,12 @@ void checkSavePoints(int level, vector<SavePoint> &s)
 		else
 			s.at(1).animations.at(0).enable();
 	}
+	if (level == 7) {
+		if (s.at(2).checkIsEnabled())
+			s.at(2).animations.at(1).enable();
+		else
+			s.at(2).animations.at(0).enable();
+	}
 }
 
 int getSavePointLevel(vector<SavePoint> &s) 
@@ -583,6 +589,8 @@ int getSavePointLevel(vector<SavePoint> &s)
 		return 3;
 	else if (s.at(1).checkIsEnabled())
 		return 5;
+	else if (s.at(2).checkIsEnabled())
+		return 7;
 	return -1;
 }
 

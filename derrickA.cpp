@@ -442,7 +442,30 @@ void drawLevel3(Game *gm, Level *lev)
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
-	
+
+	//set up spike	
+	//Shape *spike;
+	glColor3ub(80,110,70);
+	spike = &gm->spike[1];
+	glPushMatrix();
+	glTranslatef(spike->center.x, spike->center.y, spike->center.z);
+	w = spike->width;
+	h = spike->height;
+	prepSpike(gm);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+			glVertex2i(-w,-h);
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+			glVertex2i(-w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+			glVertex2i( w, h);
+		glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+			glVertex2i( w,-h);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_BLEND);
+
 
         //Draw test platform 2
 	Shape *test2;
@@ -543,11 +566,21 @@ void drawLevel3(Game *gm, Level *lev)
 	glTranslatef(test6->center.x, test6->center.y, test6->center.z);
 	w = test6->width;
 	h = test6->height;
+	prepPlat(gm);
 	glBegin(GL_QUADS);
-		glVertex2i(-w,-h);
-		glVertex2i(-w, h);
-		glVertex2i( w, h);
-		glVertex2i( w,-h);
+	glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+	glVertex2i(-w,-h);
+	glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+	glVertex2i(-w, h);
+	glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+	glVertex2i( w, h);
+	glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+	glVertex2i( w,-h);
+		
+		//glVertex2i(-w,-h);
+		//glVertex2i(-w, h);
+		//glVertex2i( w, h);
+		//glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
 
@@ -580,13 +613,13 @@ void setLevel3(Game *gm, Level *lev)
         //test platforms
         gm->plat[3].width = 50;
         gm->plat[3].height = 15;
-        gm->plat[3].center.x = gm->xres/2 - 80;
+        gm->plat[3].center.x = gm->xres/2 - 120;
         gm->plat[3].center.y = 200;
 
         //test platforms
         gm->plat[4].width = 50;
         gm->plat[4].height = 15;
-        gm->plat[4].center.x = gm->xres/2 + 160;
+        gm->plat[4].center.x = gm->xres/2 + 120;
         gm->plat[4].center.y = 200;
 
 		gm->plat[5].width = 50;
@@ -595,11 +628,17 @@ void setLevel3(Game *gm, Level *lev)
 		gm->plat[5].center.y = 110;
 
         //test spikes
-        gm->spike[0].width = 250;
+        gm->spike[0].width = 100;
         gm->spike[0].height = 15;
-        gm->spike[0].center.x = gm->xres - 600;
+        gm->spike[0].center.x = gm->xres - 750;
         gm->spike[0].center.y = 110;
-
+		
+		//test spikes
+        gm->spike[1].width = 100;
+        gm->spike[1].height = 15;
+        gm->spike[1].center.x = gm->xres - 450;
+        gm->spike[1].center.y = 110;
+	
 	//wall blocking right door	
 	gm->box[4].width = 15;
 	gm->box[4].height = gm->yres - 800;
@@ -981,9 +1020,9 @@ void setLevel4(Game *gm, Level *lev)
         gm->plat[7].center.y = 560;
 
         //test platforms
-        gm->plat[8].width = 50;
+        gm->plat[8].width = 200;
         gm->plat[8].height = 15;
-        gm->plat[8].center.x = 200;
+        gm->plat[8].center.x = 1000;
         gm->plat[8].center.y = 220;
 
         //test platforms
@@ -995,7 +1034,7 @@ void setLevel4(Game *gm, Level *lev)
         //test spikes
         gm->spike[0].width = 100;
         gm->spike[0].height = 15;
-        gm->spike[0].center.x = 415;
+        gm->spike[0].center.x = 350;
         gm->spike[0].center.y = 520;
 
         //test spikes 2
