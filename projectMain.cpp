@@ -302,6 +302,7 @@ void makeCharacter(Game *game, int x, int y)
 			}
 		}
 	}
+	fireball.move(-50,fireball.getY());
 	p->velocity.y = 0;
 	p->velocity.x = 0;
 	p->s.height = p->hurt.height = runAnimation.getFrameHeight() - 10;// * 0.4;
@@ -359,20 +360,20 @@ void check_mouse(XEvent *e)
 					hasSelection = true;
 					sw = w;
 					sh = h;
-					sx = gm.xres*0.1 + w/2;
-					sy = 1 - gm.yres*0.2 + h/2;
+					sx = gm.xres*0.11 + w/2;
+					sy = gm.yres*0.55;
 				}
 			}
-			else if (y < gm.yres*0.55 && y > gm.yres*0.5) {
+			else if (y < gm.yres*0.45 && y > gm.yres*0.37) {
 				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
-					w = gm.xres*0.23 - gm.xres*0.08;
-					h = gm.yres*0.55 - gm.yres*0.5;
+					w = gm.xres*0.26 - gm.xres*0.08;
+					h = gm.yres*0.45 - gm.yres*0.37;
 					//selection(&gm, x, y, h, w);
 					hasSelection = true;
 					sw = w;
 					sh = h;
-					sx = gm.xres*0.08 + w/2;
-					sy = 1 - gm.yres*0.5 + h/2;
+					sx = gm.xres*0.09;
+					sy = gm.yres*0.37;
 				}
 			}
 			else if (y < gm.yres*0.63 && y > gm.yres*.55) {
@@ -383,8 +384,8 @@ void check_mouse(XEvent *e)
 					hasSelection = true;
 					sw = w;
 					sh = h;
-					sx = gm.xres*0.11 + w/2;
-					sy = 1 - gm.yres*0.55 + h/2;
+					sx = gm.xres*0.1 + w/2;
+					sy = gm.yres*0.2;
 				}
 			}
 			else

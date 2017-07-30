@@ -524,8 +524,8 @@ void selection(Game *gm, int x, int y, int h, int w)
 	Vec *c = &gm->button.center;
 	c->x = x;
 	c->y = y;
-	h = gm->button.height;
-	w = gm->button.width;
+	gm->button.height = h;
+	gm->button.width = w;
 	if (gm->state == STATE_STARTMENU) {
 		glPushMatrix();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

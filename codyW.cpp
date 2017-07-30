@@ -195,9 +195,8 @@ void flames()
 		return;
 	}
 
-	alSourcef(s.alSource_one[1], AL_GAIN, 0.5f);
-	alSourcef(s.alSource_one[1], AL_PITCH, 1.0f);
-	//for longer fire set looping to AL_TRUE
+	alSourcef(s.alSource_one[1], AL_GAIN, 0.0f);
+	alSourcef(s.alSource_one[1], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_one[1], AL_LOOPING, AL_FALSE);
 	
 	if (alGetError() != AL_NO_ERROR) {
