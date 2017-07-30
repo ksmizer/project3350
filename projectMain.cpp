@@ -302,6 +302,7 @@ void makeCharacter(Game *game, int x, int y)
 			}
 		}
 	}
+	fireball.move(-50,fireball.getY());
 	p->velocity.y = 0;
 	p->velocity.x = 0;
 	p->s.height = p->hurt.height = runAnimation.getFrameHeight() - 10;// * 0.4;

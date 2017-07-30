@@ -737,6 +737,7 @@ void checkFireball(Game *game, Character *p, Fireball &f)
 		if (p->s.center.x > charL && p->s.center.x < charR) {
 			p->velocity.y = 0;
 			p->jumpCurrent = 2;
+			f.move(-50,f.getY());
 			death();
 			game->state = STATE_GAMEOVER;
 		}
