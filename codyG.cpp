@@ -1,6 +1,6 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/29/17
+ *Last Modified: 7/30/17
  *Project: Dungeon Escape
  * --------------------------------------------------------------------------
  *Week 4: Created SpriteAnimation class and functionality to add generic
@@ -30,6 +30,8 @@
  *Week 9: Added Enemy spawner which clears enemy vector and adds specific
  * enemies depending on the level. Added new enemy type. Added decoration class
  * for background decorations. Added armor upgrade which allows double jump.
+ * Edited enemy and savepoint placement. Added boots upgrade which allows 
+ * sprinting when pressing shift.
  */
 
 #include "codyG.h"
@@ -88,6 +90,7 @@ SpriteAnimation::~SpriteAnimation() { }
 void SpriteAnimation::convertToPpm()
 {
 	char command[128];
+	command[0] = '\0';
 
 	strcpy(command, "convert ./images/");
 	strcat(command, sheetName);
@@ -331,8 +334,9 @@ bool Spear::checkIsLeft() { return isLeft; }
 
 //---------------------------------------------------------
 // Upgrade Class
-Upgrade::Upgrade(int x, int y, bool e, string n, string d)
+Upgrade::Upgrade(int t, int x, int y, bool e, string n, string d)
 {
+	type = t;
 	xPos = x;
 	yPos = y;
 	enabled = e;
@@ -342,8 +346,16 @@ Upgrade::Upgrade(int x, int y, bool e, string n, string d)
 
 void Upgrade::initAnimation()
 {
-	SpriteAnimation anim((char*)"armor.png",1,1,1,0,0,16,27,0.1,true);
-	sprite = anim;
+	//Type 0 = armor, Type 1 = boots
+	if (type == 0) {
+		SpriteAnimation anim((char*)"armor.png",1,1,1,0,0,16,27,0.1,true);
+		sprite = anim;
+	}
+	else if (type == 1) {
+		SpriteAnimation anim((char*)"boots.png",1,1,1,0,0,12,11,0.1,true);
+		sprite = anim;
+	}
+
 }
 
 Upgrade::~Upgrade() { }
@@ -490,22 +502,42 @@ void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s,
     }
 
 	if (level == 3) {
-		Enemy e1(1,32,27,500,48,26,27,0,0,-3,0,0,1200,false);
+		Enemy e1(1,32,27,500,42,26,27,0,0,-3,0,0,1200,false);
 		e.push_back(e1);
-		//Upgrade u1(300, 48, true, "Jumping Armor", "Allows you to double jump");
-		//u.push_back(u1);
-
-		//if (s.at(0).checkIsEnabled())
-	//		s.at(0).animations.at(1).enable();
-//		else
-//			s.at(0).animations.at(0).enable();
 	}
 
 	if (level == 4) {
 		Enemy e1(0,27,40,400,48,15,40,0,0,1,0,0,1200,false);
-		Enemy e2(1,32,27,300,48,26,27,0,0,-4,0,0,1200,false);
+		Enemy e2(1,32,27,300,42,26,27,0,0,-4,0,0,1200,false);
+		Enemy e3(1,32,27,900,260,26,27,0,0,-4,0,800,1200,false);
+		Enemy e4(0,27,40,600,48,15,40,0,0,-1,0,0,1200,true);
 		e.push_back(e1);
 		e.push_back(e2);
+		e.push_back(e3);
+		e.push_back(e4);
+	}
+
+	if (level == 5) {
+		Enemy e1(1,32,27,300,690,26,27,0,0,-4,0,0,WINDOW_WIDTH/2,false);
+		e.push_back(e1);
+	}
+
+	if (level == 6) {
+		Enemy e1(0,27,40,900,295,15,40,0,0,1,0,800,1200,false);
+		Enemy e2(1,32,27,720,770,26,27,0,0,-4,0,700,1100,false);
+		e.push_back(e1);
+		e.push_back(e2);
+	}
+
+	if (level == 7) {
+		Enemy e1(1,32,27,300,48,26,27,0,0,4,0,0,1200,true);
+		e.push_back(e1);
+	}
+	if (level == 8) {
+	}
+	if (level == 9) {
+	}
+	if (level == 10) {
 	}
 
 	for (unsigned int i = 0; i < e.size(); i++) {
@@ -521,11 +553,6 @@ void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s,
 		d.at(i).createTexture();
 	}
 
-	/*for (unsigned int i = 0; i < u.size(); i++) {
-		u.at(i).initAnimation();
-		u.at(i).sprite.convertToPpm();
-		u.at(i).sprite.createTexture();
-	}*/
 }
 
 void renderEntities(vector<SpriteAnimation> &d)
@@ -554,6 +581,10 @@ void checkUpgrade(int level, vector<Upgrade> &u)
 		if (u.at(0).checkIsEnabled())
 			u.at(0).sprite.enable();
 	}
+	if (level == 6) {
+		if (u.at(1).checkIsEnabled())
+			u.at(1).sprite.enable();
+	}
 }
 
 void checkSavePoints(int level, vector<SavePoint> &s)
@@ -575,6 +606,24 @@ void checkSavePoints(int level, vector<SavePoint> &s)
 		else
 			s.at(1).animations.at(0).enable();
 	}
+	if (level == 7) {
+		if (s.at(2).checkIsEnabled())
+			s.at(2).animations.at(1).enable();
+		else
+			s.at(2).animations.at(0).enable();
+	}
+	if (level == 8) {
+		if (s.at(3).checkIsEnabled())
+			s.at(3).animations.at(1).enable();
+		else
+			s.at(3).animations.at(0).enable();
+	}
+	if (level == 9) {
+		if (s.at(4).checkIsEnabled())
+			s.at(4).animations.at(1).enable();
+		else
+			s.at(4).animations.at(0).enable();
+	}
 }
 
 int getSavePointLevel(vector<SavePoint> &s) 
@@ -583,6 +632,13 @@ int getSavePointLevel(vector<SavePoint> &s)
 		return 3;
 	else if (s.at(1).checkIsEnabled())
 		return 5;
+	else if (s.at(2).checkIsEnabled())
+		return 7;
+	else if (s.at(3).checkIsEnabled())
+		return 8;
+	else if (s.at(4).checkIsEnabled())
+		return 9;
+
 	return -1;
 }
 
@@ -591,20 +647,26 @@ void upgradeCheck(Character *p, vector<Upgrade> &u)
 {
 	if (u.size() < 1)
 		return;		
-	if (u.at(0).checkIsEnabled() && u.at(0).sprite.isEnabled())
-	{
-		int x = u.at(0).getX();
-		int y = u.at(0).getY();
-		int charTop, charBot, charL, charR;
-		charTop = y + p->s.height;
-		charBot = y - p->s.height;
-		charL = x - p->s.width;
-		charR = x + p->s.width;
-		if (p->s.center.y < charTop && p->s.center.y > charBot) {
-			if (p->s.center.x > charL && p->s.center.x < charR) {
-				p->upgrade = true;
-				p->jumpMax = 2;
-				u.at(0).disable();
+	for (unsigned int i = 0; i < u.size(); i++) {
+		if (u.at(i).checkIsEnabled() && u.at(i).sprite.isEnabled()) {
+			int x = u.at(i).getX();
+			int y = u.at(i).getY();
+			int charTop, charBot, charL, charR;
+			charTop = y + p->s.height;
+			charBot = y - p->s.height;
+			charL = x - p->s.width;
+			charR = x + p->s.width;
+			if (p->s.center.y < charTop && p->s.center.y > charBot) {
+				if (p->s.center.x > charL && p->s.center.x < charR) {
+					if (i == 0) {
+						p->upgrade = true;
+						p->jumpMax = 2; 
+					}
+					else if (i == 1) {
+						p->upgrade2 = true;
+					}
+					u.at(i).disable();
+				}
 			}
 		}
 	}

@@ -62,6 +62,8 @@ extern void explosion();
 extern void timer(int mode);
 
 void makeWeapon(Game *game, Character *p);
+void start(Game *game);
+void loading(Game *game);
 
 void movement(Game *game, Character *p, PlayerState ps, char keys[])
 {
@@ -72,13 +74,17 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x > -WALK)
 				p->velocity.x -= WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x > -WALK * 2)
+				if (p->velocity.x > -RUN && p->upgrade2)
 					p->velocity.x -= WALK / 5;
 			}
 		}
 		else {
-			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = -WALK * 2;
+			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
+				if(p->upgrade2)
+					p->velocity.x = -RUN;
+				else
+					p->velocity.x = -WALK;
+			}
 			else
 				p->velocity.x = -WALK;
 		}
@@ -89,13 +95,18 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			if (p->velocity.x < WALK)
 				p->velocity.x += WALK / 10;
 			if (keys[XK_Shift_L] || keys[XK_Shift_R]) {
-				if (p->velocity.x < WALK * 2)
+				if (p->velocity.x < RUN && p->upgrade2)
 					p->velocity.x += WALK / 5;
 			}
 		}
 		else {
 			if (keys[XK_Shift_L] || keys[XK_Shift_R])
-				p->velocity.x = WALK * 2;
+			{
+				if (p->upgrade2)
+					p->velocity.x = RUN;
+				else
+					p->velocity.x = WALK;
+			}
 			else
 				p->velocity.x = WALK;
 		}
@@ -107,6 +118,18 @@ void movement(Game *game, Character *p, PlayerState ps, char keys[])
 			p->hurtJump = true;
 			jump();
 			p->soundChk = !p->soundChk;
+		}
+		if (game->state == STATE_STARTMENU) {
+			if (game->button.center.x >= game->yres+0.6) {
+				game->button.center.x += 100;
+			}
+		}
+	}
+	if (keys[XK_Down] || keys[XK_S] || keys[XK_s]) {
+		if (game->state == STATE_STARTMENU) {
+			if (game->button.center.x <= game->yres+0.4) {
+				game->button.center.x -= 100;
+			}
 		}
 	}
 	if (keys[XK_Left] + keys[XK_Right] + keys[XK_a]
@@ -153,60 +176,13 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 		spikeBottom[i] = s->center.y - s->height - p->s.height;
 		spikeLeft[i] = s->center.x - s->width - p->s.width;
 		spikeRight[i] = s->center.x + s->width + p->s.width;
-		if (p->s.center.y < spikeTop[i] && p->s.center.y > spikeBottom[i]) {
-			if (p->s.center.x > spikeLeft[i] && p->s.center.x < spikeRight[i]) {
-				//Top collision detection
-				if (p->s.center.y < spikeTop[i]
-					&& p->s.center.y > spikeTop[i] - OFFSET
-						&& p->s.center.x < spikeRight[i]
-							&& p->s.center.x > spikeLeft[i]
-								&& p->velocity.y < 0) {
-					if (p->soundChk == true) {
-						p->soundChk = !p->soundChk;
-					}
-					p->s.center.y = spikeTop[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
-				//Bottom collision detection
-				if (p->s.center.y > spikeBottom[i]
-						&& p->s.center.y < spikeBottom[i] + OFFSET
-							&& p->s.center.x < spikeRight[i] - OFFSET
-								&& p->s.center.x > spikeLeft[i] + OFFSET) {
-					p->s.center.y = spikeBottom[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
-				//Right collision detection
-				if (p->s.center.x < spikeRight[i]
-						&& p->s.center.x > s->center.x
-							&& p->s.center.y < spikeTop[i] - OFFSET
-								&& p->s.center.y > spikeBottom[i] + OFFSET) {
-					p->s.center.y = spikeRight[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
-				//Left Collision detection
-				if (p->s.center.x > spikeLeft[i]
-						&& p->s.center.x < s->center.x
-							&& p->s.center.y < spikeTop[i] - OFFSET
-								&& p->s.center.y > spikeBottom[i] + OFFSET) {
-					p->s.center.y = spikeLeft[i];
-					p->velocity.y = 0;
-					p->jumpCurrent = 2;
-					spikes();
-					death();
-					game->state = STATE_GAMEOVER;
-				}
+		if (p->s.center.y < spikeTop[i] - 10 && p->s.center.y > spikeBottom[i] + 15) {
+			if (p->s.center.x > spikeLeft[i] + 10 && p->s.center.x < spikeRight[i] - 10) {
+				p->velocity.y = 0;
+				p->jumpCurrent = 2;
+				spikes();
+				death();
+				game->state = STATE_GAMEOVER;
 			}
 		}
 	}
@@ -243,43 +219,10 @@ bool enemyHurt(Game *game, Character *p, Enemy enemy)
 		spikeRight[i] = s->center.x + s->width + e->s.width;
 		if (e->s.center.y < spikeTop[i] && e->s.center.y > spikeBottom[i]) {
 			if (e->s.center.x > spikeLeft[i] && e->s.center.x < spikeRight[i]) {
-				//Top collision detection
-				if (e->s.center.y < spikeTop[i]
-					&& e->s.center.y > spikeTop[i] - OFFSET
-						&& e->s.center.x < spikeRight[i]
-							&& e->s.center.x > spikeLeft[i]) {
-					e->s.center.y = spikeTop[i];
-					e->velocity.y = 0;
-					death();
-				}
-				//Bottom collision detection
-				if (e->s.center.y > spikeBottom[i]
-						&& e->s.center.y < spikeBottom[i] + OFFSET
-							&& e->s.center.x < spikeRight[i] - OFFSET
-								&& e->s.center.x > spikeLeft[i] + OFFSET) {
-					e->s.center.y = spikeBottom[i];
-					e->velocity.y = 0;
-					death();
-				}
-				//Right collision detection
-				if (e->s.center.x < spikeRight[i]
-						&& e->s.center.x > s->center.x
-							&& e->s.center.y < spikeTop[i] - OFFSET
-								&& e->s.center.y > spikeBottom[i] + OFFSET) {
-					e->s.center.y = spikeRight[i];
-					e->velocity.y = 0;
-					death();
-				}
-				//Left Collision detection
-				if (e->s.center.x > spikeLeft[i]
-						&& e->s.center.x < s->center.x
-							&& e->s.center.y < spikeTop[i] - OFFSET
-								&& e->s.center.y > spikeBottom[i] + OFFSET) {
-					e->s.center.y = spikeLeft[i];
-					e->velocity.y = 0;
-					death();
-				}
-			}			
+				e->s.center.y = spikeTop[i];
+				e->velocity.y = 0;
+				death();
+			}
 		}
 	}
 	//Lance death detection
@@ -294,7 +237,6 @@ bool enemyHurt(Game *game, Character *p, Enemy enemy)
 				e->velocity.x = 0;
 				e->killEnemy();
 				kill = true;
-				p->l[i].s.center.y = -50;
 				p->l[i].s.center.x = -50;
 				p->l[i].velocity.x = 0;
 			}
@@ -397,13 +339,13 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 		}
 	}
 	// weapon box collision update
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 2; j++) {
+	for (unsigned int i = 0; i < 10; i++) {
+		for (int j = 0; j < 1; j++) {
 			Shape *s = &game->box[i];
-			boxTop[i] = s->center.y + s->height + p->l[j].s.height;
-			boxBottom[i] = s->center.y - s->height - p->l[j].s.height;
-			boxLeft[i] = s->center.x - s->width - p->l[j].s.width;
-			boxRight[i] = s->center.x + s->width + p->l[j].s.width;
+			boxTop[i] = s->center.y + s->height + W_HEIGHT;
+			boxBottom[i] = s->center.y - s->height - W_HEIGHT;
+			boxLeft[i] = s->center.x - s->width - W_WIDTH;
+			boxRight[i] = s->center.x + s->width + W_WIDTH;
 			if (p->l[j].s.center.x > 0) {
 				if (p->l[j].s.center.y < boxTop[i]
 						&& p->l[j].s.center.y > boxBottom[i]) {
@@ -532,7 +474,7 @@ void makeWeapon(Game *game, Character *p)
 			if (p->l[i].thrown == false) {
 				throw_spear();
 				p->l[i].s.center.x = p->s.center.x;
-				p->l[i].s.center.y = p->s.center.y + p->s.height*3/4;
+				p->l[i].s.center.y = p->s.center.y + p->s.height*1/3;
 				p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
 				p->l[i].hit.center.y = p->l[i].s.center.y;
 				p->l[i].hit.width = W_WIDTH;
@@ -570,125 +512,27 @@ void savePointCheck(Character *p, vector<SavePoint> &sp)
 		}
 	}
 }
-/*
-void buttonInit(Game *gm)
+
+void selection(Game *gm, int x, int y, int h, int w)
 {
+	Vec *c = &gm->button.center;
+	c->x = x;
+	c->y = y;
+	h = gm->button.height;
+	w = gm->button.width;
 	if (gm->state == STATE_STARTMENU) {
-		int nbuttons = gm->nbuttons = 0;
-		//===========//
-		//Play button//
-		//===========//
-		gm->button[nbuttons].r.width = 100;
-		gm->button[nbuttons].r.height = 50;
-		gm->button[nbuttons].r.left =
-			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.bot =
-			gm->yres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.right =
-			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
-		gm->button[nbuttons].r.top =
-			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
-		gm->button[nbuttons].r.centerx =
-			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
-		gm->button[nbuttons].r.centery =
-			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
-		strcpy(gm->button[nbuttons].text, "Play");
-		gm->button[nbuttons].down = 0;
-		gm->button[nbuttons].click = 0;
-		gm->button[nbuttons].color[0] = 0.4f;
-		gm->button[nbuttons].color[1] = 0.4f;
-		gm->button[nbuttons].color[2] = 0.7f;
-		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
-		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
-		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
-		gm->button[nbuttons].text_color = 0x00ffffff;
-		gm->nbuttons++;
-		//===============//
-		//Controls button//
-		//===============//
-		gm->button[nbuttons].r.width = 100;
-		gm->button[nbuttons].r.height = 50;
-		gm->button[nbuttons].r.left =
-			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.bot =	gm->yres / 2 -
-			gm->button[nbuttons].r.height - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.right =
-			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
-		gm->button[nbuttons].r.top =
-			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
-		gm->button[nbuttons].r.centerx =
-			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
-		gm->button[nbuttons].r.centery =
-			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
-		strcpy(gm->button[nbuttons].text, "Controls");
-		gm->button[nbuttons].down = 0;
-		gm->button[nbuttons].click = 0;
-		gm->button[nbuttons].color[0] = 0.4f;
-		gm->button[nbuttons].color[1] = 0.4f;
-		gm->button[nbuttons].color[2] = 0.7f;
-		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
-		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
-		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
-		gm->button[nbuttons].text_color = 0x00ffffff;
-		gm->nbuttons++;
-		//===========//
-		//Exit button//
-		//===========//
-		gm->button[nbuttons].r.width = 100;
-		gm->button[nbuttons].r.height = 50;
-		gm->button[nbuttons].r.left =
-			gm->xres / 2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.bot =	gm->yres / 2 -
-			gm->button[nbuttons].r.height*2 - gm->button[nbuttons].r.width / 2;
-		gm->button[nbuttons].r.right =
-			gm->button[nbuttons].r.left + gm->button[nbuttons].r.width;
-		gm->button[nbuttons].r.top =
-			gm->button[nbuttons].r.bot + gm->button[nbuttons].r.height;
-		gm->button[nbuttons].r.centerx =
-			(gm->button[nbuttons].r.left + gm->button[nbuttons].r.right) / 2;
-		gm->button[nbuttons].r.centery =
-			(gm->button[nbuttons].r.bot + gm->button[nbuttons].r.top) / 2;
-		strcpy(gm->button[nbuttons].text, "Exit");
-		gm->button[nbuttons].down = 0;
-		gm->button[nbuttons].click = 0;
-		gm->button[nbuttons].color[0] = 0.4f;
-		gm->button[nbuttons].color[1] = 0.4f;
-		gm->button[nbuttons].color[2] = 0.7f;
-		gm->button[nbuttons].dcolor[0] = gm->button[nbuttons].color[0] * 0.5f;
-		gm->button[nbuttons].dcolor[1] = gm->button[nbuttons].color[1] * 0.5f;
-		gm->button[nbuttons].dcolor[2] = gm->button[nbuttons].color[2] * 0.5f;
-		gm->button[nbuttons].text_color = 0x00ffffff;
-		gm->nbuttons++;
-	}
-}
-*/
-void mouseClick(Game *gm, int ibutton, int action, int x, int y)
-{
-	if (action == 1) {
-		for (int i = 0; i < gm->nbuttons; i++) {
-			if (gm->button[i].over) {
-				gm->button[i].down = 1;
-				gm->button[i].click = 1;
-				if (i == 0) {
-					//Pressed Play button
-					gm->state = STATE_GAMEPLAY;
-				}
-				if (i == 1) {
-					//Pressed Controls button
-					gm->state = STATE_CONTROLS;
-				}
-				if (i == 2) {
-					//Pressed Quit button
-					gm->done = 1;
-				}
-			}
-		}
-	}
-	if (action == 2) {
-		for (int i = 0; i < gm->nbuttons; i++) {
-			gm->button[i].down = 0;
-			gm->button[i].click = 0;
-		}
+		glPushMatrix();
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glColor4f(1.0, 1.0, 1.0, 0.3);
+		glBegin(GL_QUADS);
+			glVertex2i(c->x-w, c->y-h);
+			glVertex2i(c->x-w, c->y+h);
+			glVertex2i(c->x+w, c->y+h);
+			glVertex2i(c->x+w, c->y-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_BLEND);
 	}
 }
 
@@ -702,8 +546,9 @@ void checkControl(Game *gm)
 		w = 200.0;
 		glPushMatrix();
 		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 1.0, 0.9);
+		glColor4f(0.0, 0.0, 0.0, 0.9);
 		glTranslated(gm->xres/2, gm->yres/2, 0);
 		glBegin(GL_QUADS);
 			glVertex2i(-w, -h);
@@ -711,15 +556,16 @@ void checkControl(Game *gm)
 			glVertex2i(+w, +h);
 			glVertex2i(+w, -h);
 		glEnd();
-		glDisable(GL_BLEND);
 		glPopMatrix();
+		glDisable(GL_BLEND);
 		r.bot = gm->yres/2 + 80;
 		r.left = gm->xres/2;
 		r.center = 1;
 		ggprint8b(&r, 16, c, "CONTROLS");
 		r.center = 0;
 		r.left = gm->xres/2 - 100;
-		ggprint8b(&r, 16, c, "TAB -> Resume play");
+		ggprint8b(&r, 16, c, "M -> Return to Menu");
+		ggprint8b(&r, 16, c, "TAB -> Pause / Resume Play");
 		ggprint8b(&r, 16, c, "SHIFT -> Run");
 		ggprint8b(&r, 16, c, "Right Arrow or A -> Walk right");
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
@@ -774,33 +620,16 @@ void checkPause(Game *gm)
 
 void checkStart(Game *gm)
 {
-	Flt h, w;
-	Rect r;
-	int c = 0xffffffff;
 	if (gm->state == STATE_STARTMENU) {
-		h = 100.0;
-		w = 200.0;
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 0.0, 0.0);
-		glTranslated(gm->xres/2, gm->yres/2, 0);
-		glBegin(GL_QUADS);
-			glVertex2i(-w, -h);
-			glVertex2i(-w, +h);
-			glVertex2i(+w, +h);
-			glVertex2i(+w, -h);
-		glEnd();
-		glDisable(GL_BLEND);
-		glPopMatrix();
-		r.bot = gm->yres/2 + 80;
-		r.left = gm->xres/2;
-		r.center = 1;
-		ggprint8b(&r, 16, c, "START MENU");
-		r.center = 0;
-		r.left = gm->xres/2 - 100;
-		ggprint8b(&r, 16, c, "P - Play");
-		ggprint8b(&r, 16, c, "TAB - Pause");
+		start(gm);
+	}
+}
+
+void checkLoading(Game *gm)
+{
+	if (gm->state == STATE_NONE) {
+		loading(gm);
+		gm->state = STATE_LOADING;
 	}
 }
 
@@ -856,28 +685,90 @@ void loadBackground(Game *gm)
 	gm->tex.yb[0] = 0.0;
 	gm->tex.yb[1] = 1.0;
 }
-/*
-void loadSpikes(Game *gm)
+
+void loadGameover(Game *gm)
 {
+	Game *p = gm;
 	//load the images file into a ppm structure.
-	system("convert images/spikes.png tmp.ppm");
-	gm->tex.spike = ppm6GetImage("./tmp.ppm");
+	system("convert images/died.png tmp.ppm");
+	gm->tex.died = ppm6GetImage("./tmp.ppm");
 	//create opengl texture elements
-	glGenTextures(1, gm->tex.spikeTexture);
-	int w = gm->tex.spike->width;
-	int h = gm->tex.spike->height;
-	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
+	glGenTextures(1, &p->tex.diedTexture);
+	int w = gm->tex.died->width;
+	int h = gm->tex.died->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.diedTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.died->data);
 	unlink("./tmp.ppm");
-	gm->tex.xs[0] = 0.0;
-	gm->tex.xs[1] = 1.0;
-	gm->tex.ys[0] = 0.0;
-	gm->tex.ys[1] = 1.0;
+	gm->tex.xd[0] = 0.0;
+	gm->tex.xd[1] = 1.0;
+	gm->tex.yd[0] = 0.0;
+	gm->tex.yd[1] = 1.0;
+	glPushMatrix();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.diedTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xd[0], gm->tex.yd[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xd[0], gm->tex.yd[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xd[1], gm->tex.yd[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xd[1], gm->tex.yd[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
+	glPopMatrix();
 }
-*/
+
+void loadLoading(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/loading.png tmp.ppm");
+	gm->tex.loading = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.loadTexture);
+	int w = gm->tex.loading->width;
+	int h = gm->tex.loading->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.loadTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.loading->data);
+	unlink("./tmp.ppm");
+	gm->tex.xl[0] = 0.0;
+	gm->tex.xl[1] = 1.0;
+	gm->tex.yl[0] = 0.0;
+	gm->tex.yl[1] = 1.0;
+}
+
+void loadStart(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/descape.png tmp.ppm");
+	gm->tex.start = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.startTexture);
+	int w = gm->tex.start->width;
+	int h = gm->tex.start->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.startTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.start->data);
+	unlink("./tmp.ppm");
+	gm->tex.xS[0] = 0.0;
+	gm->tex.xS[1] = 1.0;
+	gm->tex.yS[0] = 0.0;
+	gm->tex.yS[1] = 1.0;
+}
+
 void loadPlatforms(Game *gm)
 {
 	Game *p = gm;
@@ -935,8 +826,9 @@ void loadSpikes(Game *gm)
 	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
-		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.spike->data);
+	gm->tex.spike->data = buildAlphaData(gm->tex.spike);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, gm->tex.spike->data);
 	unlink("./tmp.ppm");
 	gm->tex.xs[0] = 0.0;
 	gm->tex.xs[1] = 1.0;
@@ -944,9 +836,52 @@ void loadSpikes(Game *gm)
 	gm->tex.ys[1] = 1.0;
 }
 
+void start(Game *gm)
+{
+	glPushMatrix();
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.startTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xS[0], gm->tex.yS[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xS[0], gm->tex.yS[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xS[1], gm->tex.yS[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xS[1], gm->tex.yS[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
+	glPopMatrix();
+}
+
+void loading(Game *gm)
+{
+	glPushMatrix();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.loadTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xl[0], gm->tex.yl[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xl[0], gm->tex.yl[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xl[1], gm->tex.yl[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xl[1], gm->tex.yl[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
+	glPopMatrix();
+}
+
 void background(Game *gm)
 {
+	glPushMatrix();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.backTexture);
 	glBegin(GL_QUADS);
@@ -959,6 +894,7 @@ void background(Game *gm)
 		glTexCoord2f(gm->tex.xb[1], gm->tex.yb[1]);
 			glVertex2i(gm->xres, 0); 
 	glEnd();
+	glPopMatrix();
 }
 
 void prepPlat(Game *gm)
@@ -984,8 +920,40 @@ void prepSpike(Game *gm)
 	glColor3f(1.0,1.0,1.0);
 	glBindTexture(GL_TEXTURE_2D, gm->tex.spikeTexture);
 	glEnable(GL_ALPHA_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
+}
+
+void mouseClick(Game *gm, int action, int x, int y)
+{
+	if (action == 1) {
+		if (gm->state == STATE_STARTMENU) {
+			if (y < gm->yres*0.3 && y > gm->yres*0.2) {
+				if (x > gm->xres*0.1 && x < gm->xres*0.23) {
+					gm->state = STATE_NONE;
+					loadLoading(gm);
+				}
+			}
+			if (y < gm->yres*0.45 && y > gm->yres*0.37) {
+				if (x > gm->xres*0.08 && x < gm->xres*0.26) {
+					gm->state = STATE_CONTROLS;
+					checkControl(gm);
+				}
+			}
+			if (y < gm->yres*0.63 && y > gm->yres*.55) {
+				if (x > gm->xres*0.11 && x < gm->xres*0.22) {
+					gm->done = 1;
+				}
+			}
+		}
+		if (gm->state == STATE_GAMEOVER) {
+			if (y < gm->yres*0.3 && y > gm->yres*.2) {
+				if (x > gm->xres*0.45 && x < gm->xres*0.55) {
+					gm->state = STATE_GAMEPLAY;
+				}
+			}
+		}
+	}
+	if (action == 2) {
+	}
 }

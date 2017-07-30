@@ -412,6 +412,11 @@ void setDeathTime()
 	deadTime = clock();
 }
 
+void setPauseTime()
+{
+	pauseTime = clock();
+}
+
 void countDeath()
 {
 	deaths++;
@@ -428,7 +433,7 @@ void totalTimer(int mode)
 	if (mode == 1) {
 		clockTicksTaken = clock() - startTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		totalSeconds = timeInSeconds * 7.5;
+		totalSeconds = timeInSeconds * 25;
 		totalMinutes = totalSeconds / 60;
 		totalSeconds = totalSeconds % 60;
 	} 
@@ -436,7 +441,7 @@ void totalTimer(int mode)
 	if (mode == 2) {
 		clockTicksTaken = clock() - pauseTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		pauseSeconds = timeInSeconds * 7.5;
+		pauseSeconds = timeInSeconds * 25;
 		pauseMinutes = totalSeconds / 60;
 		pauseSeconds = totalSeconds % 60;
 		totalSeconds = totalSeconds - pauseSeconds;
@@ -446,7 +451,7 @@ void totalTimer(int mode)
 	if (mode == 3) {
 		clockTicksTaken = clock() - thisTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		seconds = timeInSeconds * 7.5;
+		seconds = timeInSeconds * 25;
 		minutes = seconds / 60;
 		seconds = seconds % 60;
 	}
@@ -454,7 +459,7 @@ void totalTimer(int mode)
 	if (mode == 4) {
 		clockTicksTaken = clock() - deadTime;
 		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		pauseSeconds = timeInSeconds * 7.5;
+		pauseSeconds = timeInSeconds * 25;
 		pauseMinutes = totalSeconds / 60;
 		pauseSeconds = totalSeconds % 60;
 		totalSeconds = totalSeconds - deadSeconds;
@@ -541,6 +546,38 @@ void outputCurrentScore(Game *gm)
 	}
 }
 
+void loadFlames(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/flames.png tmp.ppm");
+	gm->tex.flames = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+    	glGenTextures(1, &p->tex.flamesTexture);
+	int w = gm->tex.flames->width;
+	int h = gm->tex.flames->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.flamesTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, gm->tex.flames->data);
+	unlink("./tmp.ppm");
+	gm->tex.xf[0] = 0.0;
+	gm->tex.xf[1] = 1.0;
+	gm->tex.yf[0] = 0.0;
+	gm->tex.yf[1] = 1.0;
+
+}
+
+void prepFlames(Game*gm)
+{
+	glColor3f(1.0,1.0,1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.flamesTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+
+}
 
 void drawLevel7(Game *gm, Level *lev)
 {
@@ -549,7 +586,7 @@ void drawLevel7(Game *gm, Level *lev)
 
 		//set up spike 1	
 		Shape *spike;
-		glColor3ub(80,110,70);
+		//glColor3ub(80,110,70);
 		spike = &gm->spike[0];
 		glPushMatrix();
 		glTranslatef(spike->center.x, spike->center.y, spike->center.z);
@@ -689,7 +726,7 @@ void drawLevel7(Game *gm, Level *lev)
 		glTranslatef(spike3->center.x, spike3->center.y, spike3->center.z);
 		w = spike3->width;
 		h = spike3->height;
-		prepSpike(gm);
+		prepFlames(gm);
 		glBegin(GL_QUADS);
 			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 				glVertex2i(-w,-h);
@@ -795,7 +832,7 @@ void drawLevel7(Game *gm, Level *lev)
 		
 		//set up spike 5	
 		Shape *spike5;
-		glColor3ub(80,110,70);
+		//Color3ub(80,110,70);
 		spike5 = &gm->spike[4];
 		glPushMatrix();
 		glTranslatef(spike5->center.x, spike5->center.y, spike5->center.z);
@@ -903,6 +940,226 @@ void drawLevel7(Game *gm, Level *lev)
 		glEnd();
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
+	
+		//spike 6	
+		Shape *spike6;	
+		//glColor3ub(80,110,70);
+		spike6 = &gm->spike[5];
+		glPushMatrix();
+		glTranslatef(spike6->center.x, spike6->center.y, spike6->center.z);
+		w = spike6->width;
+		h = spike6->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+
+		//spike 7	
+		Shape *spike7;	
+		//glColor3ub(80,110,70);
+		spike7 = &gm->spike[6];
+		glPushMatrix();
+		glTranslatef(spike7->center.x, spike7->center.y, spike7->center.z);
+		w = spike7->width;
+		h = spike7->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 8	
+		Shape *spike8;	
+		glColor3ub(80,110,70);
+		spike8 = &gm->spike[7];
+		glPushMatrix();
+		glTranslatef(spike8->center.x, spike8->center.y, spike8->center.z);
+		w = spike8->width;
+		h = spike8->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 9	
+		Shape *spike9;	
+		glColor3ub(80,110,70);
+		spike9 = &gm->spike[8];
+		glPushMatrix();
+		glTranslatef(spike9->center.x, spike9->center.y, spike9->center.z);
+		w = spike9->width;
+		h = spike9->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 10	
+		Shape *spike10;	
+		glColor3ub(80,110,70);
+		spike10 = &gm->spike[9];
+		glPushMatrix();
+		glTranslatef(spike10->center.x, spike10->center.y, spike10->center.z);
+		w = spike10->width;
+		h = spike10->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 11
+		Shape *spike11;	
+		glColor3ub(80,110,70);
+		spike11 = &gm->spike[10];
+		glPushMatrix();
+		glTranslatef(spike11->center.x, spike11->center.y, spike11->center.z);
+		w = spike11->width;
+		h = spike11->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 12	
+		Shape *spike12;	
+		glColor3ub(80,110,70);
+		spike12 = &gm->spike[11];
+		glPushMatrix();
+		glTranslatef(spike12->center.x, spike12->center.y, spike12->center.z);
+		w = spike12->width;
+		h = spike12->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 13	
+		Shape *spike13;	
+		glColor3ub(80,110,70);
+		spike13 = &gm->spike[12];
+		glPushMatrix();
+		glTranslatef(spike13->center.x, spike13->center.y, spike13->center.z);
+		w = spike13->width;
+		h = spike13->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 14	
+		/*Shape *spike14;	
+		glColor3ub(80,110,70);
+		spike14 = &gm->spike[13];
+		glPushMatrix();
+		glTranslatef(spike14->center.x, spike14->center.y, spike14->center.z);
+		w = spike14->width;
+		h = spike14->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);
+		
+		//spike 15	
+		Shape *spike15;	
+		glColor3ub(80,110,70);
+		spike15 = &gm->spike[14];
+		glPushMatrix();
+		glTranslatef(spike15->center.x, spike15->center.y, spike15->center.z);
+		w = spike15->width;
+		h = spike15->height;
+		prepFlames(gm);
+		glBegin(GL_QUADS);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
+				glVertex2i(-w,-h);
+			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+				glVertex2i(-w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
+				glVertex2i( w, h);
+			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
+				glVertex2i( w,-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_ALPHA_TEST);	*/
 	}	
 }
 
@@ -943,19 +1200,19 @@ void setLevel7(Game *gm, Level *lev)
 	        //test platforms3
 	        gm->plat[2].width = 15;
 	        gm->plat[2].height = 15;
-	        gm->plat[2].center.x = 180;
+	        gm->plat[2].center.x = 200;
 	        gm->plat[2].center.y = 250;
 	
 	        //test platforms4
 	        gm->plat[3].width = 30;
 	        gm->plat[3].height = 15;
 	        gm->plat[3].center.x = 7;
-	        gm->plat[3].center.y = 400;
+	        gm->plat[3].center.y = 375;
 	
 	        //test spikes3
-	        gm->spike[2].width = 450;
+	        gm->spike[2].width = 50;
 	        gm->spike[2].height = 15;
-	        gm->spike[2].center.x = 650;
+	        gm->spike[2].center.x = 250;
 	        gm->spike[2].center.y = 450;
 		
 		//wall 2	
@@ -1011,5 +1268,53 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->plat[9].height = 10;
 	        gm->plat[9].center.x = 1000;
 	        gm->plat[9].center.y = 470;
-	}	
+	        
+		//test spikes 6
+	        gm->spike[5].width = 50;
+	        gm->spike[5].height = 15;
+	        gm->spike[5].center.x = 350;
+		gm->spike[5].center.y = 450;
+		
+		//test spikes 7
+	        gm->spike[6].width = 50;
+	        gm->spike[6].height = 15;
+	        gm->spike[6].center.x = 450;
+		gm->spike[6].center.y = 450;
+		
+		//test spikes 8
+	        gm->spike[7].width = 50;
+	        gm->spike[7].height = 15;
+	        gm->spike[7].center.x = 550;
+		gm->spike[7].center.y = 450;
+		
+		//test spikes 9
+	        gm->spike[8].width = 50;
+	        gm->spike[8].height = 15;
+	        gm->spike[8].center.x = 650;
+		gm->spike[8].center.y = 450;
+		
+		//test spikes 10
+	        gm->spike[9].width = 50;
+	        gm->spike[9].height = 15;
+	        gm->spike[9].center.x = 750;
+		gm->spike[9].center.y = 450;
+		
+		//test spikes 11
+	        gm->spike[10].width = 50;
+	        gm->spike[10].height = 15;
+	        gm->spike[10].center.x = 850;
+		gm->spike[10].center.y = 450;
+		
+		//test spikes 12
+	        gm->spike[11].width = 50;
+	        gm->spike[11].height = 15;
+	        gm->spike[11].center.x = 950;
+		gm->spike[11].center.y = 450;
+		
+		//test spikes 13
+	        gm->spike[12].width = 50;
+	        gm->spike[12].height = 15;
+	        gm->spike[12].center.x = 1050;
+		gm->spike[12].center.y = 450;
+	}
 }
