@@ -176,8 +176,8 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 		spikeBottom[i] = s->center.y - s->height - p->s.height;
 		spikeLeft[i] = s->center.x - s->width - p->s.width;
 		spikeRight[i] = s->center.x + s->width + p->s.width;
-		if (p->s.center.y < spikeTop[i] && p->s.center.y > spikeBottom[i]) {
-			if (p->s.center.x > spikeLeft[i] && p->s.center.x < spikeRight[i]) {
+		if (p->s.center.y < spikeTop[i] - 10 && p->s.center.y > spikeBottom[i] + 15) {
+			if (p->s.center.x > spikeLeft[i] + 10 && p->s.center.x < spikeRight[i] - 10) {
 				p->velocity.y = 0;
 				p->jumpCurrent = 2;
 				spikes();
@@ -522,10 +522,11 @@ void selection(Game *gm, int x, int y, int h, int w)
 	w = gm->button.width;
 	if (gm->state == STATE_STARTMENU) {
 		glPushMatrix();
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(1.0, 1.0, 1.0, 0.3);
+		glColor4f(1.0, 1.0, 1.0, 0.5);
 		glBegin(GL_QUADS);
 			glVertex2i(c->x-w, c->y-h);
 			glVertex2i(c->x-w, c->y+h);

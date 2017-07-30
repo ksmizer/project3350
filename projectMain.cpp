@@ -140,6 +140,9 @@ SpriteAnimation jumpAnimation2((char*)"greenArmor.png", 1, 12, 12, 8, 8,
 SpriteAnimation attackAnimation2((char*)"greenArmor.png", 1, 12, 12, 8, 10,
 	36, 40, 0.1, false);
 
+// selection
+bool hasSelection = false;
+int sx, sy, sh, sw;
 
 //SpriteAnimation zombieAnimation((char*)"zombie.png", 1, 5, 5, 0, 3,
 	//27, 40, 0.1, true);
@@ -167,15 +170,25 @@ int main(void)
 	SavePoint sp1(100, 59, false);
 	SavePoint sp2(100, 59, false);
 	SavePoint sp3(100, 59, false);
+	SavePoint sp4(100, 59, false);
+	SavePoint sp5(1100, 59, false);
 	savePoints.push_back(sp1);
 	savePoints.push_back(sp2);
 	savePoints.push_back(sp3);
+	savePoints.push_back(sp4);
+	savePoints.push_back(sp5);
+
 	savePoints.at(0).initAnimations();
 	savePoints.at(1).initAnimations();
 	savePoints.at(2).initAnimations();
-	Upgrade u1(300, 48, true, "Jumping Armor", "Allows you to double jump");
+	savePoints.at(3).initAnimations();
+	savePoints.at(4).initAnimations();
+	Upgrade u1(0, 300, 48, true, "Jumping Armor", "Allows you to double jump");
+	Upgrade u2(1, 800, 760, true, "Sprinting Boots", "Allows you to spring");
 	upgrade.push_back(u1);
+	upgrade.push_back(u2);
 	upgrade.at(0).initAnimation();
+	upgrade.at(1).initAnimation();
 	#ifdef USE_OPENAL_SOUND
 	initialize_sound();
 	background_music();
@@ -356,23 +369,41 @@ void check_mouse(XEvent *e)
 				if (x > gm.xres*0.1 && x < gm.xres*0.23) {
 					w = gm.xres*0.23 - gm.xres*0.1;
 					h = gm.yres*0.3 - gm.yres*0.2;
-					selection(&gm, x, y, h, w);
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h;
+					sx = gm.xres*0.1 + w/2;
+					sy = gm.yres*0.2 + h/2;
 				}
 			}
-			if (y < gm.yres*0.55 && y > gm.yres*0.5) {
+			else if (y < gm.yres*0.55 && y > gm.yres*0.5) {
 				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
-					w = gm.xres*0.26 - gm.xres*0.08;
-					h = gm.yres*0.45 - gm.yres*0.37;
-					selection(&gm, x, y, h, w);
+					w = gm.xres*0.23 - gm.xres*0.08;
+					h = gm.yres*0.55 - gm.yres*0.5;
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h;
+					sx = gm.xres*0.08 + w/2;
+					sy = gm.yres*0.5 + h/2;
 				}
 			}
-			if (y < gm.yres*0.63 && y > gm.yres*.55) {
+			else if (y < gm.yres*0.63 && y > gm.yres*.55) {
 				if (x > gm.xres*0.11 && x < gm.xres*0.22) {
 					w = gm.xres*0.22 - gm.xres*0.11;
 					h = gm.yres*0.63 - gm.yres*0.55;
-					selection(&gm, x, y, h, w);
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h;
+					sx = gm.xres*0.11 + w/2;
+					sy = gm.yres*0.55 + h/2;
 				}
 			}
+			else
+				hasSelection = false;
+
 		}
 	}
 }
@@ -448,8 +479,11 @@ void check_keys(XEvent *e) {
                     break;
 				case XK_j:
 					playerState = STATE_ATTACK;
-					s1.initSpearDirection(gm.character);
-					//s2.initSpearDirection(gm.character);
+						if (gm.character.l[0].s.center.x < 0 || 
+							gm.character.l[0].s.center.x > gm.xres) {
+							s1.initSpearDirection(gm.character);
+							s2.initSpearDirection(gm.character);
+						}
 					break;
 				case XK_t:
 					if (enemies.size() > 0)
@@ -636,7 +670,7 @@ void render(Game *game)
 	if (gm.state == STATE_STARTMENU) {
 		loadStart(&gm);
 		checkStart(&gm);
-	}
+			}
 
 	if (gm.state == STATE_LOADING) {
 
@@ -782,6 +816,7 @@ void render(Game *game)
 				savePoints.at(j).getY(), 4.0, false);
 		}
 	}
+
 	
 
 	//Check Game States
@@ -792,6 +827,11 @@ void render(Game *game)
 	//checkGameOver(&gm);
 	outputScore(&gm);
 	outputCurrentScore(&gm);
+
+	if (gm.state == STATE_STARTMENU)
+		if (hasSelection)
+			selection(&gm, sx, sy, sh, sw);
+
 	
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
