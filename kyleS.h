@@ -82,6 +82,7 @@ public:
 	Ppmimage *spike;
 	Ppmimage *start;
 	Ppmimage *loading;
+	Ppmimage *died;
 	Ppmimage *platform;
 	Ppmimage *flames;
 	GLuint spikeTexture;
@@ -89,8 +90,11 @@ public:
 	GLuint loadTexture;
 	GLuint platTexture;
 	GLuint backTexture;
+	GLuint diedTexture;
 	GLuint boxTexture;
 	GLuint flamesTexture;
+	Flt xd[2];
+	Flt yd[2];
 	Flt xl[2];
 	Flt yl[2];
 	Flt xb[2];

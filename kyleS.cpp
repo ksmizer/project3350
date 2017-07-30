@@ -508,53 +508,25 @@ void savePointCheck(Character *p, vector<SavePoint> &sp)
 	}
 }
 
-void selection(Game *gm)
+void selection(Game *gm, int x, int y, int h, int w)
 {
-	Flt w, h;
 	Vec *c = &gm->button.center;
+	c->x = x;
+	c->y = y;
 	h = gm->button.height;
 	w = gm->button.width;
 	if (gm->state == STATE_STARTMENU) {
-		glEnable(GL_BLEND);
-		glDisable(GL_DEPTH_TEST);
 		glPushMatrix();
-
-		if (gm->button.alpha >= 0.7) {
-			while (gm->button.alpha > 0.3) {
-				gm->button.alpha -= 0.05;
-				glClear(GL_COLOR_BUFFER_BIT);
-				glColor4f(1.0, 1.0, 1.0, gm->button.alpha);
-				glBegin(GL_QUADS);
-					glVertex2i(c->x-w, c->y-h);
-					glVertex2i(c->x-w, c->y+h);
-					glVertex2i(c->x+w, c->y+h);
-					glVertex2i(c->x+w, c->y-h);
-				glEnd();
-				glPopMatrix();
-			}
-		}
-		if (gm->button.alpha <= 0.3) {
-			while (gm->button.alpha < 0.7) {
-				gm->button.alpha += 0.05;
-				glClear(GL_COLOR_BUFFER_BIT);
-				glColor4f(1.0, 1.0, 1.0, gm->button.alpha);
-				glBegin(GL_QUADS);
-					glVertex2i(c->x-w, c->y-h);
-					glVertex2i(c->x-w, c->y+h);
-					glVertex2i(c->x+w, c->y+h);
-					glVertex2i(c->x+w, c->y-h);
-				glEnd();
-				glPopMatrix();
-			}
-		}
-	}
-}
-
-void mouseClick(Game *gm, int ibutton, int action, int x, int y)
-{
-	if (action == 1) {
-	}
-	if (action == 2) {
+		glEnable(GL_BLEND);
+		glColor4f(1.0, 1.0, 1.0, 0.3);
+		glBegin(GL_QUADS);
+			glVertex2i(c->x-w, c->y-h);
+			glVertex2i(c->x-w, c->y+h);
+			glVertex2i(c->x+w, c->y+h);
+			glVertex2i(c->x+w, c->y-h);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_BLEND);
 	}
 }
 
@@ -568,8 +540,9 @@ void checkControl(Game *gm)
 		w = 200.0;
 		glPushMatrix();
 		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 1.0, 0.9);
+		glColor4f(0.0, 0.0, 0.0, 0.9);
 		glTranslated(gm->xres/2, gm->yres/2, 0);
 		glBegin(GL_QUADS);
 			glVertex2i(-w, -h);
@@ -577,15 +550,16 @@ void checkControl(Game *gm)
 			glVertex2i(+w, +h);
 			glVertex2i(+w, -h);
 		glEnd();
-		glDisable(GL_BLEND);
 		glPopMatrix();
+		glDisable(GL_BLEND);
 		r.bot = gm->yres/2 + 80;
 		r.left = gm->xres/2;
 		r.center = 1;
 		ggprint8b(&r, 16, c, "CONTROLS");
 		r.center = 0;
 		r.left = gm->xres/2 - 100;
-		ggprint8b(&r, 16, c, "TAB -> Resume play");
+		ggprint8b(&r, 16, c, "M -> Return to Menu");
+		ggprint8b(&r, 16, c, "TAB -> Pause / Resume Play");
 		ggprint8b(&r, 16, c, "SHIFT -> Run");
 		ggprint8b(&r, 16, c, "Right Arrow or A -> Walk right");
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
@@ -704,6 +678,45 @@ void loadBackground(Game *gm)
 	gm->tex.xb[1] = 1.0;
 	gm->tex.yb[0] = 0.0;
 	gm->tex.yb[1] = 1.0;
+}
+
+void loadGameover(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/died.png tmp.ppm");
+	gm->tex.died = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.diedTexture);
+	int w = gm->tex.died->width;
+	int h = gm->tex.died->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.diedTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.died->data);
+	unlink("./tmp.ppm");
+	gm->tex.xd[0] = 0.0;
+	gm->tex.xd[1] = 1.0;
+	gm->tex.yd[0] = 0.0;
+	gm->tex.yd[1] = 1.0;
+	glPushMatrix();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.loadTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xd[0], gm->tex.yd[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xd[0], gm->tex.yd[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xd[1], gm->tex.yd[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xd[1], gm->tex.yd[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
+	glPopMatrix();
 }
 
 void loadLoading(Game *gm)
@@ -903,4 +916,32 @@ void prepSpike(Game *gm)
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
+}
+
+void mouseClick(Game *gm, int action, int x, int y)
+{
+	if (action == 1) {
+		if (gm->state == STATE_STARTMENU) {
+			if (y < gm->yres*0.3 && y > gm->yres*0.2) {
+				if (x > gm->xres*0.1 && x < gm->xres*0.23) {
+					gm->state = STATE_NONE;
+					loadLoading(gm);
+				}
+			}
+			if (y < gm->yres*0.45 && y > gm->yres*0.37) {
+				if (x > gm->xres*0.08 && x < gm->xres*0.26) {
+					gm->state = STATE_CONTROLS;
+					checkControl(gm);
+					cout << "control set" << endl;
+				}
+			}
+			if (y < gm->yres*0.63 && y > gm->yres*.55) {
+				if (x > gm->xres*0.11 && x < gm->xres*0.22) {
+					gm->done = 1;
+				}
+			}
+		}
+	}
+	if (action == 2) {
+	}
 }

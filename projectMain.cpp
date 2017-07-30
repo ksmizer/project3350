@@ -45,8 +45,9 @@ extern void movement(Game *game, Character *p, PlayerState ps, char keys[]);
 extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, vector<SavePoint>& sp);
-extern void selection(Game *game);
+extern void selection(Game *game, int x, int y, int h, int w);
 extern void start(Game *game);
+extern void loadGameover(Game *game);
 extern void loadLoading(Game *game);
 extern void loading(Game *game);
 extern void loadStart(Game *game);
@@ -65,7 +66,7 @@ extern void checkStart(Game *game);
 extern void checkLoading(Game *game);
 extern void checkGameOver(Game *game);
 extern void charHurt(Game *game, Character *p);
-extern void mouseClick(Game *game, int ibutton, int action, int x, int y);
+extern void mouseClick(Game *game, int action, int x, int y);
 extern void setFrame(Game *g);
 extern void setLRDoor(Game *g);
 extern void levelText(Game *game, Level *lev);
@@ -324,24 +325,50 @@ void check_mouse(XEvent *e)
         static int savey = 0;
         static int n = 0;
         if (e->type == ButtonRelease) {
-			mouseClick(&gm, e->xbutton.button, 2, e->xbutton.x, e->xbutton.y);
 			return;
         }
         if (e->type == ButtonPress) {
                 if (e->xbutton.button == 1) {
-                        //Left button was pressed
+                	//Left button was pressed
+					mouseClick(&gm, 1, e->xbutton.x, e->xbutton.y);
                 }
                 if (e->xbutton.button == 3) {
-                        //Right button was pressed
+                	//Right button was pressed
+					mouseClick(&gm, 2, e->xbutton.x, e->xbutton.y);
                 }
         }
         //Did the mouse move?
-        if (savex != e->xbutton.x || savey != e->xbutton.y) {
-                savex = e->xbutton.x;
-                savey = e->xbutton.y;
-                if (++n < 10)
-                        return;
-        }
+	if (savex != e->xbutton.x || savey != e->xbutton.y) {
+		int x, y;
+		savex = x = e->xbutton.x;
+		savey = y = e->xbutton.y;
+		if (++n < 10)
+			return;
+		if (gm.state == STATE_STARTMENU) {
+			int w, h;
+			if (y < gm.yres*0.3 && y > gm.yres*0.2) {
+				if (x > gm.xres*0.1 && x < gm.xres*0.23) {
+					w = gm.xres*0.23 - gm.xres*0.1;
+					h = gm.yres*0.3 - gm.yres*0.2;
+					selection(&gm, x, y, h, w);
+				}
+			}
+			if (y < gm.yres*0.55 && y > gm.yres*0.5) {
+				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
+					w = gm.xres*0.23 - gm.xres*0.08;
+					h = gm.yres*0.55 - gm.yres*0.5;
+					selection(&gm, x, y, h, w);
+				}
+			}
+			if (y < gm.yres*0.63 && y > gm.yres*.55) {
+				if (x > gm.xres*0.11 && x < gm.xres*0.22) {
+					w = gm.xres*0.22 - gm.xres*0.11;
+					h = gm.yres*0.63 - gm.yres*0.55;
+					selection(&gm, x, y, h, w);
+				}
+			}
+		}
+	}
 }
 
 void check_keys(XEvent *e) {
@@ -378,13 +405,14 @@ void check_keys(XEvent *e) {
                 case XK_Tab:
                     if (gm.state == STATE_PAUSE)
                         gm.state = STATE_GAMEPLAY;
-					else if (gm.state == STATE_CONTROLS)
-						gm.state = STATE_STARTMENU;
                     else
                         gm.state = STATE_PAUSE;
 		        //totalTimer(2);
                     break;
-				
+				case XK_m:
+					if (gm.state == STATE_CONTROLS)
+						gm.state = STATE_STARTMENU;
+					break;
 				case XK_i:
 					//toggle savepoint
 					if (savePoints.at(0).checkIsEnabled())
@@ -613,7 +641,6 @@ void render(Game *game)
 	if (gm.state == STATE_STARTMENU) {
 		loadStart(&gm);
 		checkStart(&gm);
-		selection(&gm);
 	}
 
 	if (gm.state == STATE_LOADING) {
@@ -669,6 +696,9 @@ void render(Game *game)
 			upgrade.at(i).sprite.createTexture();
 		}
 		gm.state = STATE_GAMEPLAY;
+	}
+	if (gm.state == STATE_GAMEOVER) {
+		loadGameover(&gm);
 	}
 	//draw background
 	background(&gm);
@@ -764,7 +794,7 @@ void render(Game *game)
 	checkLoading(&gm);
 	checkControl(&gm);
 	checkPause(&gm);
-	checkGameOver(&gm);
+	//checkGameOver(&gm);
 	outputScore(&gm);
 	outputCurrentScore(&gm);
 	
