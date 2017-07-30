@@ -119,9 +119,8 @@ vector<Upgrade> upgrade;
 //spears
 Spear s1, s2;
 
-//zombie sprites
-//vector<SpriteAnimation> zombieAnimations;
-
+//Fireball
+Fireball fireball(19,27,-50,65);
 //sprite testing
 SpriteAnimation runAnimation((char*)"player.png", 1, 12, 12, 1, 6, 
 	46, 50, 0.1, true); 
@@ -144,27 +143,14 @@ SpriteAnimation attackAnimation2((char*)"greenArmor.png", 1, 12, 12, 8, 10,
 bool hasSelection = false;
 int sx, sy, sh, sw;
 
-//SpriteAnimation zombieAnimation((char*)"zombie.png", 1, 5, 5, 0, 3,
-	//27, 40, 0.1, true);
-
 bool newLevel = false;
-
+bool debug = false;
 
 int main(void)
 {
-	//initialize enemies
-	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 300, 900, false);
 	initializeTime();
-	//Enemy testEnemy(0, 27, 40, 400, 48, 15, 40, 0, 0, 1, 0, 0, 1200, false);
-	//Enemy testEnemy2(0, 27, 40, 300, 48, 15, 40, 0, 0, -1, 0, 0, 1200, true);
-	//enemies.push_back(testEnemy);
-	//enemies.push_back(testEnemy2);
-	
-	//spawnEnemies(lev.levelID, enemies);
-		//initialize sprites/
-	//	for (unsigned int i = 0; i < enemies.size(); i++) 
-			//enemies.at(i).initAnimations();
 	spawnEntities(0, enemies, savePoints, decorations, upgrade);
+	fireball.initAnimations();
 	s1.initAnimations();
 	s2.initAnimations();
 	SavePoint sp1(100, 59, false);
@@ -316,6 +302,7 @@ void makeCharacter(Game *game, int x, int y)
 			}
 		}
 	}
+	fireball.move(-50,fireball.getY());
 	p->velocity.y = 0;
 	p->velocity.x = 0;
 	p->s.height = p->hurt.height = runAnimation.getFrameHeight() - 10;// * 0.4;
@@ -452,6 +439,8 @@ void check_keys(XEvent *e) {
 					break;
 				case XK_i:
 					//toggle savepoint
+					if (!debug)
+						break;
 					if (savePoints.at(0).checkIsEnabled())
 						savePoints.at(0).disable();
 					else {
@@ -460,6 +449,8 @@ void check_keys(XEvent *e) {
 					break;
 				case XK_o:
 					//move player to savepoint if enabled
+					if (!debug)
+						break;
 					for (unsigned int i = 0; i < savePoints.size(); i++) {
 						if (savePoints.at(i).checkIsEnabled())
 						{
@@ -485,24 +476,37 @@ void check_keys(XEvent *e) {
 							s2.initSpearDirection(gm.character);
 						}
 					break;
+				case XK_n:
+					debug = !debug;
+					break;
 				case XK_t:
+					if (!debug)
+						break;
 					if (enemies.size() > 0)
 						enemies.at(0).stateUnitTest();
 					break;
 				case XK_v:
 					//move enemy to position
-					//enemies.erase(enemies.begin()); breaks game due to physics
+					if (!debug)
+						break;
 					if (enemies.size() > 0)
 						moveEnemy(enemies.at(0), 601, 48);
 					break;
+
 				case XK_z:
+					if (!debug)
+						break;
 					gm.character.upgrade2 = true;
 					break;
 				case XK_0:
+					if (!debug)
+						break;
 					nextLevel(&gm, &lev);
 					spawnEntities(lev.levelID, enemies, savePoints, decorations, upgrade);
 					break;
 				case XK_9:
+					if (!debug)
+						break;
 					previousLevel(&gm, &lev);
 					spawnEntities(lev.levelID, enemies, savePoints, decorations, upgrade);
 					break;
@@ -539,6 +543,8 @@ void physics(Game *game, PlayerState ps)
 	enemyCollision(game, p, enemies);
 	savePointCheck(p, savePoints);
 	upgradeCheck(p, upgrade);	
+
+	checkFireball(game, p, fireball);
 	
 	//check for the character is off-screen to load next level
 	if (p->s.center.y < 0.1 || p->s.center.y > gm.yres) {
@@ -624,8 +630,15 @@ void physics(Game *game, PlayerState ps)
 		for (unsigned int j = 0; j < enemies.at(i).animations.size(); j++) {
 			enemies.at(i).animations.at(j).enable();
 			enemies.at(i).animations.at(j).updateAnimation();
+			if (enemies.at(i).getType() == 2 && 
+				enemies.at(i).animations.at(j).getCurrentFrame() == 4)
+				enemies.at(i).attack(fireball);
 		}
 	}
+	
+	fireball.sprite.enable();
+	fireball.sprite.updateAnimation();
+	fireball.updatePosition();
 
 	s1.sprite.enable();
 	s2.sprite.enable();
@@ -697,7 +710,8 @@ void render(Game *game)
 		jumpAnimation2.createTexture();
 		attackAnimation2.convertToPpm();
 		attackAnimation2.createTexture();
-	
+		fireball.sprite.convertToPpm();
+		fireball.sprite.createTexture();
 		s1.sprite.convertToPpm();
 		s1.sprite.createTexture();
 		s2.sprite.convertToPpm();
@@ -810,12 +824,15 @@ void render(Game *game)
 				enemies.at(i).getY(), 1.0, enemies.at(i).checkIsLeft());
 		}
 	}
+
+	
 	for (unsigned int j = 0; j < savePoints.size(); j++) {
 		for (unsigned int i = 0; i < 2; i++) {
 			renderSprite(savePoints.at(j).animations.at(i), savePoints.at(j).getX(),
 				savePoints.at(j).getY(), 4.0, false);
 		}
 	}
+	renderSprite(fireball.sprite, fireball.getX(), fireball.getY(), 1.0, false);
 
 	
 
