@@ -461,7 +461,14 @@ void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 	}
 
 	if (enemyHurt(game, p, enemies.at(j))) {
-	    enemies.erase(enemies.begin() + j);
+	    if (enemies.at(j).getType() != 2)
+			enemies.erase(enemies.begin() + j);
+		else {
+			enemies.at(j).setHP(enemies.at(j).getHP() - 1);
+			if (enemies.at(j).getHP() <= 0) {
+				enemies.erase(enemies.begin() + j);
+			}
+		}
 	    break;
 	}
     }
@@ -573,6 +580,8 @@ void checkControl(Game *gm)
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
 		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
 		ggprint8b(&r, 16, c, "J - Throw Spear");
+		ggprint8b(&r, 16, c, "N - Debug Mode");
+		ggprint8b(&r, 16, c, "----DEBUG CMDS----");
 		ggprint8b(&r, 16, c, "V - Enemy Move Test");
 		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
 		ggprint8b(&r, 16, c, "I - Toggle Save Point");
@@ -613,10 +622,14 @@ void checkPause(Game *gm)
 		ggprint8b(&r, 16, c, "Left Arrow or D -> Walk left");
 		ggprint8b(&r, 16, c, "Up Arrow or W -> Jump");
 		ggprint8b(&r, 16, c, "J - Throw Spear");
+		ggprint8b(&r, 16, c, "N - Debug Mode");
+		ggprint8b(&r, 16, c, "----DEBUG CMDS----");
 		ggprint8b(&r, 16, c, "T - Enemy Unit Test");
 		ggprint8b(&r, 16, c, "V - Enemy Move Test");
 		ggprint8b(&r, 16, c, "I - Toggle Save Point");
 		ggprint8b(&r, 16, c, "O - Test Save Point");
+		ggprint8b(&r, 16, c, "9 - Previous Level");
+		ggprint8b(&r, 16, c, "0 - Next Level");
 	}
 }
 

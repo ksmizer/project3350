@@ -31,11 +31,12 @@
  * enemies depending on the level. Added new enemy type. Added decoration class
  * for background decorations. Added armor upgrade which allows double jump.
  * Edited enemy and savepoint placement. Added boots upgrade which allows 
- * sprinting when pressing shift.
+ * sprinting when pressing shift. Added boss enemy type and fireball attack.
  */
 
 #include "codyG.h"
 
+extern void death();
 Timers timers;
 
 //---------------------------------------------------------
@@ -83,7 +84,6 @@ SpriteAnimation::SpriteAnimation(char* name, int maxr, int maxc,
 	}
 }
 
-//class destructor
 SpriteAnimation::~SpriteAnimation() { }
 
 //convert image to usable format
@@ -190,6 +190,9 @@ Enemy::Enemy(int t, Flt w, Flt h, Flt cenX, Flt cenY, Flt hitW, Flt hitH,
 	leftStop = left;
 	rightStop = right;
 	isLeft = l;
+	attacking = false;
+	if (type == 2)
+		hp = 10;
 }
 
 //destructor
@@ -198,7 +201,7 @@ Enemy::~Enemy() { }
 //checks when enemy should turn around
 void Enemy::checkState()
 {
-	if (velocity.x == 0) {
+	if (velocity.x == 0 && type != 2) {
 		velocity.x = 1;
 		isLeft = false;
 	}
@@ -210,6 +213,12 @@ void Enemy::checkState()
 
 bool Enemy::checkIsLeft() { return isLeft; }
 
+int Enemy::getType() { return type; }
+
+void Enemy::setHP(int h) { hp = h; }
+
+int Enemy::getHP() { return hp; }
+
 Flt Enemy::getX() { return s.center.x; }
 
 Flt Enemy::getY() { return s.center.y; }
@@ -218,12 +227,27 @@ void Enemy::setX(Flt x) { s.center.x = x; }
 
 void Enemy::setY(Flt y) { s.center.y = y; }
 
+//reposition fireball to boss location
+void Enemy::attack(Fireball &f)
+{
+	if (type == 2)
+	{
+		//play animation, shoot fire, reset timer
+		if (f.getX() < 0)
+			f.move(this->getX(), f.getY());
+	}
+}
+
+bool Enemy::isAttacking() { return attacking; }
+
+//updates movement of enemy
 void Enemy::move() 
 { 
 	s.center.x += velocity.x;
 	hitbox.center.x = s.center.x;
 }
 
+//used for flipping sprite and changing velocity
 void Enemy::flipDirection() 
 { 
 	velocity.x = -velocity.x; 
@@ -237,6 +261,8 @@ void Enemy::flipDirection()
 		isLeft = true;
 }
 
+
+//initialize animation sprites for each enemy type
 void Enemy::initAnimations()
 {
 	animations.clear();
@@ -244,6 +270,7 @@ void Enemy::initAnimations()
 	* TYPES
 	* 0 = Zombie
 	* 1 = Goblin
+	* 2 = Boss
 	*/
 	if (type == 0) {
 		SpriteAnimation anim((char*)"zombie.png", 1, 5, 5, 0, 3, 27, 40, 0.1, true);
@@ -253,8 +280,13 @@ void Enemy::initAnimations()
 		SpriteAnimation anim((char*)"goblin.png", 1, 3, 3, 0, 2, 32, 27, 0.1, true);
 		animations.push_back(anim);
 	}
+	if (type == 2) {
+		SpriteAnimation anim((char*)"boss.png", 1, 5, 5, 0, 4, 64, 63, 0.3, true);
+		animations.push_back(anim);
+	}
 }
 
+//moves enemy off screen, better approach is to add/remove from enemies vector
 void Enemy::killEnemy()
 {
 	this->setX(-100);
@@ -262,6 +294,7 @@ void Enemy::killEnemy()
 	this->velocity.x = 0;
 }
 
+//moves enemy back to position and enables velocity again
 void Enemy::spawn(int x, int y)
 {
 	s.center.x = x;
@@ -291,6 +324,7 @@ SavePoint::SavePoint(int x, int y, bool e)
 
 SavePoint::~SavePoint(){ }
 
+//initialize savepoint sprites
 void SavePoint::initAnimations()
 {
 	animations.clear();
@@ -331,6 +365,36 @@ void Spear::initSpearDirection(Character p)
 }
 
 bool Spear::checkIsLeft() { return isLeft; }
+
+//---------------------------------------------------------
+//Fireball class
+Fireball::Fireball(int w, int h, int x, int y)
+{
+	width = w;
+	height = h;
+	xPos = x;
+	yPos = y;
+}
+
+void Fireball::initAnimations()
+{
+	SpriteAnimation anim((char*)"fire.png", 1, 4, 4, 2, 3, 19, 23, 0.1, true);
+	sprite = anim;
+}
+
+int Fireball::getX() { return xPos; }
+
+int Fireball::getY() { return yPos; }
+
+void Fireball::updatePosition() { xPos -= 16; }
+
+void Fireball::move(int x, int y)
+{
+	xPos = x;
+	yPos = y;
+}
+
+Fireball::~Fireball() {}
 
 //---------------------------------------------------------
 // Upgrade Class
@@ -384,6 +448,7 @@ void movePlayer(Character &c, int xpos, int ypos)
 	c.s.center.y = c.hurt.center.x = ypos;
 }
 
+//renders sprite at an x and y position, flips if left. modifier changes size
 void renderSprite(SpriteAnimation sprite, int xposition, 
 	int yposition, Flt modifier, bool left)
 {
@@ -436,6 +501,7 @@ void renderSprite(SpriteAnimation sprite, int xposition,
 	}
 }
 
+//updates spear location
 void updateSpear(Character *p)
 {
 	for (int i = 0; i < 2; i++) {
@@ -443,7 +509,7 @@ void updateSpear(Character *p)
 	}
 }
 
-
+//used for updating player animation
 PlayerState getPlayerState(Character *p, char keys[])
 {
 	PlayerState tmp = STATE_IDLE;
@@ -455,7 +521,7 @@ PlayerState getPlayerState(Character *p, char keys[])
 	return tmp;
 }
 
-
+//spawns decorations for level and enemies
 void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s, 
 	vector<SpriteAnimation> &d, vector<Upgrade> &u) 
 {
@@ -534,10 +600,20 @@ void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s,
 		e.push_back(e1);
 	}
 	if (level == 8) {
-	}
-	if (level == 9) {
+		Enemy e1(0,27,40,750,295,15,40,0,0,1,0,700,850,false);
+		Enemy e2(1,32,27,300,42,26,27,0,0,-4,0,0,1200,false);
+		e.push_back(e1);
+		e.push_back(e2);
 	}
 	if (level == 10) {
+		Enemy e1(2,64,63,900,75,58,58,0,0,0,0,0,1200,false);
+		Enemy e2(0,27,40,350,48,15,40,0,0,-1,0,0,1200,true);
+		Enemy e3(0,27,40,500,48,15,40,0,0,-1,0,0,1200,true);
+		Enemy e4(1,32,27,1000,42,26,27,0,0,-4,0,0,1200,false);
+		e.push_back(e1);
+		e.push_back(e2);
+		e.push_back(e3);
+		e.push_back(e4);
 	}
 
 	for (unsigned int i = 0; i < e.size(); i++) {
@@ -555,6 +631,7 @@ void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s,
 
 }
 
+//renders level decorations
 void renderEntities(vector<SpriteAnimation> &d)
 {
 	if (d.size() < 1)
@@ -572,6 +649,7 @@ void renderEntities(vector<SpriteAnimation> &d)
 	
 }
 
+//enables/disables upgrade sprites depending if player got them yet or not
 void checkUpgrade(int level, vector<Upgrade> &u)
 {
 	for (unsigned int i = 0; i < u.size(); i++) {
@@ -587,6 +665,7 @@ void checkUpgrade(int level, vector<Upgrade> &u)
 	}
 }
 
+//checks which savepoints to render depending on level
 void checkSavePoints(int level, vector<SavePoint> &s)
 {
 	for (unsigned int i = 0; i < s.size(); i++) {
@@ -626,6 +705,7 @@ void checkSavePoints(int level, vector<SavePoint> &s)
 	}
 }
 
+//returns savepoint player activated
 int getSavePointLevel(vector<SavePoint> &s) 
 {
 	if (s.at(0).checkIsEnabled())
@@ -640,6 +720,28 @@ int getSavePointLevel(vector<SavePoint> &s)
 		return 9;
 
 	return -1;
+}
+
+//checks if player collides with fireball
+void checkFireball(Game *game, Character *p, Fireball &f)
+{
+	if (f.getX() < 0)
+		return;
+	int x = f.getX();
+	int y = f.getY();
+	int charTop = y + p->s.height;
+	int charBot = y - p->s.height;
+	int charL = x - p->s.width;
+	int charR = x + p->s.width;
+	if (p->s.center.y < charTop && p->s.center.y > charBot) {
+		if (p->s.center.x > charL && p->s.center.x < charR) {
+			p->velocity.y = 0;
+			p->jumpCurrent = 2;
+			death();
+			game->state = STATE_GAMEOVER;
+		}
+	}
+	
 }
 
 //checks if player collides with upgrade
