@@ -948,26 +948,26 @@ void mouseClick(Game *gm, int action, int x, int y)
 {
 	if (action == 1) {
 		if (gm->state == STATE_STARTMENU) {
-			if (y < gm->yres*0.3 && y > gm->yres*0.2) {
+			if (y < gm->yres*0.49 && y > gm->yres*0.42) {
 				if (x > gm->xres*0.1 && x < gm->xres*0.23) {
 					gm->state = STATE_NONE;
 					loadLoading(gm);
 				}
 			}
-			if (y < gm->yres*0.45 && y > gm->yres*0.37) {
+			if (y < gm->yres*0.69 && y > gm->yres*0.60) {
 				if (x > gm->xres*0.08 && x < gm->xres*0.26) {
 					gm->state = STATE_CONTROLS;
 					checkControl(gm);
 				}
 			}
-			if (y < gm->yres*0.63 && y > gm->yres*.55) {
+			if (y < gm->yres*0.84 && y > gm->yres*.76) {
 				if (x > gm->xres*0.11 && x < gm->xres*0.22) {
 					gm->done = 1;
 				}
 			}
 		}
 		if (gm->state == STATE_GAMEOVER) {
-			if (y < gm->yres*0.7 && y > gm->yres*.62) {
+			if (y < gm->yres*0.9 && y > gm->yres*.82) {
 				if (x > gm->xres*0.41 && x < gm->xres*0.59) {
 					makeCharacter(gm, gm->xres/2, gm->yres/2);
 					gm->state = STATE_GAMEPLAY;
