@@ -343,9 +343,11 @@ void explosion()
 
 void initializeTime()
 {
-	if (minutes == 0 && seconds == 0) {
-		startTime = clock();
-	};
+	if (totalMinutes == 0 && totalSeconds == 0) {
+		if (seconds == 0 && minutes == 0) {
+			thisTime = clock();
+		}
+	}
 }
 
 void resetTime()
