@@ -359,20 +359,20 @@ void check_mouse(XEvent *e)
 					hasSelection = true;
 					sw = w;
 					sh = h;
-					sx = x;
-					sy = y;
+					sx = gm.xres*0.11 + w/2;
+					sy = gm.yres*0.55;
 				}
 			}
-			else if (y < gm.yres*0.55 && y > gm.yres*0.5) {
+			else if (y < gm.yres*0.45 && y > gm.yres*0.37) {
 				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
-					w = gm.xres*0.23 - gm.xres*0.08;
-					h = gm.yres*0.55 - gm.yres*0.5;
+					w = gm.xres*0.26 - gm.xres*0.08;
+					h = gm.yres*0.45 - gm.yres*0.37;
 					//selection(&gm, x, y, h, w);
 					hasSelection = true;
 					sw = w;
 					sh = h;
-					sx = x;
-					sy = y;
+					sx = gm.xres*0.09;
+					sy = gm.yres*0.37;
 				}
 			}
 			else if (y < gm.yres*0.63 && y > gm.yres*.55) {
@@ -383,13 +383,30 @@ void check_mouse(XEvent *e)
 					hasSelection = true;
 					sw = w;
 					sh = h;
-					sx = x;
-					sy = y;
+					sx = gm.xres*0.1 + w/2;
+					sy = gm.yres*0.2;
 				}
 			}
 			else
 				hasSelection = false;
 
+		}
+		if (gm.state == STATE_GAMEOVER) {
+			int w, h;
+			if (y < gm.yres*0.7 && y > gm.yres*0.62) {
+				if (x > gm.xres*0.41 && x < gm.xres*0.59) {
+					w = gm.xres*0.59 - gm.xres*0.41;
+					h = gm.yres*0.7 - gm.yres*0.62;
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h / 2;
+					sx = gm.xres*0.42 + w/2;
+					sy = gm.yres*0.15;
+				}
+			}
+			else
+				hasSelection = false;
 		}
 	}
 }
@@ -687,7 +704,7 @@ void render(Game *game)
 	if (gm.state == STATE_STARTMENU) {
 		loadStart(&gm);
 		checkStart(&gm);
-			}
+	}
 
 	if (gm.state == STATE_LOADING) {
 
@@ -743,9 +760,6 @@ void render(Game *game)
 			upgrade.at(i).sprite.createTexture();
 		}
 		gm.state = STATE_GAMEPLAY;
-	}
-	if (gm.state == STATE_GAMEOVER) {
-		loadGameover(&gm);
 	}
 	//draw background
 	background(&gm);
@@ -849,14 +863,18 @@ void render(Game *game)
 	outputScore(&gm);
 	outputCurrentScore(&gm);
 
-	if (gm.state == STATE_STARTMENU)
+	if (gm.state == STATE_GAMEOVER) {
+		if (gm.hasDied)
+			loadGameover(&gm);
+	}
+
+	if (gm.state == STATE_STARTMENU || gm.state == STATE_GAMEOVER) {
 		if (hasSelection)
 			selection(&gm, sx, sy, sh, sw);
-
+	}
 	
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
-
 }
 
 unsigned char *buildAlphaData(Ppmimage *img)
