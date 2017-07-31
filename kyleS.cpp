@@ -62,6 +62,7 @@ extern void explosion();
 extern void spearHit();
 extern void timer(int mode);
 extern void makeCharacter(Game *game, int x, int y);
+extern void setTime();
 
 void makeWeapon(Game *game, Character *p);
 void start(Game *game);
@@ -267,6 +268,7 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 					if (p->velocity.y < 0) {
 						if (p->soundChk == true) {
 							thump();
+							setTime();
 							p->soundChk = !p->soundChk;
 						}
 						p->s.center.y = boxTop[i];
@@ -332,6 +334,7 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 								&& p->velocity.y < 0) {
 					if (p->soundChk == true) {
 						thump();
+						setTime();
 						p->soundChk = !p->soundChk;
 					}
 					p->s.center.y = platTop[i];
@@ -403,6 +406,7 @@ void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 								&& e->s.center.x > boxLeft[i] + OFFSET) {
 					if (e->velocity.y < 0) {
 						thump();
+						setTime();
 						e->s.center.y = boxTop[i];
 						e->velocity.y = 0;
 					}
@@ -453,6 +457,7 @@ void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 							&& e->s.center.x >= platLeft[i]
 								&& e->velocity.y < 0) {
 					thump();
+					setTime();
 					e->s.center.y = platTop[i];
 					e->velocity.y = 0;
 					if (e->s.center.x == platRight[i] ||

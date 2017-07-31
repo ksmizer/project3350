@@ -62,7 +62,8 @@ clock_t deadTime;
 clock_t thisTime;
 clock_t clockTicksTaken;
 double timeInSeconds;
-int BUF = 0;
+bool start = true;
+	
 
 extern void prepPlat(Game *g);
 extern void prepBox(Game *g);
@@ -384,6 +385,14 @@ void explosion()
 	
 }
 
+void setTime()
+{
+	if (start == true) {
+		thisTime = clock();
+		start = false;
+	}
+}
+
 void initializeTime()
 {
 	if (totalMinutes == 0 && totalSeconds == 0) {
@@ -459,8 +468,8 @@ void totalTimer()
 	// current time minus the time when the clock started
 	clockTicksTaken = clock() - thisTime;
 	timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-	// seconds = timeInSeconds * 25 for csub computers
-	seconds = timeInSeconds * 5;
+	// seconds = timeInSeconds * 20 for csub computers
+	seconds = timeInSeconds * 21.5;
 	minutes = seconds / 60;
 	seconds = seconds % 60;
 	// running total of pause time
@@ -507,7 +516,7 @@ void outputCurrentScore(Game *gm)
 	Flt h, w;
 	Rect r;
 	int c = 0xffffffff;
-	if (gm->state == STATE_GAMEPLAY) {
+	if (gm->state == STATE_GAMEPLAY && start == false) {
 		totalTimer();
 		h = 50;
 		w = 50;
@@ -536,7 +545,7 @@ void outputCurrentScore(Game *gm)
 		// computer monitors or laptops
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
 		ggprint8b(&r, 16, c, "Kills: %d", kills);
-		r.bot = gm->yres/2 + 200;
+		/*r.bot = gm->yres/2 + 200;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
@@ -545,7 +554,7 @@ void outputCurrentScore(Game *gm)
 			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		ggprint8b(&r, 16, c, "Kills: %d", kills);
+		ggprint8b(&r, 16, c, "Kills: %d", kills);*/
 	}
 }
 
