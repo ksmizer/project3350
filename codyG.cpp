@@ -36,6 +36,8 @@
 
 #include "codyG.h"
 
+extern void killCount();
+
 extern void death();
 Timers timers;
 
@@ -292,6 +294,7 @@ void Enemy::killEnemy()
 	this->setX(-100);
 	this->setY(this->getY());
 	this->velocity.x = 0;
+	killCount();
 }
 
 //moves enemy back to position and enables velocity again

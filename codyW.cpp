@@ -58,14 +58,12 @@ int totalSeconds = 0;
 int totalMinutes = 0;
 int pauseSeconds = 0;
 int pauseMinutes = 0;
-int deadSeconds = 0;
-int deadMinutes = 0;
 int deaths = 0;
 int kills = 0;
 clock_t startTime;
 clock_t pauseTime;
-clock_t thisTime;
 clock_t deadTime;
+clock_t thisTime;
 clock_t clockTicksTaken;
 double timeInSeconds;
 
@@ -93,6 +91,8 @@ class Sound {
 		ALuint alSource_seven;
 		ALuint alBuffer_eight;
 		ALuint alSource_eight;
+		ALuint alBuffer_nine;
+		ALuint alSource_nine;
 };
 
 void initialize_sound()
@@ -125,6 +125,7 @@ void finish_sound()
 	alDeleteSources(1, &s.alSource_six);
 	alDeleteSources(1, &s.alSource_seven);
 	alDeleteSources(1, &s.alSource_eight);
+	alDeleteSources(1, &s.alSource_nine);
 	//Delete the buffer.
 	alDeleteBuffers(1, &s.alBuffer);
 	alDeleteBuffers(1, &s.alBuffer_one[0]);
@@ -137,6 +138,7 @@ void finish_sound()
 	alDeleteBuffers(1, &s.alBuffer_six);
 	alDeleteBuffers(1, &s.alBuffer_seven);
 	alDeleteBuffers(1, &s.alBuffer_eight);
+	alDeleteBuffers(1, &s.alBuffer_nine);
 	//Close out OpenAL itself.
 	//Get active context.
 	ALCcontext *Context = alcGetCurrentContext();
@@ -153,9 +155,8 @@ void finish_sound()
 void thump()
 {
 	Sound s;
-	//Buffer holds the sound information.
 	s.alBuffer = alutCreateBufferFromFile("./thump.wav");
-
+	
 	//Source refers to the sound.
 	//Generate a source, and store it in a buffer.
 	alGenSources(1, &s.alSource);
@@ -164,11 +165,6 @@ void thump()
 	alSourcef(s.alSource, AL_GAIN, 0.1f);
 	alSourcef(s.alSource, AL_PITCH, 1.0f);
 	alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
-	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 	
 	alSourcePlay(s.alSource);
 }
@@ -179,7 +175,7 @@ void flames()
 
 	s.alBuffer_one[0] = alutCreateBufferFromFile("./test.wav");
 
-	s.alBuffer_one[1] = alutCreateBufferFromFile("./background.wav");
+	s.alBuffer_one[1] = alutCreateBufferFromFile("./flames.wav");
 
 	alGenSources(2, s.alSource_one);
 
@@ -190,27 +186,18 @@ void flames()
 	alSourcef(s.alSource_one[0], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_one[0], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcef(s.alSource_one[1], AL_GAIN, 0.5f);
 	alSourcef(s.alSource_one[1], AL_PITCH, 1.0f);
 	//for longer fire set looping to AL_TRUE
 	alSourcei(s.alSource_one[1], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcePlay(s.alSource_one[1]);
 	//flames will not loop until after the first source plays
 	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_one[0]);
 	}
-	return;
 }
 
 void background_music()
@@ -230,27 +217,18 @@ void background_music()
 	alSourcef(s.alSource_two[0], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_two[0], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcef(s.alSource_two[1], AL_GAIN, 0.1f);
 	alSourcef(s.alSource_two[1], AL_PITCH, 1.0f);
 	//for longer fire set looping to AL_TRUE
 	alSourcei(s.alSource_two[1], AL_LOOPING, AL_TRUE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcePlay(s.alSource_two[1]);
 	//flames will not loop until after the first source plays
 	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_two[0]);
 	}
-	return;
 }
 
 void hit()
@@ -267,11 +245,6 @@ void hit()
 	alSourcef(s.alSource_three, AL_GAIN, 0.1f);
 	alSourcef(s.alSource_three, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_three, AL_LOOPING, AL_FALSE);
-	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 	
 	alSourcePlay(s.alSource_three);
 }
@@ -291,11 +264,6 @@ void jump()
 	alSourcef(s.alSource_four, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_four, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
-	
 	alSourcePlay(s.alSource_four);
 }
 
@@ -314,11 +282,6 @@ void throw_spear()
 	alSourcef(s.alSource_five, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_five, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
-	
 	alSourcePlay(s.alSource_five);
 }
 
@@ -336,11 +299,6 @@ void spikes()
 	alSourcef(s.alSource_six, AL_GAIN, 0.1f);
 	alSourcef(s.alSource_six, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_six, AL_LOOPING, AL_FALSE);
-	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 	
 	alSourcePlay(s.alSource_six);
 }
@@ -361,11 +319,6 @@ void death()
 	alSourcef(s.alSource_seven, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_seven, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
-	
 	alSourcePlay(s.alSource_seven);
 }
 
@@ -385,11 +338,6 @@ void explosion()
 	alSourcef(s.alSource_eight, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_eight, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
-	
 	alSourcePlay(s.alSource_eight);
 }
 
@@ -402,6 +350,25 @@ void initializeTime()
 
 void resetTime()
 {
+	int s;
+	int m;
+
+		
+	if (seconds >= 60)
+	{
+		totalMinutes = totalMinutes + (seconds / 60);
+		totalSeconds = totalSeconds + (seconds % 60);
+			
+	} else {
+		totalSeconds = totalSeconds + seconds;
+		totalMinutes = totalMinutes + minutes;
+	}
+	if (totalSeconds >= 60) {
+		m = (totalSeconds / 60);
+		s = (totalSeconds % 60);
+		totalMinutes = totalMinutes + m;
+		totalSeconds = s;
+	}
 	seconds = 0;
 	minutes = 0;
 	thisTime = clock();
@@ -414,7 +381,22 @@ void setDeathTime()
 
 void setPauseTime()
 {
-	pauseTime = clock();
+	// reset pause time if its not 0
+	if (pauseSeconds != 0) {
+		pauseSeconds = 0;
+	}
+	if (pauseMinutes != 0) {
+		pauseMinutes = 0;
+	}
+	// set pausetime when player hits tab
+	pauseSeconds = seconds;
+	pauseMinutes = minutes;
+}
+
+void resumeTime()
+{
+	// reset the clock
+	thisTime = clock();
 }
 
 void countDeath()
@@ -427,44 +409,17 @@ void killCount()
 	kills++;
 }
 
-void totalTimer(int mode)
+void totalTimer()
 {
-	// total time
-	if (mode == 1) {
-		clockTicksTaken = clock() - startTime;
-		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		totalSeconds = timeInSeconds * 25;
-		totalMinutes = totalSeconds / 60;
-		totalSeconds = totalSeconds % 60;
-	} 
-	// pause time
-	if (mode == 2) {
-		clockTicksTaken = clock() - pauseTime;
-		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		pauseSeconds = timeInSeconds * 25;
-		pauseMinutes = totalSeconds / 60;
-		pauseSeconds = totalSeconds % 60;
-		totalSeconds = totalSeconds - pauseSeconds;
-		totalMinutes = totalMinutes - pauseMinutes; 
-	}
-	// current time
-	if (mode == 3) {
-		clockTicksTaken = clock() - thisTime;
-		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		seconds = timeInSeconds * 25;
-		minutes = seconds / 60;
-		seconds = seconds % 60;
-	}
-	// time during gameover screen
-	if (mode == 4) {
-		clockTicksTaken = clock() - deadTime;
-		timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-		pauseSeconds = timeInSeconds * 25;
-		pauseMinutes = totalSeconds / 60;
-		pauseSeconds = totalSeconds % 60;
-		totalSeconds = totalSeconds - deadSeconds;
-		totalMinutes = totalMinutes - deadMinutes; 
-	}
+	// current time minus the time when the clock started
+	clockTicksTaken = clock() - thisTime;
+	timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
+	seconds = timeInSeconds * 25;
+	minutes = seconds / 60;
+	seconds = seconds % 60;
+	// running total of pause time
+	minutes = minutes + pauseMinutes;
+	seconds = seconds + pauseSeconds;
 }
 
 void outputScore(Game *gm)
@@ -497,7 +452,7 @@ void outputScore(Game *gm)
 			ggprint8b(&r, 16, c, "Total Time: %d:%d", totalMinutes, totalSeconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		//ggprint8b(&r, 16, c, "Kills: %d", kills);
+		ggprint8b(&r, 16, c, "Kills: %d", kills);
 	}
 }
 
@@ -507,7 +462,7 @@ void outputCurrentScore(Game *gm)
 	Rect r;
 	int c = 0xffffffff;
 	if (gm->state == STATE_GAMEPLAY) {
-		totalTimer(3);
+		totalTimer();
 		h = 50;
 		w = 50;
 		glPushMatrix();
@@ -531,9 +486,11 @@ void outputCurrentScore(Game *gm)
 		} else {
 			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
 		}
+		// use this code for testing timer on smaller 
+		// computer monitors or laptops
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		//ggprint8b(&r, 16, c, "Kills: %d", kills);
-		/*r.bot = gm->yres/2 + 200;
+		ggprint8b(&r, 16, c, "Kills: %d", kills);
+		r.bot = gm->yres/2 + 200;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
@@ -542,7 +499,7 @@ void outputCurrentScore(Game *gm)
 			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		//ggprint8b(&r, 16, c, "Kills: %d", kills);*/
+		ggprint8b(&r, 16, c, "Kills: %d", kills);
 	}
 }
 
@@ -642,7 +599,8 @@ void drawLevel7(Game *gm, Level *lev)
 		glBegin(GL_QUADS);
 			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 				glVertex2i(-w,-h);
-			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
+	
+		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
 				glVertex2i(-w, h);
 			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
 				glVertex2i( w, h);
@@ -1116,16 +1074,16 @@ void drawLevel7(Game *gm, Level *lev)
 		glEnd();
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
-		
-		//spike 14	
-		/*Shape *spike14;	
-		glColor3ub(80,110,70);
-		spike14 = &gm->spike[13];
+			
+		//Draw test platform 12
+		Shape *test12;
+		//glColor3ub(80,110,70);
+		test12 = &gm->plat[11];
 		glPushMatrix();
-		glTranslatef(spike14->center.x, spike14->center.y, spike14->center.z);
-		w = spike14->width;
-		h = spike14->height;
-		prepFlames(gm);
+		glTranslatef(test12->center.x, test12->center.y, test12->center.z);
+		w = test12->width;
+		h = test12->height;
+		prepPlat(gm);
 		glBegin(GL_QUADS);
 			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 				glVertex2i(-w,-h);
@@ -1138,31 +1096,8 @@ void drawLevel7(Game *gm, Level *lev)
 		glEnd();
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
-		
-		//spike 15	
-		Shape *spike15;	
-		glColor3ub(80,110,70);
-		spike15 = &gm->spike[14];
-		glPushMatrix();
-		glTranslatef(spike15->center.x, spike15->center.y, spike15->center.z);
-		w = spike15->width;
-		h = spike15->height;
-		prepFlames(gm);
-		glBegin(GL_QUADS);
-			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
-				glVertex2i(-w,-h);
-			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
-				glVertex2i(-w, h);
-			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
-				glVertex2i( w, h);
-			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
-				glVertex2i( w,-h);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_ALPHA_TEST);	*/
-	}	
+	}
 }
-
 
 void setLevel7(Game *gm, Level *lev)
 {
@@ -1316,5 +1251,11 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[12].height = 15;
 	        gm->spike[12].center.x = 1050;
 		gm->spike[12].center.y = 450;
+	        
+		//test platforms12
+	        gm->plat[11].width = 15;
+	        gm->plat[11].height = 15;
+	        gm->plat[11].center.x = 520;
+	        gm->plat[11].center.y = 250;
 	}
 }
