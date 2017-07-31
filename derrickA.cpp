@@ -12,6 +12,7 @@
 #include "derrickA.h"
 #include "fonts.h"
 #include <fcntl.h>
+#include <stdio.h>
 
 extern void prepPlat(Game *g);
 extern void prepBox(Game *g);
@@ -182,18 +183,30 @@ void loadLevel(Game *g, Level *lev)
 	if (p->s.center.x > WINDOW_WIDTH - 0.1) {
 		p->s.center.x = 20;
 		lev->levelID++;
-		if(lev->levelID > 1) {
+		if(lev->levelID == 10) {
+			//printf("loadLevel setting boss frame");
+			setFrame(g);
+		}
+		if (lev->levelID == 1) {
+			//printf("Loadlevel function setting right door \n");
+			setRightDoor(g);
+		}
+		if(lev->levelID > 1 && lev->levelID < 10) {
 			setLRDoor(g);
 		}
-	}
-	else if (lev->levelID > 1) {
-		setLRDoor(g);
-	}
-	else if (lev->levelID == 1) {
-		setRightDoor(g);
+
+		if(lev->levelID > 1 && lev->levelID < 10) {
+			setLRDoor(g);
+		}
+	
+		if (lev->levelID == 1) {
+			//printf("Loadlevel function setting right door \n");
+			setRightDoor(g);
+		}
 	}
 
 }
+
 
 void levelText(Game *gm, Level *lev)
 {
@@ -228,9 +241,26 @@ if (gm->state == STATE_GAMEPLAY) {
 void gameOverLevelRestart(Game *gm, Level *lev)
 {
 	if (gm->state == STATE_GAMEOVER) {
-		lev->levelID = 1;
-	//	clearLevel(gm);
-		setRightDoor(gm);      
+		if(lev->levelID == 2) {
+			lev->levelID = 1;
+			setRightDoor(gm);
+		}     
+
+	//	lev->levelID = 1;
+
+	//	if(lev->levelID == 10) {
+	//		setFrame(gm);
+	//	}
+		if (lev->levelID == 1) {
+			setRightDoor(gm);
+		}
+		if(lev->levelID > 1 && lev->levelID < 10) {
+			setLRDoor(gm);
+		}
+		else{
+	//		clearLevel(gm);
+			setLRDoor(gm);
+		} 
 	}
 }
 
@@ -640,7 +670,7 @@ void setLevel3(Game *gm, Level *lev)
 	
 	//wall blocking right door	
 	gm->box[4].width = 15;
-	gm->box[4].height = gm->yres - 825;
+	gm->box[4].height = gm->yres - 800;
 	gm->box[4].center.x = gm->xres - 150;
 	gm->box[4].center.y = 0;
 
@@ -1024,13 +1054,13 @@ void setLevel4(Game *gm, Level *lev)
         //test platforms
         gm->plat[9].width = 50;
         gm->plat[9].height = 15;
-        gm->plat[9].center.x = 650;
+        gm->plat[9].center.x = 550;
         gm->plat[9].center.y = 480;
 
         //test spikes
         gm->spike[0].width = 100;
         gm->spike[0].height = 15;
-        gm->spike[0].center.x = 365;
+        gm->spike[0].center.x = 350;
         gm->spike[0].center.y = 520;
 
         //test spikes 2
@@ -2453,7 +2483,7 @@ void drawLevel9(Game *gm, Level *lev)
 			glEnd();	
 			glPopMatrix();
 
-	/*//set up spike	
+	//set up spike	
 	Shape *spike;
 	glColor3ub(80,110,70);
 	spike = &gm->spike[0];
@@ -2474,7 +2504,7 @@ void drawLevel9(Game *gm, Level *lev)
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);*/
+	glDisable(GL_BLEND);
 	
 	//set up spike	2
 	Shape *spike2;
@@ -2638,8 +2668,8 @@ void drawLevel9(Game *gm, Level *lev)
 	test7 = &gm->plat[6];
 	glPushMatrix();
 	glTranslatef(test7->center.x, test7->center.y, test7->center.z);
-	w = test7->width;
-	h = test7->height;
+	w = test2->width;
+	h = test2->height;
 	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
@@ -2675,7 +2705,6 @@ void drawLevel9(Game *gm, Level *lev)
 			glEnd();	
 			glPopMatrix();
 
-/*
 	//Draw test platform 9
 	Shape *test9;
 	glColor3ub(80,110,70);
@@ -2696,7 +2725,7 @@ void drawLevel9(Game *gm, Level *lev)
 			glVertex2i( w,-h);
 			glEnd();	
 			glPopMatrix();
-*/	
+	
 	//Draw test platform 10
 	Shape *test10;
 	glColor3ub(80,110,70);
@@ -2770,7 +2799,7 @@ void setLevel9(Game *gm, Level *lev)
         gm->plat[6].width = 100;
         gm->plat[6].height = 15;
         gm->plat[6].center.x = 1000;
-        gm->plat[6].center.y = 525;
+        gm->plat[6].center.y = 550;
 
         //test platforms
         gm->plat[7].width = 100;
@@ -2778,24 +2807,23 @@ void setLevel9(Game *gm, Level *lev)
         gm->plat[7].center.x = 900;
         gm->plat[7].center.y = 400;
 
-        /*//test platforms wide
+        //test platforms wide
         gm->plat[8].width = 400;
         gm->plat[8].height = 15;
         gm->plat[8].center.x = 200;
-        gm->plat[8].center.y = 650;*/
+        gm->plat[8].center.y = 650;
 
         //test platforms
         gm->plat[9].width = 100;
         gm->plat[9].height = 15;
         gm->plat[9].center.x = 700;
-        gm->plat[9].center.y = 650;
+        gm->plat[9].center.y = 680;
 
-		/*
         //test spikes top
         gm->spike[0].width = 400;
         gm->spike[0].height = 15;
         gm->spike[0].center.x = 415;
-        gm->spike[0].center.y = 620;*/
+        gm->spike[0].center.y = 620;
 
         //test spikes 2 mid
         gm->spike[1].width = 300;
