@@ -149,7 +149,6 @@ bool debug = false;
 
 int main(void)
 {
-	initializeTime();
 	spawnEntities(0, enemies, savePoints, decorations, upgrade);
 	fireball.initAnimations();
 	s1.initAnimations();
@@ -413,6 +412,7 @@ void check_keys(XEvent *e) {
 				}
 		if (gm.state == STATE_GAMEOVER) {
 					if (gm.keys[XK_r] || gm.keys[XK_R]) {
+                                resumeTime();
 							makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;
 			}
@@ -466,6 +466,7 @@ void check_keys(XEvent *e) {
 					}
 					break;
 				case XK_p:
+                    initializeTime();
                     if (gm.state == STATE_STARTMENU) {
                         gm.state = STATE_NONE;
 						loadLoading(&gm);
