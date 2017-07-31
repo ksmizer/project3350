@@ -1,6 +1,6 @@
 /* 
  *Name: Cody Graves
- *Last Modified: 7/23/17
+ *Last Modified: 7/30/17
  *Project: Dungeon Escape
  *
  */
@@ -66,14 +66,31 @@ class SpriteAnimation
 	void updateAnimation();
 };
 
+class Fireball
+{
+	protected:
+	int width, height;
+	int xPos, yPos;
+	public:
+	SpriteAnimation sprite;
+	int getX();
+	int getY();
+	void initAnimations();
+	void updatePosition();
+	void move(int x, int y);
+	Fireball(int w, int h, int x, int y);
+	~Fireball();
+};
+
 class Enemy
 {
 	protected:
 	int type;
+	int hp;
 	Vec direction;
 	int leftStop, rightStop;
 	bool isLeft;
-	
+	bool attacking;	
 	public:
 	vector<SpriteAnimation> animations;
 	Shape s;
@@ -84,11 +101,16 @@ class Enemy
 	~Enemy();
 	void checkState();
 	bool checkIsLeft();
+	bool isAttacking();
+	void setHP(int);
+	int getHP();
+	int getType();
 	Flt getX();
 	Flt getY();
 	void setX(Flt x);
 	void setY(Flt y);
 	void move();
+	void attack(Fireball &f);
 	void stateUnitTest();
 	void initAnimations();
 	void killEnemy();
@@ -125,8 +147,37 @@ class Spear
 	bool checkIsLeft();
 };
 
+class Upgrade
+{
+	protected:
+	int xPos, yPos;
+	int type;
+	bool enabled;
+	string name;
+	string description;
+	public:
+	Upgrade(int t, int x, int y, bool e, string n, string d);
+	~Upgrade();
+	SpriteAnimation sprite;
+	int getX();
+	int getY();
+	void initAnimation();
+	bool checkIsEnabled();
+	void enable();
+	void disable();
+};
+
+
 void movePlayer(Character &c, int xpos, int ypos);
 void moveEnemy(Enemy &e, int xpos, int ypos);
 void renderSprite(SpriteAnimation anim, int x, int y, Flt modifier, bool left);
 void updateSpear(Character *p);
 PlayerState getPlayerState(Character *p, char keys[]);
+void spawnEntities(int level, vector<Enemy> &e, vector<SavePoint> &s, 
+	vector<SpriteAnimation> &d, vector<Upgrade> &u);
+void checkUpgrade(int level, vector<Upgrade> &u);
+void checkSavePoints(int level, vector<SavePoint> &s);
+int getSavePointLevel(vector<SavePoint> &s);
+void renderEntities(vector<SpriteAnimation> &d);
+void checkFireball(Game *g, Character *p, Fireball &f);
+void upgradeCheck(Character *p, vector<Upgrade> &u);

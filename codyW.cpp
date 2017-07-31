@@ -166,10 +166,6 @@ void thump()
 	alSourcef(s.alSource, AL_PITCH, 1.0f);
 	alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 	alSourcePlay(s.alSource);
 }
 
@@ -190,27 +186,18 @@ void flames()
 	alSourcef(s.alSource_one[0], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_one[0], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcef(s.alSource_one[1], AL_GAIN, 0.5f);
 	alSourcef(s.alSource_one[1], AL_PITCH, 1.0f);
 	//for longer fire set looping to AL_TRUE
 	alSourcei(s.alSource_one[1], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcePlay(s.alSource_one[1]);
 	//flames will not loop until after the first source plays
 	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_one[0]);
 	}
-	return;
 }
 
 void background_music()
@@ -230,27 +217,18 @@ void background_music()
 	alSourcef(s.alSource_two[0], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_two[0], AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcef(s.alSource_two[1], AL_GAIN, 0.1f);
 	alSourcef(s.alSource_two[1], AL_PITCH, 1.0f);
 	//for longer fire set looping to AL_TRUE
 	alSourcei(s.alSource_two[1], AL_LOOPING, AL_TRUE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 
 	alSourcePlay(s.alSource_two[1]);
 	//flames will not loop until after the first source plays
 	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_two[0]);
 	}
-	return;
 }
 
 void hit()
@@ -267,11 +245,6 @@ void hit()
 	alSourcef(s.alSource_three, AL_GAIN, 0.1f);
 	alSourcef(s.alSource_three, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_three, AL_LOOPING, AL_FALSE);
-	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 	
 	alSourcePlay(s.alSource_three);
 }
@@ -291,11 +264,6 @@ void jump()
 	alSourcef(s.alSource_four, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_four, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
-	
 	alSourcePlay(s.alSource_four);
 }
 
@@ -314,11 +282,6 @@ void throw_spear()
 	alSourcef(s.alSource_five, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_five, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
-	
 	alSourcePlay(s.alSource_five);
 }
 
@@ -336,11 +299,6 @@ void spikes()
 	alSourcef(s.alSource_six, AL_GAIN, 0.1f);
 	alSourcef(s.alSource_six, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_six, AL_LOOPING, AL_FALSE);
-	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 	
 	alSourcePlay(s.alSource_six);
 }
@@ -361,11 +319,6 @@ void death()
 	alSourcef(s.alSource_seven, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_seven, AL_LOOPING, AL_FALSE);
 	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
-	
 	alSourcePlay(s.alSource_seven);
 }
 
@@ -384,11 +337,6 @@ void explosion()
 	alSourcef(s.alSource_eight, AL_GAIN, 0.1f);
 	alSourcef(s.alSource_eight, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_eight, AL_LOOPING, AL_FALSE);
-	
-	if (alGetError() != AL_NO_ERROR) {
-		printf("ERROR: setting source\n");
-		return;
-	}
 	
 	alSourcePlay(s.alSource_eight);
 }
@@ -1126,16 +1074,16 @@ void drawLevel7(Game *gm, Level *lev)
 		glEnd();
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
-		
-		//spike 14	
-		/*Shape *spike14;	
-		glColor3ub(80,110,70);
-		spike14 = &gm->spike[13];
+			
+		//Draw test platform 12
+		Shape *test12;
+		//glColor3ub(80,110,70);
+		test12 = &gm->plat[11];
 		glPushMatrix();
-		glTranslatef(spike14->center.x, spike14->center.y, spike14->center.z);
-		w = spike14->width;
-		h = spike14->height;
-		prepFlames(gm);
+		glTranslatef(test12->center.x, test12->center.y, test12->center.z);
+		w = test12->width;
+		h = test12->height;
+		prepPlat(gm);
 		glBegin(GL_QUADS);
 			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
 				glVertex2i(-w,-h);
@@ -1148,31 +1096,8 @@ void drawLevel7(Game *gm, Level *lev)
 		glEnd();
 		glPopMatrix();
 		glDisable(GL_ALPHA_TEST);
-		
-		//spike 15	
-		Shape *spike15;	
-		glColor3ub(80,110,70);
-		spike15 = &gm->spike[14];
-		glPushMatrix();
-		glTranslatef(spike15->center.x, spike15->center.y, spike15->center.z);
-		w = spike15->width;
-		h = spike15->height;
-		prepFlames(gm);
-		glBegin(GL_QUADS);
-			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
-				glVertex2i(-w,-h);
-			glTexCoord2f(gm->tex.xp[0], gm->tex.yp[1]);
-				glVertex2i(-w, h);
-			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[1]);
-				glVertex2i( w, h);
-			glTexCoord2f(gm->tex.xp[1], gm->tex.yp[0]);
-				glVertex2i( w,-h);
-		glEnd();
-		glPopMatrix();
-		glDisable(GL_ALPHA_TEST);	*/
-	}	
+	}
 }
-
 
 void setLevel7(Game *gm, Level *lev)
 {
@@ -1210,14 +1135,14 @@ void setLevel7(Game *gm, Level *lev)
 	        //test platforms3
 	        gm->plat[2].width = 15;
 	        gm->plat[2].height = 15;
-	        gm->plat[2].center.x = 180;
+	        gm->plat[2].center.x = 200;
 	        gm->plat[2].center.y = 250;
 	
 	        //test platforms4
 	        gm->plat[3].width = 30;
 	        gm->plat[3].height = 15;
 	        gm->plat[3].center.x = 7;
-	        gm->plat[3].center.y = 400;
+	        gm->plat[3].center.y = 375;
 	
 	        //test spikes3
 	        gm->spike[2].width = 50;
@@ -1326,5 +1251,11 @@ void setLevel7(Game *gm, Level *lev)
 	        gm->spike[12].height = 15;
 	        gm->spike[12].center.x = 1050;
 		gm->spike[12].center.y = 450;
+	        
+		//test platforms12
+	        gm->plat[11].width = 15;
+	        gm->plat[11].height = 15;
+	        gm->plat[11].center.x = 520;
+	        gm->plat[11].center.y = 250;
 	}
 }

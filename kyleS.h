@@ -24,11 +24,12 @@ const Flt timeslice = 1.0f;
 const Flt gravity = -0.2f;
 #define PI 3.141592653589793
 #define ALPHA 1
-#define WALK 2.0
-#define JUMP 4.0
+#define RUN 6.0
+#define WALK 3.5 //default 2...I think
+#define JUMP 6.0 //default 4.0
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 900
-#define GRAVITY 0.1
+#define GRAVITY 0.25 //default 0.1
 #define OFFSET 15
 #define C_HEIGHT 2
 #define C_WIDTH 10
@@ -39,12 +40,6 @@ const Flt gravity = -0.2f;
 //structs
 struct Vec {
 	Flt x, y, z;
-};
-
-struct Rectangle {
-	Flt width, height;
-	Flt right, left, top, bot;
-	Flt centerx, centery;
 };
 
 struct Shape {
@@ -60,14 +55,9 @@ struct Hurtbox {
 };
 
 struct Button {
-	Rectangle r;
-	char text[32];
-	int over;
-	int down;
-	int click;
-	float color[3];
-	float dcolor[3];
-	unsigned int text_color;
+	Flt width, height;
+	Vec center;
+	GLfloat alpha;
 };
 
 struct Hitbox {
@@ -78,6 +68,7 @@ struct Hitbox {
 enum State {
 	STATE_NONE,
 	STATE_STARTMENU,
+	STATE_LOADING,
 	STATE_GAMEPLAY,
 	STATE_PAUSE,
 	STATE_CONTROLS,
@@ -89,19 +80,31 @@ public:
 	Ppmimage *background;
 	Ppmimage *box;
 	Ppmimage *spike;
+	Ppmimage *start;
+	Ppmimage *loading;
+	Ppmimage *died;
 	Ppmimage *platform;
 	Ppmimage *flames;
 	GLuint spikeTexture;
+	GLuint startTexture;
+	GLuint loadTexture;
 	GLuint platTexture;
 	GLuint backTexture;
+	GLuint diedTexture;
 	GLuint boxTexture;
 	GLuint flamesTexture;
+	Flt xd[2];
+	Flt yd[2];
+	Flt xl[2];
+	Flt yl[2];
 	Flt xb[2];
 	Flt yb[2];
 	Flt xB[2];
 	Flt yB[2];
 	Flt xs[2];
 	Flt ys[2];
+	Flt xS[2];
+	Flt yS[2];
 	Flt xp[2];
 	Flt yp[2];
 	Flt xf[2];
@@ -132,6 +135,8 @@ public:
 	bool hurtJump;
 	Flt angle;
 	Flt color[3];
+	bool upgrade;
+	bool upgrade2;
 	bool isLeft;
 };
 
@@ -143,10 +148,7 @@ public:
 	Character character;
 	State state;
 	Texture tex;
-	Button button[MAXBUTTONS];
-	int nbuttons;
-	int lbutton;
-	int rbutton;
+	Button button;
 	int n;
 	int xres, yres;
 	int done;
@@ -159,6 +161,9 @@ public:
 		yres = WINDOW_HEIGHT;
 		done = 0;
 		memset(keys, 0, 65536);
+		button.alpha = 1.0;
+		button.height = 50;
+		button.width = 100;
 	}
 };
 
