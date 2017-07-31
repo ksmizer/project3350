@@ -2483,7 +2483,7 @@ void drawLevel9(Game *gm, Level *lev)
 			glEnd();	
 			glPopMatrix();
 
-	//set up spike	
+/*	//set up spike	
 	Shape *spike;
 	glColor3ub(80,110,70);
 	spike = &gm->spike[0];
@@ -2505,7 +2505,7 @@ void drawLevel9(Game *gm, Level *lev)
 	glPopMatrix();
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_BLEND);
-	
+	*/
 	//set up spike	2
 	Shape *spike2;
 	glColor3ub(80,110,70);
@@ -2668,8 +2668,8 @@ void drawLevel9(Game *gm, Level *lev)
 	test7 = &gm->plat[6];
 	glPushMatrix();
 	glTranslatef(test7->center.x, test7->center.y, test7->center.z);
-	w = test2->width;
-	h = test2->height;
+	w = test7->width;
+	h = test7->height;
 	prepPlat(gm);
 	glBegin(GL_QUADS);
 		glTexCoord2f(gm->tex.xp[0], gm->tex.yp[0]);
@@ -2705,7 +2705,7 @@ void drawLevel9(Game *gm, Level *lev)
 			glEnd();	
 			glPopMatrix();
 
-	//Draw test platform 9
+/*	//Draw test platform 9
 	Shape *test9;
 	glColor3ub(80,110,70);
 	test9 = &gm->plat[8];
@@ -2725,7 +2725,7 @@ void drawLevel9(Game *gm, Level *lev)
 			glVertex2i( w,-h);
 			glEnd();	
 			glPopMatrix();
-	
+*/	
 	//Draw test platform 10
 	Shape *test10;
 	glColor3ub(80,110,70);
@@ -2807,24 +2807,24 @@ void setLevel9(Game *gm, Level *lev)
         gm->plat[7].center.x = 900;
         gm->plat[7].center.y = 400;
 
-        //test platforms wide
+ /*       //test platforms wide
         gm->plat[8].width = 400;
         gm->plat[8].height = 15;
         gm->plat[8].center.x = 200;
         gm->plat[8].center.y = 650;
-
+*/
         //test platforms
         gm->plat[9].width = 100;
         gm->plat[9].height = 15;
         gm->plat[9].center.x = 700;
-        gm->plat[9].center.y = 680;
-
+        gm->plat[9].center.y = 650;
+/*
         //test spikes top
         gm->spike[0].width = 400;
         gm->spike[0].height = 15;
         gm->spike[0].center.x = 415;
         gm->spike[0].center.y = 620;
-
+*/
         //test spikes 2 mid
         gm->spike[1].width = 300;
         gm->spike[1].height = 15;
