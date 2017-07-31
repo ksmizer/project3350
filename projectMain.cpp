@@ -695,6 +695,7 @@ void render(Game *game)
 		loadPlatforms(&gm);
 		loadBoxes(&gm);
 		loadSpikes(&gm);
+		loadFlames(&gm);
 	
 		//Sprites
 		runAnimation.convertToPpm();

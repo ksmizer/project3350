@@ -70,8 +70,8 @@ extern void prepSpike(Game *g);
 
 class Sound {
 	public:
-		ALuint alBuffer[200];
-		ALuint alSource[200];
+		ALuint alBuffer;
+		ALuint alSource;
 		ALuint alBuffer_one[2];
 		ALuint alSource_one[2];
 		ALuint alBuffer_two[2];
@@ -111,7 +111,7 @@ void finish_sound()
 	Sound s;
 	//Cleanup.
 	//First delete the source.
-	alDeleteSources(1, &s.alSource[BUF]);
+	alDeleteSources(1, &s.alSource);
 	alDeleteSources(1, &s.alSource_one[0]);
 	alDeleteSources(1, &s.alSource_one[1]);
 	alDeleteSources(1, &s.alSource_two[0]);
@@ -124,7 +124,7 @@ void finish_sound()
 	alDeleteSources(1, &s.alSource_eight);
 	alDeleteSources(1, &s.alSource_nine);
 	//Delete the buffer.
-	alDeleteBuffers(1, &s.alBuffer[BUF]);
+	alDeleteBuffers(1, &s.alBuffer);
 	alDeleteBuffers(1, &s.alBuffer_one[0]);
 	alDeleteBuffers(1, &s.alBuffer_one[1]);
 	alDeleteBuffers(1, &s.alBuffer_two[0]);
@@ -154,7 +154,7 @@ void cleanSound()
 	Sound s;
 
 	//Delete the source
-	alDeleteSources(1, &s.alSource[BUF]);
+	alDeleteSources(1, &s.alSource);
 	alDeleteSources(1, &s.alSource_one[0]);
 	alDeleteSources(1, &s.alSource_one[1]);
 	alDeleteSources(1, &s.alSource_three);
@@ -165,7 +165,7 @@ void cleanSound()
 	alDeleteSources(1, &s.alSource_eight);
 	alDeleteSources(1, &s.alSource_nine);
 	//Delete the buffer.
-	alDeleteBuffers(1, &s.alBuffer[BUF]);
+	alDeleteBuffers(1, &s.alBuffer);
 	alDeleteBuffers(1, &s.alBuffer_one[0]);
 	alDeleteBuffers(1, &s.alBuffer_one[1]);
 	alDeleteBuffers(1, &s.alBuffer_three);
@@ -192,23 +192,19 @@ void thump()
 {
 	Sound s;
 
-	if (BUF == 5) {
-		BUF = 0;
-	}
 
-	s.alBuffer[BUF] = alutCreateBufferFromFile("./thump.wav");
+	s.alBuffer = alutCreateBufferFromFile("./thump.wav");
 	
 	//Source refers to the sound.
 	//Generate a source, and store it in a buffer.
-	alGenSources(1, &s.alSource[BUF]);
-	alSourcei(s.alSource[BUF], AL_BUFFER, s.alBuffer[BUF]);
+	alGenSources(1, &s.alSource);
+	alSourcei(s.alSource, AL_BUFFER, s.alBuffer);
 	//Set volume and pitch to normal, no looping of sound.
-	alSourcef(s.alSource[BUF], AL_GAIN, 0.1f);
-	alSourcef(s.alSource[BUF], AL_PITCH, 1.0f);
-	alSourcei(s.alSource[BUF], AL_LOOPING, AL_FALSE);
+	alSourcef(s.alSource, AL_GAIN, 0.1f);
+	alSourcef(s.alSource, AL_PITCH, 1.0f);
+	alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
 	
-	alSourcePlay(s.alSource[BUF]);
-	BUF++;
+	alSourcePlay(s.alSource);
 }
 
 void flames()
@@ -265,6 +261,7 @@ void background_music()
 	//for longer fire set looping to AL_TRUE
 	alSourcei(s.alSource_two[1], AL_LOOPING, 1);
 	alSourcePlay(s.alSource_two[1]);
+
 	//flames will not loop until after the first source plays
 	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_two[0]);
@@ -540,7 +537,7 @@ void outputCurrentScore(Game *gm)
 		// computer monitors or laptops
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
 		ggprint8b(&r, 16, c, "Kills: %d", kills);
-		/*r.bot = gm->yres/2 + 200;
+		r.bot = gm->yres/2 + 200;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
@@ -549,7 +546,7 @@ void outputCurrentScore(Game *gm)
 			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		ggprint8b(&r, 16, c, "Kills: %d", kills);*/
+		ggprint8b(&r, 16, c, "Kills: %d", kills);
 	}
 }
 
