@@ -351,7 +351,7 @@ void check_mouse(XEvent *e)
 			return;
 		if (gm.state == STATE_STARTMENU) {
 			int w, h;
-			if (y < gm.yres*0.3 && y > gm.yres*0.2) {
+			if (y < gm.yres*0.49 && y > gm.yres*0.42) {
 				if (x > gm.xres*0.1 && x < gm.xres*0.23) {
 					w = gm.xres*0.23 - gm.xres*0.1;
 					h = gm.yres*0.3 - gm.yres*0.2;
@@ -363,7 +363,7 @@ void check_mouse(XEvent *e)
 					sy = gm.yres*0.55;
 				}
 			}
-			else if (y < gm.yres*0.45 && y > gm.yres*0.37) {
+			else if (y < gm.yres*0.69 && y > gm.yres*0.60) {
 				if (x > gm.xres*0.08 && x < gm.xres*0.26) {
 					w = gm.xres*0.26 - gm.xres*0.08;
 					h = gm.yres*0.45 - gm.yres*0.37;
@@ -375,7 +375,7 @@ void check_mouse(XEvent *e)
 					sy = gm.yres*0.37;
 				}
 			}
-			else if (y < gm.yres*0.63 && y > gm.yres*.55) {
+			else if (y < gm.yres*0.84 && y > gm.yres*.76) {
 				if (x > gm.xres*0.11 && x < gm.xres*0.22) {
 					w = gm.xres*0.22 - gm.xres*0.11;
 					h = gm.yres*0.63 - gm.yres*0.55;
@@ -393,16 +393,16 @@ void check_mouse(XEvent *e)
 		}
 		if (gm.state == STATE_GAMEOVER) {
 			int w, h;
-			if (y < gm.yres*0.7 && y > gm.yres*0.62) {
+			if (y < gm.yres*0.9 && y > gm.yres*0.82) {
 				if (x > gm.xres*0.41 && x < gm.xres*0.59) {
 					w = gm.xres*0.59 - gm.xres*0.41;
-					h = gm.yres*0.7 - gm.yres*0.62;
+					h = gm.yres*0.72 - gm.yres*0.62;
 					//selection(&gm, x, y, h, w);
 					hasSelection = true;
 					sw = w;
 					sh = h / 2;
 					sx = gm.xres*0.42 + w/2;
-					sy = gm.yres*0.15;
+					sy = gm.yres*0.14;
 				}
 			}
 			else
