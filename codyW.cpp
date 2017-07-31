@@ -47,11 +47,7 @@
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
 #endif //USE_OPENAL_SOUND
-#define SIZE 40
-#define HOST "www.google.com"
-#define PAGE "/"
-#define PORT 80
-#define USERAGENT "HTMLGET 1.0"
+
 int seconds = 0;
 int minutes = 0;
 int totalSeconds = 0;
@@ -66,6 +62,7 @@ clock_t deadTime;
 clock_t thisTime;
 clock_t clockTicksTaken;
 double timeInSeconds;
+int BUF = 0;
 
 extern void prepPlat(Game *g);
 extern void prepBox(Game *g);
@@ -152,9 +149,50 @@ void finish_sound()
 	alcCloseDevice(Device);
 }
 
+void cleanSound()
+{
+	Sound s;
+
+	//Delete the source
+	alDeleteSources(1, &s.alSource);
+	alDeleteSources(1, &s.alSource_one[0]);
+	alDeleteSources(1, &s.alSource_one[1]);
+	alDeleteSources(1, &s.alSource_three);
+	alDeleteSources(1, &s.alSource_four);
+	alDeleteSources(1, &s.alSource_five);
+	alDeleteSources(1, &s.alSource_six);
+	alDeleteSources(1, &s.alSource_seven);
+	alDeleteSources(1, &s.alSource_eight);
+	alDeleteSources(1, &s.alSource_nine);
+	//Delete the buffer.
+	alDeleteBuffers(1, &s.alBuffer);
+	alDeleteBuffers(1, &s.alBuffer_one[0]);
+	alDeleteBuffers(1, &s.alBuffer_one[1]);
+	alDeleteBuffers(1, &s.alBuffer_three);
+	alDeleteBuffers(1, &s.alBuffer_four);
+	alDeleteBuffers(1, &s.alBuffer_five);
+	alDeleteBuffers(1, &s.alBuffer_six);
+	alDeleteBuffers(1, &s.alBuffer_seven);
+	alDeleteBuffers(1, &s.alBuffer_eight);
+	alDeleteBuffers(1, &s.alBuffer_nine);
+	//Close out OpenAL itself.
+	//Get active context.
+	//ALCcontext *Context = alcGetCurrentContext();
+	//Get device for active context.
+	//ALCdevice *Device = alcGetContextsDevice(Context);
+	//Disable context
+	//alcMakeContextCurrent(NULL);
+	//Release context(s)
+	//alcDestroyContext(Context);
+	//Close device.
+	//alcCloseDevice(Device);
+}
+
 void thump()
 {
 	Sound s;
+
+
 	s.alBuffer = alutCreateBufferFromFile("./thump.wav");
 	
 	//Source refers to the sound.
@@ -197,6 +235,7 @@ void flames()
 	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_one[0]);
 	}
+	
 }
 
 void background_music()
@@ -208,7 +247,7 @@ void background_music()
 	s.alBuffer_two[1] = alutCreateBufferFromFile("./background.wav");
 
 	alGenSources(2, s.alSource_two);
-
+	
 	alSourcei(s.alSource_two[0], AL_BUFFER, s.alBuffer_two[0]);
 	alSourcei(s.alSource_two[1], AL_BUFFER, s.alBuffer_two[1]);
 
@@ -216,14 +255,12 @@ void background_music()
 	alSourcef(s.alSource_two[0], AL_PITCH, 0.0f);
 	alSourcei(s.alSource_two[0], AL_LOOPING, AL_FALSE);
 	
-
 	alSourcef(s.alSource_two[1], AL_GAIN, 0.1f);
 	alSourcef(s.alSource_two[1], AL_PITCH, 1.0f);
 	//for longer fire set looping to AL_TRUE
-	alSourcei(s.alSource_two[1], AL_LOOPING, AL_TRUE);
-	
-
+	alSourcei(s.alSource_two[1], AL_LOOPING, 1);
 	alSourcePlay(s.alSource_two[1]);
+
 	//flames will not loop until after the first source plays
 	for (int i=0; i<10; i++) {
 		alSourcePlay(s.alSource_two[0]);
@@ -246,11 +283,12 @@ void hit()
 	alSourcei(s.alSource_three, AL_LOOPING, AL_FALSE);
 	
 	alSourcePlay(s.alSource_three);
+	
 }
 
 void jump()
 {
-	Sound s;
+	/*Sound s;
 	//Buffer holds the sound information.
 	s.alBuffer_four = alutCreateBufferFromFile("./jump.wav");
 
@@ -263,7 +301,8 @@ void jump()
 	alSourcef(s.alSource_four, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_four, AL_LOOPING, AL_FALSE);
 	
-	alSourcePlay(s.alSource_four);
+	alSourcePlay(s.alSource_four);*/
+	
 }
 
 void throw_spear()
@@ -282,6 +321,7 @@ void throw_spear()
 	alSourcei(s.alSource_five, AL_LOOPING, AL_FALSE);
 	
 	alSourcePlay(s.alSource_five);
+	
 }
 
 void spikes()
@@ -300,6 +340,7 @@ void spikes()
 	alSourcei(s.alSource_six, AL_LOOPING, AL_FALSE);
 	
 	alSourcePlay(s.alSource_six);
+	
 }
 
 void death()
@@ -319,6 +360,8 @@ void death()
 	alSourcei(s.alSource_seven, AL_LOOPING, AL_FALSE);
 	
 	alSourcePlay(s.alSource_seven);
+	
+	cleanSound();
 }
 
 void explosion()
@@ -338,6 +381,7 @@ void explosion()
 	alSourcei(s.alSource_eight, AL_LOOPING, AL_FALSE);
 	
 	alSourcePlay(s.alSource_eight);
+	
 }
 
 void initializeTime()
@@ -415,7 +459,8 @@ void totalTimer()
 	// current time minus the time when the clock started
 	clockTicksTaken = clock() - thisTime;
 	timeInSeconds = clockTicksTaken / (double) CLOCKS_PER_SEC;
-	seconds = timeInSeconds * 25;
+	// seconds = timeInSeconds * 25 for csub computers
+	seconds = timeInSeconds * 5;
 	minutes = seconds / 60;
 	seconds = seconds % 60;
 	// running total of pause time
@@ -1103,53 +1148,53 @@ void drawLevel7(Game *gm, Level *lev)
 void setLevel7(Game *gm, Level *lev)
 {
 	if (lev->levelID == 7) {
-	        //test spikes1
-	        gm->spike[0].width = 300;
-	        gm->spike[0].height = 15;
-	        gm->spike[0].center.x = gm->xres - 885;
-	        gm->spike[0].center.y = 135;
+		//test spikes1
+		gm->spike[0].width = 300;
+		gm->spike[0].height = 15;
+		gm->spike[0].center.x = gm->xres - 885;
+		gm->spike[0].center.y = 135;
 		
-	        //test spikes2
-	        gm->spike[1].width = 150;
-	        gm->spike[1].height = 15;
-	        gm->spike[1].center.x = gm->xres - 350;
-	        gm->spike[1].center.y = 135;
+		//test spikes2
+		gm->spike[1].width = 150;
+		gm->spike[1].height = 15;
+		gm->spike[1].center.x = gm->xres - 350;
+		gm->spike[1].center.y = 135;
 			
 		//test wall1		
 		gm->box[4].width = 10;
-        	gm->box[4].height = 600;
-        	gm->box[4].center.x = 1100;
-        	gm->box[4].center.y = 0;
+		gm->box[4].height = 600;
+		gm->box[4].center.x = 1100;
+		gm->box[4].center.y = 0;
 	
 		//test platform1
 		gm->plat[0].width = 25;
-        	gm->plat[0].height = 15;
-        	gm->plat[0].center.x = 1075;
-        	gm->plat[0].center.y = 135;
+		gm->plat[0].height = 15;
+		gm->plat[0].center.x = 1075;
+		gm->plat[0].center.y = 135;
 	
-	        //test platforms2
-	        gm->plat[1].width = 15;
-	        gm->plat[1].height = 15;
-	        gm->plat[1].center.x = 820;
-	        gm->plat[1].center.y = 250;
+		//test platforms2
+		gm->plat[1].width = 15;
+		gm->plat[1].height = 15;
+		gm->plat[1].center.x = 820;
+		gm->plat[1].center.y = 250;
 	
-	        //test platforms3
-	        gm->plat[2].width = 15;
-	        gm->plat[2].height = 15;
-	        gm->plat[2].center.x = 200;
-	        gm->plat[2].center.y = 250;
+		//test platforms3
+		gm->plat[2].width = 15;
+		gm->plat[2].height = 15;
+		gm->plat[2].center.x = 200;
+		gm->plat[2].center.y = 250;
 	
-	        //test platforms4
-	        gm->plat[3].width = 30;
-	        gm->plat[3].height = 15;
-	        gm->plat[3].center.x = 7;
-	        gm->plat[3].center.y = 375;
+		//test platforms4
+		gm->plat[3].width = 30;
+		gm->plat[3].height = 15;
+		gm->plat[3].center.x = 7;
+		gm->plat[3].center.y = 375;
 	
-	        //test spikes3
-	        gm->spike[2].width = 50;
-	        gm->spike[2].height = 15;
-	        gm->spike[2].center.x = 250;
-	        gm->spike[2].center.y = 450;
+		//test spikes3
+		gm->spike[2].width = 50;
+		gm->spike[2].height = 15;
+		gm->spike[2].center.x = 250;
+		gm->spike[2].center.y = 450;
 		
 		//wall 2	
 		gm->box[5].width = 15;
@@ -1157,106 +1202,106 @@ void setLevel7(Game *gm, Level *lev)
 		gm->box[5].center.x = 200;
 		gm->box[5].center.y = 550;
 		
-	        //test platforms5
-	        gm->plat[4].width = 15;
-	        gm->plat[4].height = 15;
-	        gm->plat[4].center.x = 180;
-	        gm->plat[4].center.y = 450;
+		//test platforms5
+		gm->plat[4].width = 15;
+		gm->plat[4].height = 15;
+		gm->plat[4].center.x = 180;
+		gm->plat[4].center.y = 450;
 	        
 		//test spikes4
-	        gm->spike[3].width = 60;
-	        gm->spike[3].height = 15;
-	        gm->spike[3].center.x = 60;
-	        gm->spike[3].center.y = 550;
+		gm->spike[3].width = 60;
+		gm->spike[3].height = 15;
+		gm->spike[3].center.x = 60;
+		gm->spike[3].center.y = 550;
 		
-	        //test platforms6
-	        gm->plat[5].width = 30;
-	        gm->plat[5].height = 5;
-	        gm->plat[5].center.x = 7;
-	        gm->plat[5].center.y = 565;
+		//test platforms6
+		gm->plat[5].width = 30;
+		gm->plat[5].height = 5;
+		gm->plat[5].center.x = 7;
+		gm->plat[5].center.y = 565;
 		
-	        //test platforms7
-	        gm->plat[6].width = 50;
-	        gm->plat[6].height = 10;
-	        gm->plat[6].center.x = 415;
-	        gm->plat[6].center.y = 470;
+		//test platforms7
+		gm->plat[6].width = 50;
+		gm->plat[6].height = 10;
+		gm->plat[6].center.x = 415;
+		gm->plat[6].center.y = 470;
 		
 		//test spikes5
-	        gm->spike[4].width = 350;
-	        gm->spike[4].height = 15;
-	        gm->spike[4].center.x = 670;
-	        gm->spike[4].center.y = 655;
+		gm->spike[4].width = 350;
+		gm->spike[4].height = 15;
+		gm->spike[4].center.x = 670;
+		gm->spike[4].center.y = 655;
 	        
 		//test platforms8
-	        gm->plat[7].width = 50;
-	        gm->plat[7].height = 10;
-	        gm->plat[7].center.x = 600;
-	        gm->plat[7].center.y = 470;
+		gm->plat[7].width = 50;
+		gm->plat[7].height = 10;
+		gm->plat[7].center.x = 600;
+		gm->plat[7].center.y = 470;
 		
 		//test platforms9
-	        gm->plat[8].width = 50;
-	        gm->plat[8].height = 10;
-	        gm->plat[8].center.x = 800;
-	        gm->plat[8].center.y = 470;
-		
+		gm->plat[8].width = 50;
+		gm->plat[8].height = 10;
+		gm->plat[8].center.x = 800;
+		gm->plat[8].center.y = 470;
+	
 		//test platforms10
-	        gm->plat[9].width = 50;
-	        gm->plat[9].height = 10;
-	        gm->plat[9].center.x = 1000;
-	        gm->plat[9].center.y = 470;
+		gm->plat[9].width = 50;
+		gm->plat[9].height = 10;
+		gm->plat[9].center.x = 1000;
+		gm->plat[9].center.y = 470;
 	        
 		//test spikes 6
-	        gm->spike[5].width = 50;
-	        gm->spike[5].height = 15;
-	        gm->spike[5].center.x = 350;
+		gm->spike[5].width = 50;
+		gm->spike[5].height = 15;
+		gm->spike[5].center.x = 350;
 		gm->spike[5].center.y = 450;
 		
 		//test spikes 7
-	        gm->spike[6].width = 50;
-	        gm->spike[6].height = 15;
-	        gm->spike[6].center.x = 450;
+		gm->spike[6].width = 50;
+		gm->spike[6].height = 15;
+		gm->spike[6].center.x = 450;
 		gm->spike[6].center.y = 450;
 		
 		//test spikes 8
-	        gm->spike[7].width = 50;
-	        gm->spike[7].height = 15;
-	        gm->spike[7].center.x = 550;
+		gm->spike[7].width = 50;
+		gm->spike[7].height = 15;
+		gm->spike[7].center.x = 550;
 		gm->spike[7].center.y = 450;
 		
 		//test spikes 9
-	        gm->spike[8].width = 50;
-	        gm->spike[8].height = 15;
-	        gm->spike[8].center.x = 650;
+		gm->spike[8].width = 50;
+		gm->spike[8].height = 15;
+		gm->spike[8].center.x = 650;
 		gm->spike[8].center.y = 450;
 		
 		//test spikes 10
-	        gm->spike[9].width = 50;
-	        gm->spike[9].height = 15;
-	        gm->spike[9].center.x = 750;
+		gm->spike[9].width = 50;
+		gm->spike[9].height = 15;
+		gm->spike[9].center.x = 750;
 		gm->spike[9].center.y = 450;
 		
 		//test spikes 11
-	        gm->spike[10].width = 50;
-	        gm->spike[10].height = 15;
-	        gm->spike[10].center.x = 850;
+		gm->spike[10].width = 50;
+		gm->spike[10].height = 15;
+		gm->spike[10].center.x = 850;
 		gm->spike[10].center.y = 450;
 		
 		//test spikes 12
-	        gm->spike[11].width = 50;
-	        gm->spike[11].height = 15;
-	        gm->spike[11].center.x = 950;
+		gm->spike[11].width = 50;
+		gm->spike[11].height = 15;
+		gm->spike[11].center.x = 950;	
 		gm->spike[11].center.y = 450;
 		
 		//test spikes 13
-	        gm->spike[12].width = 50;
-	        gm->spike[12].height = 15;
-	        gm->spike[12].center.x = 1050;
+		gm->spike[12].width = 50;
+		gm->spike[12].height = 15;
+		gm->spike[12].center.x = 1050;
 		gm->spike[12].center.y = 450;
 	        
 		//test platforms12
-	        gm->plat[11].width = 15;
-	        gm->plat[11].height = 15;
-	        gm->plat[11].center.x = 520;
-	        gm->plat[11].center.y = 250;
+		gm->plat[11].width = 15;
+		gm->plat[11].height = 15;
+		gm->plat[11].center.x = 520;
+		gm->plat[11].center.y = 250;
 	}
 }
