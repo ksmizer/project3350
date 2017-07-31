@@ -31,6 +31,8 @@
 
 #include "codyG.h"
 
+extern void killCount();
+
 Timers timers;
 
 //---------------------------------------------------------
@@ -242,6 +244,7 @@ void Enemy::killEnemy()
 	this->setX(-100);
 	this->setY(this->getY());
 	this->velocity.x = 0;
+	killCount();
 }
 
 void Enemy::spawn(int x, int y)

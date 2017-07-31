@@ -58,6 +58,7 @@ extern void spikes();
 extern void death();
 extern void flames();
 extern void explosion();
+extern void spearHit();
 extern void timer(int mode);
 
 void makeWeapon(Game *game, Character *p);
@@ -287,7 +288,6 @@ void enemyHurt(Game *game, Character *p, vector<Enemy> &enemies)
 			if (e->s.center.x < lance[i][2] && e->s.center.x > lance[i][3]) {
 				e->velocity.x = 0;
 				e->killEnemy();
-				//death();
 				p->l[i].s.center.x = -50;
 				p->l[i].velocity.x = 0;
 			}

@@ -86,8 +86,9 @@ extern void totalTimer(int mode);
 extern void initializeTime();
 extern void resetTime();
 extern void countDeath();
-extern void setDeathTime();
 extern void setPauseTime();
+extern void setDeathTime();
+extern void resumeTime();
 extern void outputScore(Game *game);
 extern void outputCurrentScore(Game *game);
 extern void loadFlames(Game *game);
@@ -278,7 +279,6 @@ void init_opengl(void)
 void makeCharacter(Game *game, int x, int y)
 {
 	initializeTime();
-	resetTime();
 	//position of character
 	Character *p = &game->character;
 	
@@ -372,7 +372,6 @@ void check_keys(XEvent *e) {
 				}
 		if (gm.state == STATE_GAMEOVER) {
 					if (gm.keys[XK_r] || gm.keys[XK_R]) {
-							//totalTimer(4);
 							makeCharacter(&gm, gm.xres/2, gm.yres/2);
 				gm.state = STATE_GAMEPLAY;
 			}
@@ -386,13 +385,15 @@ void check_keys(XEvent *e) {
                     gm.done = 1;
                     break;
                 case XK_Tab:
-                    if (gm.state == STATE_PAUSE)
+                        setPauseTime();
+                    if (gm.state == STATE_PAUSE) {
                         gm.state = STATE_GAMEPLAY;
+                        resumeTime();
+                    }
 					else if (gm.state == STATE_CONTROLS)
 						gm.state = STATE_STARTMENU;
                     else
                         gm.state = STATE_PAUSE;
-		        //totalTimer(2);
                     break;
 				
 				case XK_i:
@@ -549,9 +550,9 @@ void physics(Game *game, PlayerState ps)
 		savePoints.at(0).animations.at(1).disable();
 	}
 	if (gm.state == STATE_GAMEOVER) {
+		resetTime();
 		setDeathTime();
 		countDeath();
-		totalTimer(1);
 	} 
 	if (gm.state == STATE_PAUSE) {
 		setPauseTime();
