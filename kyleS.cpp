@@ -60,6 +60,7 @@ extern void death();
 extern void flames();
 extern void explosion();
 extern void timer(int mode);
+extern void makeCharacter(Game *game, int x, int y);
 
 void makeWeapon(Game *game, Character *p);
 void start(Game *game);
@@ -183,6 +184,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 				spikes();
 				death();
 				game->state = STATE_GAMEOVER;
+				game->hasDied = true;
 			}
 		}
 	}
@@ -200,6 +202,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 				p->jumpMax = 0;
 				death();
 				game->state = STATE_GAMEOVER;
+				game->hasDied = true;
 			}
 		}
 	}
@@ -338,27 +341,28 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 		}
 	}
 	// weapon box collision update
+	int top[10], bottom[10], left[10], right[10];
 	for (unsigned int i = 0; i < 10; i++) {
 		for (int j = 0; j < 1; j++) {
-			Shape *s = &game->box[i];
-			boxTop[i] = s->center.y + s->height + W_HEIGHT;
-			boxBottom[i] = s->center.y - s->height - W_HEIGHT;
-			boxLeft[i] = s->center.x - s->width - W_WIDTH;
-			boxRight[i] = s->center.x + s->width + W_WIDTH;
+			Shape *w = &game->box[i];
+			top[i] = w->center.y + w->height + W_HEIGHT;
+			bottom[i] = w->center.y - w->height - W_HEIGHT;
+			left[i] = w->center.x - w->width - W_WIDTH;
+			right[i] = w->center.x + w->width + W_WIDTH;
 			if (p->l[j].s.center.x > 0) {
-				if (p->l[j].s.center.y < boxTop[i]
-						&& p->l[j].s.center.y > boxBottom[i]) {
-					if (p->l[j].s.center.x > boxLeft[i]
-							&& p->l[j].s.center.x < boxRight[i]) {
+				if (p->l[j].s.center.y < top[i]
+						&& p->l[j].s.center.y > bottom[i]) {
+					if (p->l[j].s.center.x > left[i]
+							&& p->l[j].s.center.x < right[i]) {
 						//Right collision detection
-						if (p->l[j].s.center.x < boxRight[i]
-								&& p->l[j].s.center.x > s->center.x) {
+						if (p->l[j].s.center.x < right[i]
+								&& p->l[j].s.center.x > w->center.x) {
 							p->l[j].velocity.x = 0;
 							p->l[j].s.center.x = -50;
 						}
 						//Left Collision detection
-						if (p->l[j].s.center.x > boxLeft[i]
-								&& p->l[j].s.center.x < s->center.x) {
+						if (p->l[j].s.center.x > left[i]
+								&& p->l[j].s.center.x < w->center.x) {
 							p->l[j].velocity.x = 0;
 							p->l[j].s.center.x = -50;
 						}
@@ -526,7 +530,7 @@ void selection(Game *gm, int x, int y, int h, int w)
 	c->y = y;
 	gm->button.height = h;
 	gm->button.width = w;
-	if (gm->state == STATE_STARTMENU) {
+	if (gm->state == STATE_STARTMENU || gm->state == STATE_GAMEOVER) {
 		glPushMatrix();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
@@ -962,8 +966,9 @@ void mouseClick(Game *gm, int action, int x, int y)
 			}
 		}
 		if (gm->state == STATE_GAMEOVER) {
-			if (y < gm->yres*0.3 && y > gm->yres*.2) {
-				if (x > gm->xres*0.45 && x < gm->xres*0.55) {
+			if (y < gm->yres*0.7 && y > gm->yres*.62) {
+				if (x > gm->xres*0.41 && x < gm->xres*0.59) {
+					makeCharacter(gm, gm->xres/2, gm->yres/2);
 					gm->state = STATE_GAMEPLAY;
 				}
 			}

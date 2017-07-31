@@ -392,6 +392,23 @@ void check_mouse(XEvent *e)
 				hasSelection = false;
 
 		}
+		if (gm.state == STATE_GAMEOVER) {
+			int w, h;
+			if (y < gm.yres*0.7 && y > gm.yres*0.62) {
+				if (x > gm.xres*0.41 && x < gm.xres*0.59) {
+					w = gm.xres*0.59 - gm.xres*0.41;
+					h = gm.yres*0.7 - gm.yres*0.62;
+					//selection(&gm, x, y, h, w);
+					hasSelection = true;
+					sw = w;
+					sh = h / 2;
+					sx = gm.xres*0.42 + w/2;
+					sy = gm.yres*0.15;
+				}
+			}
+			else
+				hasSelection = false;
+		}
 	}
 }
 
@@ -683,7 +700,7 @@ void render(Game *game)
 	if (gm.state == STATE_STARTMENU) {
 		loadStart(&gm);
 		checkStart(&gm);
-			}
+	}
 
 	if (gm.state == STATE_LOADING) {
 
@@ -739,9 +756,6 @@ void render(Game *game)
 			upgrade.at(i).sprite.createTexture();
 		}
 		gm.state = STATE_GAMEPLAY;
-	}
-	if (gm.state == STATE_GAMEOVER) {
-		loadGameover(&gm);
 	}
 	//draw background
 	background(&gm);
@@ -845,14 +859,18 @@ void render(Game *game)
 	outputScore(&gm);
 	outputCurrentScore(&gm);
 
-	if (gm.state == STATE_STARTMENU)
+	if (gm.state == STATE_GAMEOVER) {
+		if (gm.hasDied)
+			loadGameover(&gm);
+	}
+
+	if (gm.state == STATE_STARTMENU || gm.state == STATE_GAMEOVER) {
 		if (hasSelection)
 			selection(&gm, sx, sy, sh, sw);
-
+	}
 	
 	//resets level id on game over
 	gameOverLevelRestart(&gm, &lev);
-
 }
 
 unsigned char *buildAlphaData(Ppmimage *img)

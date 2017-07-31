@@ -154,6 +154,7 @@ public:
 	int done;
 	char keys[65536];
 	bool swtch;
+	bool hasDied;
 	Game() {
 		n = 0;
 		state = STATE_STARTMENU;
@@ -164,6 +165,7 @@ public:
 		button.alpha = 1.0;
 		button.height = 50;
 		button.width = 100;
+		hasDied = false;
 	}
 };
 
