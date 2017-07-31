@@ -81,7 +81,7 @@ extern void loadLevel(Game *g, Level *lev);
 extern void thump();
 extern void initialize_sound();
 extern void finish_sound();
-extern void background_music();
+extern void background_music(int choice);
 extern void death();
 extern void loadLevel(Game *g);
 extern void initialize_sound();
@@ -177,7 +177,6 @@ int main(void)
 	upgrade.at(1).initAnimation();
 	#ifdef USE_OPENAL_SOUND
 	initialize_sound();
-	background_music();
 	srand(time(NULL));
 	initXWindows();
 	

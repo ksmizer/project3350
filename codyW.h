@@ -16,10 +16,10 @@
 #define USE_SOUNDHEAP
 
 #ifdef USE_SOUNDHEAP
-const int MAX_SOUNDHEAP = 64;
+const int MAX_SOUNDHEAP = 1000;
 #endif
 
-#define MAX_SOUNDQUEUES (32)
+#define MAX_SOUNDQUEUES (1000)
 
 #ifdef USE_SOUNDQUEUE
 typedef struct t_soundqueue 
