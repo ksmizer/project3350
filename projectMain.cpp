@@ -284,7 +284,6 @@ void init_opengl(void)
 
 void makeCharacter(Game *game, int x, int y)
 {
-	initializeTime();
 	//position of character
 	Character *p = &game->character;
 	
