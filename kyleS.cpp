@@ -168,8 +168,7 @@ void charHurtUpdate(Game *game, Character *p)
 
 void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
-		
-    	//Enemy *e = &enemies.at(0);
+	//Enemy *e = &enemies.at(0);
 	charHurtUpdate(game, p);
 	// Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
@@ -179,8 +178,10 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 		spikeBottom[i] = s->center.y - s->height - p->s.height;
 		spikeLeft[i] = s->center.x - s->width - p->s.width;
 		spikeRight[i] = s->center.x + s->width + p->s.width;
-		if (p->s.center.y < spikeTop[i] - 10 && p->s.center.y > spikeBottom[i] + 15) {
-			if (p->s.center.x > spikeLeft[i] + 10 && p->s.center.x < spikeRight[i] - 10) {
+		if (p->s.center.y < spikeTop[i] - 10
+				&& p->s.center.y > spikeBottom[i] + 15) {
+			if (p->s.center.x > spikeLeft[i] + 10
+					&& p->s.center.x < spikeRight[i] - 10) {
 				p->velocity.y = 0;
 				p->jumpCurrent = 2;
 				spikes();
@@ -192,7 +193,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 	}
 	// Enemy collision
 	for (unsigned int i = 0; i < enemies.size(); i++) {
-	    	Enemy *e = &enemies.at(i);
+		Enemy *e = &enemies.at(i);
 		int enemyHit[4];
 		enemyHit[0] = e->s.center.y + e->hitbox.height + p->hurt.radius;
 		enemyHit[1] = e->s.center.y - e->hitbox.height - p->hurt.radius;
@@ -212,7 +213,7 @@ void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 
 bool enemyHurt(Game *game, Character *p, Enemy enemy)
 {
-    	bool kill = false;
+	bool kill = false;
 	Enemy *e = &enemy;
 	//Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
@@ -223,7 +224,8 @@ bool enemyHurt(Game *game, Character *p, Enemy enemy)
 		spikeLeft[i] = s->center.x - s->width - e->s.width;
 		spikeRight[i] = s->center.x + s->width + e->s.width;
 		if (e->s.center.y < spikeTop[i] && e->s.center.y > spikeBottom[i]) {
-			if (e->s.center.x > spikeLeft[i] && e->s.center.x < spikeRight[i]) {
+			if (e->s.center.x > spikeLeft[i]
+					&& e->s.center.x < spikeRight[i]) {
 				e->s.center.y = spikeTop[i];
 				e->velocity.y = 0;
 			}
@@ -275,8 +277,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 						p->velocity.y = 0;
 						p->jumpCurrent = 0;
 						p->hurtJump = false;
-						if (p->velocity.x <= WALK / 5 &&
-								p->velocity.x >= -WALK / 5) {
+						if (p->velocity.x <= WALK / 5
+								&& p->velocity.x >= -WALK / 5) {
 							p->velocity.x = 0;
 						}
 						if (p->velocity.x > 0) {
@@ -388,99 +390,97 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 
 void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 {
-    for (unsigned int j = 0; j < enemies.size(); j++) {
-	Enemy *e = &enemies.at(j);
-	int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
-	for (int i = 0; i < 7; i++) {
-		Shape *s = &game->box[i];
-		boxTop[i] = s->center.y + s->height + e->s.height;
-		boxBottom[i] = s->center.y - s->height - e->s.height;
-		boxLeft[i] = s->center.x - s->width - e->s.width;
-		boxRight[i] = s->center.x + s->width + e->s.width;
-		if (e->s.center.y < boxTop[i] && e->s.center.y > boxBottom[i]) {
-			if (e->s.center.x > boxLeft[i]	&& e->s.center.x < boxRight[i]) {
-				//Top collision detection
-				if (e->s.center.y < boxTop[i]
-						&& e->s.center.y > boxTop[i] - OFFSET
+	for (unsigned int j = 0; j < enemies.size(); j++) {
+		Enemy *e = &enemies.at(j);
+		int boxTop[7], boxBottom[7], boxLeft[7], boxRight[7];
+		for (int i = 0; i < 7; i++) {
+			Shape *s = &game->box[i];
+			boxTop[i] = s->center.y + s->height + e->s.height;
+			boxBottom[i] = s->center.y - s->height - e->s.height;
+			boxLeft[i] = s->center.x - s->width - e->s.width;
+			boxRight[i] = s->center.x + s->width + e->s.width;
+			if (e->s.center.y < boxTop[i] && e->s.center.y > boxBottom[i]) {
+				if (e->s.center.x > boxLeft[i]	&& e->s.center.x < boxRight[i]) {
+					//Top collision detection
+					if (e->s.center.y < boxTop[i]
+							&& e->s.center.y > boxTop[i] - OFFSET
 							&& e->s.center.x < boxRight[i] - OFFSET
-								&& e->s.center.x > boxLeft[i] + OFFSET) {
-					if (e->velocity.y < 0) {
-						thump();
-						setTime();
-						e->s.center.y = boxTop[i];
-						e->velocity.y = 0;
+							&& e->s.center.x > boxLeft[i] + OFFSET) {
+						if (e->velocity.y < 0) {
+							thump();
+							e->s.center.y = boxTop[i];
+							e->velocity.y = 0;
+						}
 					}
-				}
-				//Bottom collision detection
-				if (e->s.center.y > boxBottom[i]
-						&& e->s.center.y < boxBottom[i] + OFFSET
+					//Bottom collision detection
+					if (e->s.center.y > boxBottom[i]
+							&& e->s.center.y < boxBottom[i] + OFFSET
 							&& e->s.center.x < boxRight[i] - OFFSET
-								&& e->s.center.x > boxLeft[i] + OFFSET) {
-					e->s.center.y = boxBottom[i];
-					if (e->velocity.y > 0)
-						e->velocity.y = 0;
-				}
-				//Right collision detection
-				if (e->s.center.x < boxRight[i]
-						&& e->s.center.x > s->center.x
+							&& e->s.center.x > boxLeft[i] + OFFSET) {
+						e->s.center.y = boxBottom[i];
+						if (e->velocity.y > 0)
+							e->velocity.y = 0;
+					}
+					//Right collision detection
+					if (e->s.center.x < boxRight[i]
+							&& e->s.center.x > s->center.x
 							&& e->s.center.y < boxTop[i] - OFFSET
-								&& e->s.center.y > boxBottom[i] + OFFSET) {
-					e->s.center.x = boxRight[i];
-					if (e->velocity.x < 0)
-						e->flipDirection();
-				}
-				//Left Collision detection
-				if (e->s.center.x > boxLeft[i]
-						&& e->s.center.x < s->center.x
+							&& e->s.center.y > boxBottom[i] + OFFSET) {
+						e->s.center.x = boxRight[i];
+						if (e->velocity.x < 0)
+							e->flipDirection();
+					}
+					//Left Collision detection
+					if (e->s.center.x > boxLeft[i]
+							&& e->s.center.x < s->center.x
 							&& e->s.center.y < boxTop[i] - OFFSET
-								&& e->s.center.y > boxBottom[i] + OFFSET) {
-					e->s.center.x = boxLeft[i];
-					if (e->velocity.x > 0)
-						e->flipDirection();
+							&& e->s.center.y > boxBottom[i] + OFFSET) {
+						e->s.center.x = boxLeft[i];
+						if (e->velocity.x > 0)
+							e->flipDirection();
+					}
 				}
 			}
 		}
-	}
-	int platTop[10], platBottom[10], platLeft[10], platRight[10];
-	for (int i = 0; i < 10; i++) {
-		Shape *s = &game->plat[i];
-		platTop[i] = s->center.y + s->height + e->s.height;
-		platBottom[i] = s->center.y - s->height - e->s.height;
-		platLeft[i] = s->center.x - s->width - e->s.width;
-		platRight[i] = s->center.x + s->width + e->s.width;
-		if (e->s.center.y < platTop[i] && e->s.center.y > platBottom[i]) {
-			if (e->s.center.x > platLeft[i]	&& e->s.center.x < platRight[i]) {
-				//Top collision detection
-				if (e->s.center.y < platTop[i]
-					&& e->s.center.y > platTop[i] - OFFSET
-						&& e->s.center.x <= platRight[i]
+		int platTop[10], platBottom[10], platLeft[10], platRight[10];
+		for (int i = 0; i < 10; i++) {
+			Shape *s = &game->plat[i];
+			platTop[i] = s->center.y + s->height + e->s.height;
+			platBottom[i] = s->center.y - s->height - e->s.height;
+			platLeft[i] = s->center.x - s->width - e->s.width;
+			platRight[i] = s->center.x + s->width + e->s.width;
+			if (e->s.center.y < platTop[i] && e->s.center.y > platBottom[i]) {
+				if (e->s.center.x > platLeft[i]	&& e->s.center.x < platRight[i]) {
+					//Top collision detection
+					if (e->s.center.y < platTop[i]
+							&& e->s.center.y > platTop[i] - OFFSET
+							&& e->s.center.x <= platRight[i]
 							&& e->s.center.x >= platLeft[i]
-								&& e->velocity.y < 0) {
-					thump();
-					setTime();
-					e->s.center.y = platTop[i];
-					e->velocity.y = 0;
-					if (e->s.center.x == platRight[i] ||
-							e->s.center.x == platLeft[i]) {
-						e->velocity.x = -e->velocity.x;
+							&& e->velocity.y < 0) {
+						thump();
+						e->s.center.y = platTop[i];
+						e->velocity.y = 0;
+						if (e->s.center.x == platRight[i] ||
+								e->s.center.x == platLeft[i]) {
+							e->velocity.x = -e->velocity.x;
+						}
 					}
 				}
 			}
 		}
-	}
 
-	if (enemyHurt(game, p, enemies.at(j))) {
-	    if (enemies.at(j).getType() != 2)
-			enemies.erase(enemies.begin() + j);
+		if (enemyHurt(game, p, enemies.at(j))) {
+			if (enemies.at(j).getType() != 2)
+				enemies.erase(enemies.begin() + j);
 		else {
 			enemies.at(j).setHP(enemies.at(j).getHP() - 1);
 			if (enemies.at(j).getHP() <= 0) {
 				enemies.erase(enemies.begin() + j);
 			}
 		}
-	    break;
+		break;
+		}
 	}
-    }
 }
 
 void makeWeapon(Game *game, Character *p)
@@ -596,8 +596,8 @@ void checkControl(Game *gm)
 		ggprint8b(&r, 16, c, "I - Toggle Save Point");
 		ggprint8b(&r, 16, c, "O - Test Save Point");
 	}
-
 }
+
 void checkPause(Game *gm)
 {
 	Flt h, w;
