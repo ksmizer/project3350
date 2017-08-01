@@ -95,7 +95,6 @@ extern void countDeath();
 extern void setPauseTime();
 extern void setDeathTime();
 extern void resumeTime();
-extern void outputScore(Game *game);
 extern void outputCurrentScore(Game *game);
 extern void loadFlames(Game *game);
 
@@ -859,7 +858,6 @@ void render(Game *game)
 	checkControl(&gm);
 	checkPause(&gm);
 	//checkGameOver(&gm);
-	outputScore(&gm);
 	outputCurrentScore(&gm);
 
 	if (gm.state == STATE_GAMEOVER) {
