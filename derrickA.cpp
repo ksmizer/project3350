@@ -176,14 +176,14 @@ void loadLevel(Game *g, Level *lev)
 	if (p->s.center.x < 0.1) {
 		p->s.center.x = WINDOW_WIDTH - 20;
 		lev->levelID--;
-		if(lev->levelID == 1) {
+		if (lev->levelID == 1) {
 			setRightDoor(g);
 		}
 	}
 	if (p->s.center.x > WINDOW_WIDTH - 0.1) {
 		p->s.center.x = 20;
 		lev->levelID++;
-		if(lev->levelID == 10) {
+		if (lev->levelID == 10) {
 			//printf("loadLevel setting boss frame");
 			setFrame(g);
 		}
@@ -204,7 +204,9 @@ void loadLevel(Game *g, Level *lev)
 			setRightDoor(g);
 		}
 	}
-
+	if (lev->levelID >= 11) {
+		g->state = STATE_WON;
+	}
 }
 
 
