@@ -63,7 +63,7 @@ clock_t thisTime;
 clock_t clockTicksTaken;
 double timeInSeconds;
 bool start = true;
-	
+bool finish = false;	
 
 extern void prepPlat(Game *g);
 extern void prepBox(Game *g);
@@ -148,45 +148,6 @@ void finish_sound()
 	alcDestroyContext(Context);
 	//Close device.
 	alcCloseDevice(Device);
-}
-
-void cleanSound()
-{
-	Sound s;
-
-	//Delete the source
-	alDeleteSources(1, &s.alSource);
-	alDeleteSources(1, &s.alSource_one[0]);
-	alDeleteSources(1, &s.alSource_one[1]);
-	alDeleteSources(1, &s.alSource_three);
-	alDeleteSources(1, &s.alSource_four);
-	alDeleteSources(1, &s.alSource_five);
-	alDeleteSources(1, &s.alSource_six);
-	alDeleteSources(1, &s.alSource_seven);
-	alDeleteSources(1, &s.alSource_eight);
-	alDeleteSources(1, &s.alSource_nine);
-	//Delete the buffer.
-	alDeleteBuffers(1, &s.alBuffer);
-	alDeleteBuffers(1, &s.alBuffer_one[0]);
-	alDeleteBuffers(1, &s.alBuffer_one[1]);
-	alDeleteBuffers(1, &s.alBuffer_three);
-	alDeleteBuffers(1, &s.alBuffer_four);
-	alDeleteBuffers(1, &s.alBuffer_five);
-	alDeleteBuffers(1, &s.alBuffer_six);
-	alDeleteBuffers(1, &s.alBuffer_seven);
-	alDeleteBuffers(1, &s.alBuffer_eight);
-	alDeleteBuffers(1, &s.alBuffer_nine);
-	//Close out OpenAL itself.
-	//Get active context.
-	//ALCcontext *Context = alcGetCurrentContext();
-	//Get device for active context.
-	//ALCdevice *Device = alcGetContextsDevice(Context);
-	//Disable context
-	//alcMakeContextCurrent(NULL);
-	//Release context(s)
-	//alcDestroyContext(Context);
-	//Close device.
-	//alcCloseDevice(Device);
 }
 
 void thump()
@@ -289,7 +250,7 @@ void hit()
 
 void jump()
 {
-	/*Sound s;
+	Sound s;
 	//Buffer holds the sound information.
 	s.alBuffer_four = alutCreateBufferFromFile("./jump.wav");
 
@@ -302,7 +263,7 @@ void jump()
 	alSourcef(s.alSource_four, AL_PITCH, 1.0f);
 	alSourcei(s.alSource_four, AL_LOOPING, AL_FALSE);
 	
-	alSourcePlay(s.alSource_four);*/
+	alSourcePlay(s.alSource_four);
 	
 }
 
@@ -361,8 +322,6 @@ void death()
 	alSourcei(s.alSource_seven, AL_LOOPING, AL_FALSE);
 	
 	alSourcePlay(s.alSource_seven);
-	
-	cleanSound();
 }
 
 void explosion()
@@ -385,6 +344,16 @@ void explosion()
 	
 }
 
+// reset the clock
+void resumeTime() { thisTime = clock(); }
+
+void countDeath() { deaths++; }
+
+void killCount() { kills++; }
+
+void setDeathTime() { deadTime = clock(); }
+
+// at the begginning of game start timer on impact
 void setTime()
 {
 	if (start == true) {
@@ -393,6 +362,7 @@ void setTime()
 	}
 }
 
+// if all times are 0 start the timer
 void initializeTime()
 {
 	if (totalMinutes == 0 && totalSeconds == 0) {
@@ -425,12 +395,7 @@ void resetTime()
 	}
 	seconds = 0;
 	minutes = 0;
-	thisTime = clock();
-}
-
-void setDeathTime()
-{
-	deadTime = clock();
+	resumeTime();
 }
 
 void setPauseTime()
@@ -445,22 +410,6 @@ void setPauseTime()
 	// set pausetime when player hits tab
 	pauseSeconds = seconds;
 	pauseMinutes = minutes;
-}
-
-void resumeTime()
-{
-	// reset the clock
-	thisTime = clock();
-}
-
-void countDeath()
-{
-	deaths++;
-}
-
-void killCount()
-{
-	kills++;
 }
 
 void totalTimer()
@@ -479,36 +428,35 @@ void totalTimer()
 
 void outputScore(Game *gm)
 {
+	finish = true;
 	Flt h, w;
 	Rect r;
 	int c = 0xffffffff;
-	if (gm->state == STATE_GAMEOVER) {
-		h = 50;
-		w = 50;
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0, 0.0, 0.0, 0.0);
-		glTranslated(gm->xres/2, gm->yres/2, 0);
-		glBegin(GL_QUADS);
-			glVertex2i(-w, -h);
-			glVertex2i(-w, +h);
-			glVertex2i(+w, +h);
-			glVertex2i(+w, -h);
-		glEnd();
-		glDisable(GL_BLEND);
-		glPopMatrix();
-		r.bot = gm->yres/2 + 40;
-		r.left = gm->xres/2.3;
-		r.center = .5;
-		if (totalSeconds < 10) {
-			ggprint8b(&r, 16, c, "Total Time: %d:0%d", totalMinutes, totalSeconds);
-		} else {
-			ggprint8b(&r, 16, c, "Total Time: %d:%d", totalMinutes, totalSeconds);
-		}
-		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		ggprint8b(&r, 16, c, "Kills: %d", kills);
+	h = 50;
+	w = 50;
+	glPushMatrix();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(0.0, 0.0, 0.0, 0.0);
+	glTranslated(gm->xres/2, gm->yres/2, 0);
+	glBegin(GL_QUADS);
+		glVertex2i(-w, -h);
+		glVertex2i(-w, +h);
+		glVertex2i(+w, +h);
+		glVertex2i(+w, -h);
+	glEnd();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+	r.bot = gm->yres/2 + 800;
+	r.left = gm->xres/2.3;
+	r.center = .5;
+	if (totalSeconds < 10) {
+		ggprint8b(&r, 16, c, "Total Time: %d:0%d", totalMinutes, totalSeconds);
+	} else {
+		ggprint8b(&r, 16, c, "Total Time: %d:%d", totalMinutes, totalSeconds);
 	}
+	ggprint8b(&r, 16, c, "Deaths: %d", deaths);
+	ggprint8b(&r, 16, c, "Kills: %d", kills);
 }
 
 void outputCurrentScore(Game *gm)
@@ -516,7 +464,7 @@ void outputCurrentScore(Game *gm)
 	Flt h, w;
 	Rect r;
 	int c = 0xffffffff;
-	if (gm->state == STATE_GAMEPLAY && start == false) {
+	if (gm->state == STATE_GAMEPLAY && start == false && finish == false) {
 		totalTimer();
 		h = 50;
 		w = 50;
@@ -545,7 +493,7 @@ void outputCurrentScore(Game *gm)
 		// computer monitors or laptops
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
 		ggprint8b(&r, 16, c, "Kills: %d", kills);
-		/*r.bot = gm->yres/2 + 200;
+		r.bot = gm->yres/2 + 200;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
@@ -554,7 +502,7 @@ void outputCurrentScore(Game *gm)
 			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		ggprint8b(&r, 16, c, "Kills: %d", kills);*/
+		ggprint8b(&r, 16, c, "Kills: %d", kills);
 	}
 }
 
