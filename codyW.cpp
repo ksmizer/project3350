@@ -154,7 +154,6 @@ void thump()
 {
 	Sound s;
 
-
 	s.alBuffer = alutCreateBufferFromFile("./thump.wav");
 	
 	//Source refers to the sound.
@@ -165,7 +164,6 @@ void thump()
 	alSourcef(s.alSource, AL_GAIN, 0.1f);
 	alSourcef(s.alSource, AL_PITCH, 1.0f);
 	alSourcei(s.alSource, AL_LOOPING, AL_FALSE);
-	
 	alSourcePlay(s.alSource);
 }
 

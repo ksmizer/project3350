@@ -46,8 +46,12 @@ extern void charCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies);
 extern void savePointCheck(Character *p, vector<SavePoint>& sp);
 extern void selection(Game *game, int x, int y, int h, int w);
+extern void makeParticle(Game *game, int x, int y);
+extern void particlePhys(Game *game, Level *lev);
+extern void drawParticle(Game *game);
 extern void start(Game *game);
 extern void loadGameover(Game *game);
+extern void loadCredits(Game *game);
 extern void loadLoading(Game *game);
 extern void loading(Game *game);
 extern void loadStart(Game *game);
@@ -543,7 +547,6 @@ void physics(Game *game, PlayerState ps)
 		game->character.jumpMax = 1;
 	}
 	
-	
 	p = &game->character;
 	
 	//Gravity and velocity update
@@ -561,6 +564,7 @@ void physics(Game *game, PlayerState ps)
 	enemyCollision(game, p, enemies);
 	savePointCheck(p, savePoints);
 	upgradeCheck(p, upgrade);	
+	particlePhys(game, &lev);
 
 	checkFireball(game, p, fireball);
 	
@@ -759,6 +763,7 @@ void render(Game *game)
 		}
 		gm.state = STATE_GAMEPLAY;
 	}
+
 	//draw background
 	background(&gm);
 
@@ -780,8 +785,8 @@ void render(Game *game)
 	//draws level text
 	levelText(&gm, &lev);
 
-	//draw platforms & spikes
-	//platforms(&gm);
+	//draw blood particles
+	drawParticle(&gm);
 
 	//draw character here
 	glPushMatrix();
@@ -863,6 +868,10 @@ void render(Game *game)
 	if (gm.state == STATE_GAMEOVER) {
 		if (gm.hasDied)
 			loadGameover(&gm);
+	}
+
+	if (gm.state == STATE_WON) {
+		loadCredits(&gm);
 	}
 
 	if (gm.state == STATE_STARTMENU || gm.state == STATE_GAMEOVER) {

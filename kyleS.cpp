@@ -46,10 +46,12 @@
 #include "codyG.h"
 #include "kyleS.h"
 #include <algorithm>
-//#include "derrickA.h"
+#include "derrickA.h"
 #ifdef USE_OPENAL_SOUND
 #include </usr/include/AL/alut.h>
 #endif //USE_OPENAL_SOUND
+
+static int temp = 0;
 
 extern void thump();
 extern void hit();
@@ -63,7 +65,9 @@ extern void spearHit();
 extern void timer(int mode);
 extern void makeCharacter(Game *game, int x, int y);
 extern void setTime();
+extern void setRightDoor(Game *game);
 
+void makeParticle(Game *game, int x, int y);
 void makeWeapon(Game *game, Character *p);
 void start(Game *game);
 void loading(Game *game);
@@ -168,7 +172,6 @@ void charHurtUpdate(Game *game, Character *p)
 
 void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
-	//Enemy *e = &enemies.at(0);
 	charHurtUpdate(game, p);
 	// Spike death detection
 	int spikeTop[5], spikeBottom[5], spikeLeft[5], spikeRight[5];
@@ -241,6 +244,13 @@ bool enemyHurt(Game *game, Character *p, Enemy enemy)
 		if (e->s.center.y < lance[i][0] && e->s.center.y > lance[i][1]) {
 			if (e->s.center.x < lance[i][2] && e->s.center.x > lance[i][3]) {
 				e->velocity.x = 0;
+				makeParticle(game, e->s.center.x, e->s.center.y);
+				int x, y;
+				if (e->getType() == 2) {
+					x = e->s.center.x + rnd() * 20 - 10;
+					y = e->s.center.y + rnd() * 20 - 15;
+					makeParticle(game, x, y);
+				}
 				e->killEnemy();
 				kill = true;
 				p->l[i].s.center.x = -50;
@@ -265,8 +275,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 				//Top collision detection
 				if (p->s.center.y < boxTop[i]
 						&& p->s.center.y > boxTop[i] - OFFSET
-							&& p->s.center.x < boxRight[i] - OFFSET
-								&& p->s.center.x > boxLeft[i] + OFFSET) {
+						&& p->s.center.x < boxRight[i] - OFFSET
+						&& p->s.center.x > boxLeft[i] + OFFSET) {
 					if (p->velocity.y < 0) {
 						if (p->soundChk == true) {
 							thump();
@@ -292,8 +302,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 				//Bottom collision detection
 				if (p->s.center.y > boxBottom[i]
 						&& p->s.center.y < boxBottom[i] + OFFSET
-							&& p->s.center.x < boxRight[i] - OFFSET
-								&& p->s.center.x > boxLeft[i] + OFFSET) {
+						&& p->s.center.x < boxRight[i] - OFFSET
+						&& p->s.center.x > boxLeft[i] + OFFSET) {
 					p->s.center.y = boxBottom[i];
 					if (p->velocity.y > 0)
 						p->velocity.y = 0;
@@ -301,8 +311,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 				//Right collision detection
 				if (p->s.center.x < boxRight[i]
 						&& p->s.center.x > s->center.x
-							&& p->s.center.y < boxTop[i] - OFFSET
-								&& p->s.center.y > boxBottom[i] + OFFSET) {
+						&& p->s.center.y < boxTop[i] - OFFSET
+						&& p->s.center.y > boxBottom[i] + OFFSET) {
 					p->s.center.x = boxRight[i];
 					if (p->velocity.x < 0)
 						p->velocity.x = 0;
@@ -310,8 +320,8 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 				//Left Collision detection
 				if (p->s.center.x > boxLeft[i]
 						&& p->s.center.x < s->center.x
-							&& p->s.center.y < boxTop[i] - OFFSET
-								&& p->s.center.y > boxBottom[i] + OFFSET) {
+						&& p->s.center.y < boxTop[i] - OFFSET
+						&& p->s.center.y > boxBottom[i] + OFFSET) {
 					p->s.center.x = boxLeft[i];
 					if (p->velocity.x > 0)
 						p->velocity.x = 0;
@@ -330,10 +340,10 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 			if (p->s.center.x > platLeft[i]	&& p->s.center.x < platRight[i]) {
 				//Top collision detection
 				if (p->s.center.y < platTop[i]
-					&& p->s.center.y > platTop[i] - OFFSET
+						&& p->s.center.y > platTop[i] - OFFSET
 						&& p->s.center.x < platRight[i]
-							&& p->s.center.x > platLeft[i]
-								&& p->velocity.y < 0) {
+						&& p->s.center.x > platLeft[i]
+						&& p->velocity.y < 0) {
 					if (p->soundChk == true) {
 						thump();
 						setTime();
@@ -476,6 +486,7 @@ void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 			enemies.at(j).setHP(enemies.at(j).getHP() - 1);
 			if (enemies.at(j).getHP() <= 0) {
 				enemies.erase(enemies.begin() + j);
+				setRightDoor(game);		
 			}
 		}
 		break;
@@ -749,6 +760,46 @@ void loadGameover(Game *gm)
 	glPopMatrix();
 }
 
+void loadCredits(Game *gm)
+{
+	Game *p = gm;
+	//load the images file into a ppm structure.
+	system("convert images/credits.png tmp.ppm");
+	gm->tex.credits = ppm6GetImage("./tmp.ppm");
+	//create opengl texture elements
+	glGenTextures(1, &p->tex.creditsTexture);
+	int w = gm->tex.credits->width;
+	int h = gm->tex.credits->height;
+	glBindTexture(GL_TEXTURE_2D, gm->tex.creditsTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+					GL_RGB, GL_UNSIGNED_BYTE, gm->tex.credits->data);
+	unlink("./tmp.ppm");
+	gm->tex.xc[0] = 0.0;
+	gm->tex.xc[1] = 1.0;
+	gm->tex.yc[0] = 0.0;
+	gm->tex.yc[1] = 1.0;
+	glPushMatrix();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, gm->tex.creditsTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(gm->tex.xc[0], gm->tex.yc[1]);
+			glVertex2i(0, 0); 
+		glTexCoord2f(gm->tex.xc[0], gm->tex.yc[0]);
+			glVertex2i(0, gm->yres);
+		glTexCoord2f(gm->tex.xc[1], gm->tex.yc[0]);
+			glVertex2i(gm->xres, gm->yres);
+		glTexCoord2f(gm->tex.xc[1], gm->tex.yc[1]);
+			glVertex2i(gm->xres, 0); 
+	glEnd();
+	glPopMatrix();
+	glFlush();
+}
+
 void loadLoading(Game *gm)
 {
 	Game *p = gm;
@@ -981,5 +1032,58 @@ void mouseClick(Game *gm, int action, int x, int y)
 		}
 	}
 	if (action == 2) {
+	}
+}
+
+void makeParticle(Game *gm, int x, int y)
+{
+	for (int i = 0; i < 20; i++) {
+		if (gm->num >= MAXPARTICLES)
+			return;
+		Particle *p = &gm->particle[gm->num];
+		p->s.center.x = x;
+		p->s.center.y = y;
+		p->velocity.y = rnd() * 4;
+		p->velocity.x = rnd() * 2 - 1;
+		gm->num++;
+	}
+}
+
+void particlePhys(Game *gm, Level *lev)
+{
+	Particle *p;
+	if (gm->num <= 0)
+		return;
+
+	for (int i = 0; i < gm->num; i++) {
+		p = &gm->particle[i];
+		p->velocity.y -= GRAVITY;
+		p->s.center.y += p->velocity.y;
+		p->s.center.x += p->velocity.x;
+	}
+
+	if (temp != lev->levelID) {
+		for (int i = 0; i < gm->num; i++) {
+		gm->num--;
+		}
+	}
+	temp = lev->levelID;
+}
+
+void drawParticle(Game *gm)
+{
+	int h, w;
+	glPushMatrix();
+	glColor3f(1.0, 0.0, 0.0);
+	for (int i = 0; i < gm->num; i++) {
+		Vec *c = &gm->particle[i].s.center;
+		w = h = 2;
+		glBegin(GL_QUADS);
+			glVertex2i(c->x-w, c->y-h);
+			glVertex2i(c->x-w, c->y+h);
+			glVertex2i(c->x+w, c->y+h);
+			glVertex2i(c->x+w, c->y-h);
+		glEnd();
+		glPopMatrix();
 	}
 }

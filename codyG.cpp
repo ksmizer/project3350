@@ -741,6 +741,7 @@ void checkFireball(Game *game, Character *p, Fireball &f)
 			p->jumpCurrent = 2;
 			f.move(-50,f.getY());
 			death();
+			game->hasDied = true;
 			game->state = STATE_GAMEOVER;
 		}
 	}

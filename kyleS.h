@@ -36,6 +36,7 @@ const Flt gravity = -0.2f;
 #define W_HEIGHT 3
 #define W_WIDTH 10
 #define MAXBUTTONS 3
+#define MAXPARTICLES 400
 
 //structs
 struct Vec {
@@ -46,6 +47,11 @@ struct Shape {
 	Flt width, height;
 	Flt radius;
 	Vec center;
+};
+
+struct Particle {
+	Shape s;
+	Vec velocity;
 };
 
 struct Hurtbox {
@@ -72,7 +78,8 @@ enum State {
 	STATE_GAMEPLAY,
 	STATE_PAUSE,
 	STATE_CONTROLS,
-	STATE_GAMEOVER
+	STATE_GAMEOVER,
+	STATE_WON
 };
 
 class Texture {
@@ -83,6 +90,7 @@ public:
 	Ppmimage *start;
 	Ppmimage *loading;
 	Ppmimage *died;
+	Ppmimage *credits;
 	Ppmimage *platform;
 	Ppmimage *flames;
 	GLuint spikeTexture;
@@ -91,8 +99,11 @@ public:
 	GLuint platTexture;
 	GLuint backTexture;
 	GLuint diedTexture;
+	GLuint creditsTexture;
 	GLuint boxTexture;
 	GLuint flamesTexture;
+	Flt xc[2];
+	Flt yc[2];
 	Flt xd[2];
 	Flt yd[2];
 	Flt xl[2];
@@ -149,7 +160,9 @@ public:
 	State state;
 	Texture tex;
 	Button button;
+	Particle particle[MAXPARTICLES];
 	int n;
+	int num;
 	int xres, yres;
 	int done;
 	char keys[65536];
@@ -157,6 +170,7 @@ public:
 	bool hasDied;
 	Game() {
 		n = 0;
+		num = 0;
 		state = STATE_STARTMENU;
 		xres = WINDOW_WIDTH;
 		yres = WINDOW_HEIGHT;
