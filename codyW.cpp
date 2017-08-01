@@ -491,7 +491,7 @@ void outputCurrentScore(Game *gm)
 		// computer monitors or laptops
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
 		ggprint8b(&r, 16, c, "Kills: %d", kills);
-		r.bot = gm->yres/2 + 200;
+		/*r.bot = gm->yres/2 + 200;
 		r.left = gm->xres/45;
 		r.center = .5;
 		if (seconds < 10) {
@@ -500,7 +500,7 @@ void outputCurrentScore(Game *gm)
 			ggprint8b(&r, 16, c, "Time: %d:%d", minutes, seconds);
 		}
 		ggprint8b(&r, 16, c, "Deaths: %d", deaths);
-		ggprint8b(&r, 16, c, "Kills: %d", kills);
+		ggprint8b(&r, 16, c, "Kills: %d", kills);*/
 	}
 }
 
