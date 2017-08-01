@@ -352,6 +352,17 @@ void charCollision(Game *game, Character *p, vector<Enemy> &enemies)
 					p->s.center.y = platTop[i];
 					p->velocity.y = 0;
 					p->jumpCurrent = 0;
+					p->hurtJump = false;
+					if (p->velocity.x <= WALK / 5
+							&& p->velocity.x >= -WALK / 5) {
+						p->velocity.x = 0;
+					}
+					if (p->velocity.x > 0) {
+						p->velocity.x -= WALK / 5;
+					}
+					if (p->velocity.x < 0) {
+						p->velocity.x += WALK / 5;
+					}
 				}
 			}
 		}
