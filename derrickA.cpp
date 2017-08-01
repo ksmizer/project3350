@@ -259,6 +259,7 @@ void gameOverLevelRestart(Game *gm, Level *lev)
 		}
 		else{
 	//		clearLevel(gm);
+			lev->levelID = 1;
 			setLRDoor(gm);
 		} 
 	}
