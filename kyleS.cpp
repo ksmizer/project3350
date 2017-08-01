@@ -485,12 +485,12 @@ void enemyCollision(Game *game, Character *p, vector<Enemy> &enemies)
 
 void makeWeapon(Game *game, Character *p)
 {
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 1; i++) {
 		if (p->l[i].s.center.x < 0 || p->l[i].s.center.x > game->xres) {
 			if (p->l[i].thrown == false) {
 				throw_spear();
 				p->l[i].s.center.x = p->s.center.x;
-				p->l[i].s.center.y = p->s.center.y + p->s.height*1/3;
+				p->l[i].s.center.y = p->s.center.y;// + p->s.height*1/3;
 				p->l[i].hit.center.x = p->l[i].initThrow.x = p->s.center.x;
 				p->l[i].hit.center.y = p->l[i].s.center.y;
 				p->l[i].hit.width = W_WIDTH;

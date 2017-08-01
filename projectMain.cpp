@@ -817,8 +817,8 @@ void render(Game *game)
 	renderSprite(attackAnimation2, game->character.s.center.x,
 		game->character.s.center.y, 1.0, game->character.isLeft);
 	renderSprite(s1.sprite, game->character.l[0].s.center.x, 
-		game->character.l[1].s.center.y, 1.0, s1.checkIsLeft());
-	renderSprite(s2.sprite, game->character.l[0].s.center.x, 
+		game->character.l[0].s.center.y, 1.0, s1.checkIsLeft());
+	renderSprite(s2.sprite, game->character.l[1].s.center.x, 
 		game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
 	}
 	else {
@@ -831,8 +831,8 @@ void render(Game *game)
 	renderSprite(attackAnimation, game->character.s.center.x,
 		game->character.s.center.y, 1.0, game->character.isLeft);
 	renderSprite(s1.sprite, game->character.l[0].s.center.x, 
-		game->character.l[1].s.center.y, 1.0, s1.checkIsLeft());
-	renderSprite(s2.sprite, game->character.l[0].s.center.x, 
+		game->character.l[0].s.center.y, 1.0, s1.checkIsLeft());
+	renderSprite(s2.sprite, game->character.l[1].s.center.x, 
 		game->character.l[1].s.center.y, 1.0, s2.checkIsLeft());
 	}
 	for (unsigned int i = 0; i < enemies.size(); i++) {
