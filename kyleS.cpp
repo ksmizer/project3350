@@ -169,7 +169,40 @@ void charHurtUpdate(Game *game, Character *p)
 		//p->hurt.width = p->s.width;
 	}		
 }
-
+/*
+void spikeDetection(Game *game, Character *p, vector<Enemy> &enemies) {
+{
+	int spike[5][4];
+	for (int i = 0; i < 5; i++) {
+		Shape *s = &game->spike[i];
+		spike[i][1] = s->center.y + s->height + p->s.height;
+		spike[i][2] = s->center.y + s->height - p->s.height;
+		spike[i][3] = s->center.x - s->width - p->s.width;
+		spike[i][4] = s->center.x + s->width + p->s.width;
+		if (p->s.center.y < spike[i][1] - 10
+				&& p->s.center.y > spike[i][2] + 15) {
+			if (p->s.center.x > spike[i][3] +10
+					&& p->s.center.x < spike[i][4] - 10) {
+				spikes();
+				death();
+				game->state = STATE_GAMEOVER;
+				game->hasDied = true;
+			}
+		}
+		spike[i][1] += e->s.height - p->s.height;
+		spike[i][1] += p->s.height - e->s.height;
+		spike[i][1] += p->s.width - e->s.width;
+		spike[i][1] += e->s.width - p->s.width;
+		if (e->s.center.y < spikeTop[i] && e->s.center.y > spikeBottom[i]) {
+			if (e->s.center.x > spikeLeft[i]
+					&& e->s.center.x < spikeRight[i]) {
+				e->s.center.y = spikeTop[i];
+				e->velocity.y = 0;
+			}
+		}
+	}
+}
+*/
 void charHurt(Game *game, Character *p, vector<Enemy> &enemies)
 {
 	charHurtUpdate(game, p);
